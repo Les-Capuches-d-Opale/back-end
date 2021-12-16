@@ -1,24 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
-import { AppModule } from './../src/app.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [
+        MongooseModule.forRoot('mongodb://localhost:27017/capuches-opale-bdd'),
+      ],
     }).compile();
 
     app = moduleFixture.createNestApplication();
     await app.init();
   });
 
-  it('/ (GET)', () => {
+  it('TEST example [GET /]', () => {
     return request(app.getHttpServer())
       .get('/')
-      .expect(200)
-      .expect('Hello World!');
+      .expect(HttpStatus.NOT_FOUND)
+      .then(({ body }) => {
+        expect(body).toEqual({
+          error: 'Not Found',
+          message: 'Cannot GET /',
+          statusCode: 404,
+        });
+      });
+  });
+
+  it.todo('Create all routes tests...]');
+
+  afterAll(async () => {
+    await app.close();
   });
 });
