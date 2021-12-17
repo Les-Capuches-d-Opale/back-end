@@ -7,15 +7,15 @@ export class Adventurer extends Document {
   @Prop()
   name: string;
 
-  @Prop()
-  description: string;
-
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Speciality',
     required: true,
   })
   speciality: Speciality;
+
+  @Prop()
+  experience: number;
 
   @Prop()
   baseDailyRate: number;
