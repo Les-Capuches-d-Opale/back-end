@@ -1,34 +1,55 @@
 import { Speciality } from './entities/speciality.entity';
+import { CreateAdventurerDto } from './dto/createAdventurer.dto';
+import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
+import { Adventurer } from './entities/adventurer.entity';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-
+import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 @Injectable()
 export class AdventurersService {
   constructor(
-    @InjectModel(Speciality.name)
-    private readonly specialityModel: Model<Speciality>,
+    @InjectModel(Adventurer.name)
+    private readonly adventurerModel: Model<Adventurer>,
   ) {}
 
-  seedSpecialities(): Array<Promise<any>> {
-    const specialities = ['Fighter', 'Mage', 'Rogue', 'Cleric'];
+  async findAll(
+    filterAdventurerQueryDto: FilterAdventurerQueryDto,
+  ): Promise<Adventurer[]> {
+    const { level, name, speciality } = filterAdventurerQueryDto;
+    return await this.adventurerModel
+      .find({
+        name: { $regex: name, $options: 'i' },
+        experience: {
+          $gte: Math.floor(level) | 0,
+          $lte: level ? Math.floor(level) + 1 : 1000000,
+        },
+      })
+      .where(speciality ? { speciality: speciality } : {})
+      .populate('speciality')
+      .exec();
+  }
 
-    return specialities.map(async (speciality) => {
-      await this.specialityModel
-        .findOne({ name: speciality })
-        .exec()
-        .then(async (dbRegion) => {
-          if (dbRegion) {
-            return Promise.resolve(null);
-          }
-          return Promise.resolve(
-            await this.specialityModel.create({
-              name: speciality,
-              description: 'description',
-            }),
-          );
-        })
-        .catch((error) => Promise.reject(error));
-    });
+  async findOne(id: string): Promise<Adventurer> {
+    return await this.adventurerModel
+      .findById(id)
+      .populate('speciality')
+      .exec();
+  }
+
+  create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
+    const adventurer = new this.adventurerModel(createAdventurerDto);
+    return adventurer.save();
+  }
+
+  async updateExp(
+    id: string,
+    updateExpAdventurerDto: UpdateExpAdventurerDto,
+  ): Promise<Adventurer> {
+    return await this.adventurerModel.findByIdAndUpdate(
+      id,
+      { $inc: { experience: updateExpAdventurerDto.experience } },
+      { new: true },
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { Speciality } from '../entities/speciality.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
@@ -6,17 +7,17 @@ export class Adventurer extends Document {
   @Prop()
   name: string;
 
-  @Prop()
-  description: string;
-
   @Prop({
     type: MongooseSchema.Types.ObjectId,
     ref: 'Speciality',
     required: true,
   })
-  speciality: string;
+  speciality: Speciality;
 
   @Prop()
+  experience: number;
+
+  @Prop({ index: true })
   baseDailyRate: number;
 
   @Prop({ required: false })
