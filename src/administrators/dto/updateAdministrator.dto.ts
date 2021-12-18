@@ -1,4 +1,4 @@
-import { LoginDto } from './login.dto';
+import { LoginDto } from './getAdministrator.dto';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 

@@ -1,3 +1,4 @@
+import { ItemsService } from './items/items.service';
 import { AdventurersModule } from './adventurers/adventurers.module';
 import { ItemsController } from './items/items.controller';
 import { MongooseModule } from '@nestjs/mongoose';
