@@ -1,34 +1,23 @@
+import { Consumable } from './consumable.entity';
+import { Equipment } from './equipment.entity';
+import { IntersectionType, PartialType } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 
-class Item extends Document {
+@Schema()
+export class Item extends PartialType(IntersectionType(Equipment, Consumable)) {
   @Prop()
   name: string;
 
   @Prop()
   price: number;
+
+  @Prop({
+    type: String,
+    validate: (value: string) => {
+      return value === 'consumable' || value === 'equipment';
+    },
+  })
+  type: 'consumable' | 'equipment';
 }
 
-@Schema()
-export class Equipment extends Item {
-  @Prop()
-  durability: number;
-
-  @Prop()
-  daysInUse: number;
-
-  @Prop()
-  repairTime: number;
-}
-
-@Schema()
-export class Consumable extends Item {
-  @Prop()
-  charges: number;
-
-  @Prop()
-  usedCharges: number;
-}
-
-export const EquipmentSchema = SchemaFactory.createForClass(Equipment);
-export const ConsumableSchema = SchemaFactory.createForClass(Consumable);
+export const ItemSchema = SchemaFactory.createForClass(Item);

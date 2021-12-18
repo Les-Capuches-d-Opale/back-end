@@ -1,9 +1,11 @@
-import { CreateAventurerDto } from './dto/createAventurer.dto';
+import { Speciality } from './entities/speciality.entity';
+import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
 import { Injectable } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
+import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -11,8 +13,21 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
   ) {}
 
-  async findAll(): Promise<Adventurer[]> {
-    return await this.adventurerModel.find({}).populate('speciality').exec();
+  async findAll(
+    filterAdventurerQueryDto: FilterAdventurerQueryDto,
+  ): Promise<Adventurer[]> {
+    const { level, name, speciality } = filterAdventurerQueryDto;
+    return await this.adventurerModel
+      .find({
+        name: { $regex: name, $options: 'i' },
+        experience: {
+          $gte: Math.floor(level) | 0,
+          $lte: level ? Math.floor(level) + 1 : 1000000,
+        },
+      })
+      .where(speciality ? { speciality: speciality } : {})
+      .populate('speciality')
+      .exec();
   }
 
   async findOne(id: string): Promise<Adventurer> {
@@ -22,8 +37,8 @@ export class AdventurersService {
       .exec();
   }
 
-  create(createAventurerDto: CreateAventurerDto): Promise<Adventurer> {
-    const adventurer = new this.adventurerModel(createAventurerDto);
+  create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
+    const adventurer = new this.adventurerModel(createAdventurerDto);
     return adventurer.save();
   }
 

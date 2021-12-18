@@ -1,5 +1,5 @@
 import { AdministratorsService } from './administrators.service';
-import { LoginDto } from './dto/login.dto';
+import { LoginDto } from './dto/getAdministrator.dto';
 import { AuthService } from './../auth/auth.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {

@@ -1,9 +1,10 @@
 import { Adventurer } from './entities/adventurer.entity';
-import { CreateAventurerDto } from './dto/createAventurer.dto';
+import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
+import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 @ApiTags('adventurers')
 @ApiBearerAuth()
 @Controller('adventurers')
@@ -11,8 +12,10 @@ export class AdventurersController {
   constructor(private readonly adventurerService: AdventurersService) {}
 
   @Get()
-  findAll(): Promise<Adventurer[]> {
-    return this.adventurerService.findAll();
+  findAll(
+    @Query() filterAdventurerQueryDto: FilterAdventurerQueryDto,
+  ): Promise<Adventurer[]> {
+    return this.adventurerService.findAll(filterAdventurerQueryDto);
   }
 
   @Get('/:id')
@@ -21,8 +24,10 @@ export class AdventurersController {
   }
 
   @Post()
-  create(@Body() createAventurerDto: CreateAventurerDto): Promise<Adventurer> {
-    return this.adventurerService.create(createAventurerDto);
+  create(
+    @Body() createAdventurerDto: CreateAdventurerDto,
+  ): Promise<Adventurer> {
+    return this.adventurerService.create(createAdventurerDto);
   }
 
   @Put('/:id')

@@ -17,7 +17,7 @@ export class Adventurer extends Document {
   @Prop()
   experience: number;
 
-  @Prop()
+  @Prop({ index: true })
   baseDailyRate: number;
 
   @Prop({ required: false })

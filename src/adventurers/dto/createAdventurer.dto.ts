@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
 
-export class CreateAventurerDto {
+export class CreateAdventurerDto {
   @ApiProperty({
     description: 'The name of the adventurer.',
     example: 'Batman',
