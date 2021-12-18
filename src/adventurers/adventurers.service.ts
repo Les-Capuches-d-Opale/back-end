@@ -2,7 +2,7 @@ import { Speciality } from './entities/speciality.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
@@ -31,10 +31,16 @@ export class AdventurersService {
   }
 
   async findOne(id: string): Promise<Adventurer> {
-    return await this.adventurerModel
+    const adventurer = await this.adventurerModel
       .findById(id)
       .populate('speciality')
       .exec();
+
+    if (!adventurer) {
+      throw new NotFoundException(`Adventurer #${id} not found`);
+    }
+
+    return adventurer;
   }
 
   create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {

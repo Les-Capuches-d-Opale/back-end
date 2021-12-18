@@ -11,22 +11,14 @@ export class AdministratorsService {
     private readonly administratorModel: Model<Administrator>,
   ) {}
 
-  async findOne(email: string): Promise<any> {
+  async findOne(email: string): Promise<Administrator> {
     return this.administratorModel.findOne({ email }).exec();
-  }
-
-  async register() {
-    return await this.administratorModel.create({
-      username: 'test',
-      email: 'email@gmail.com',
-      password: 'try',
-    });
   }
 
   async update(
     id: string,
     updateAdministratorDto: UpdateAdministratorDto,
-  ): Promise<any> {
+  ): Promise<Administrator> {
     return await this.administratorModel
       .findOneAndUpdate(
         { _id: id },

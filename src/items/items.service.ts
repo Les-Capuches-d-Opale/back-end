@@ -11,13 +11,6 @@ export class ItemsService {
   ) {}
 
   async findAll(): Promise<Item[]> {
-    new this.itemModel({
-      name: 'item 1 test',
-      price: 4,
-      type: 'consumable',
-      charges: 1,
-      usedCharges: 0,
-    }).save();
     return await this.itemModel.find().exec();
   }
 }

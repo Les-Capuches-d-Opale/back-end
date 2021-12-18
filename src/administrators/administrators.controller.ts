@@ -1,3 +1,4 @@
+import { Administrator } from 'src/administrators/entities/administrator.entity';
 import { AdministratorsService } from './administrators.service';
 import { LoginDto } from './dto/getAdministrator.dto';
 import { AuthService } from './../auth/auth.service';
@@ -25,7 +26,10 @@ export class AdministratorsController {
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
-  login(@Request() req, @Body() loginDto: LoginDto) {
+  login(
+    @Request() req,
+    @Body() loginDto: LoginDto,
+  ): Promise<{ access_token: string }> {
     return this.authService.login(req.user);
   }
 
@@ -34,7 +38,7 @@ export class AdministratorsController {
   update(
     @Request() req,
     @Body() updateAdministratorDto: UpdateAdministratorDto,
-  ) {
+  ): Promise<Administrator> {
     return this.administratorsService.update(
       req.user.adminId,
       updateAdministratorDto,
