@@ -12,7 +12,7 @@ export class AdministratorsService {
   ) {}
 
   async findOne(email: string): Promise<Administrator> {
-    return this.administratorModel.findOne({ email }).exec();
+    return await this.administratorModel.findOne({ email }).exec();
   }
 
   async update(
