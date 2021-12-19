@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Item } from 'src/items/entities/item.entity';
 
 @Schema()
 export class Administrator extends Document {
@@ -24,6 +25,21 @@ export class Administrator extends Document {
   })
   @Prop()
   password: string;
+
+  @ApiProperty({
+    description: 'The amount of money of the administrator.',
+    example: 625130,
+    default: 0,
+  })
+  @Prop()
+  wallet: number;
+
+  @ApiProperty({
+    description: 'The items of the administrator.',
+    required: false,
+  })
+  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Item', required: false })
+  items: Item[];
 }
 
 export const AdministratorSchema = SchemaFactory.createForClass(Administrator);

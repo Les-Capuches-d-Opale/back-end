@@ -20,6 +20,14 @@ export class Item extends PartialType(IntersectionType(Equipment, Consumable)) {
   price: number;
 
   @ApiProperty({
+    description: 'The availability of the item.',
+    default: true,
+    example: true,
+  })
+  @Prop()
+  isAvailable: boolean;
+
+  @ApiProperty({
     description: 'The type of the item. Can be "equipment" or "consumable".',
     example: 'equipment',
   })
