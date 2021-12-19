@@ -1,0 +1,32 @@
+{
+  "name": "Les capuches d'Opale",
+  "description": "Les capuches d'Opale web app",
+  "keywords": ["nestjs", "javascript", "node", "nodejs", "api"],
+  "repository": "https://github.com/Les-Capuches-d-Opale/back-end.git",
+  "env": {
+    "JWT_SECRET": {
+      "description": "A secret key for verifying the integrity of signed JWT.",
+      "generator": "secret"
+    },
+    "NODE_ENV": {
+      "value": "production"
+    },
+    "AUTHENTICATION": {
+      "value": "passport"
+    },
+    "DATABASE_URI": {
+      "description": "The URI of the database to connect to."
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+}
