@@ -10,11 +10,12 @@ import {
   UseGuards,
   Body,
   Put,
+  Get,
 } from '@nestjs/common';
 import { LocalAuthGuard } from 'src/auth/local-auth.guard';
 import { SkipAuth } from 'src/common/decorators/skip-auth.decorator';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
-
+@ApiBearerAuth()
 @ApiTags('administrators')
 @Controller('administrators')
 export class AdministratorsController {
@@ -34,7 +35,6 @@ export class AdministratorsController {
   }
 
   @Put('/')
-  @ApiBearerAuth()
   update(
     @Request() req,
     @Body() updateAdministratorDto: UpdateAdministratorDto,
@@ -43,5 +43,10 @@ export class AdministratorsController {
       req.user.adminId,
       updateAdministratorDto,
     );
+  }
+
+  @Get('/')
+  getOne(@Request() req): Promise<Administrator> {
+    return this.administratorsService.getOne(req.user.adminId);
   }
 }

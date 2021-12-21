@@ -2,7 +2,7 @@ import { Item } from 'src/items/entities/item.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
 import { Injectable, HttpException } from '@nestjs/common';
-import { Model, Mongoose, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -14,6 +14,10 @@ export class AdministratorsService {
 
   async findOne(email: string): Promise<Administrator> {
     return await this.administratorModel.findOne({ email }).exec();
+  }
+
+  async getOne(id: string): Promise<Administrator> {
+    return await this.administratorModel.findById(id).populate('items').exec();
   }
 
   async update(

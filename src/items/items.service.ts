@@ -14,11 +14,16 @@ export class ItemsService {
     private readonly administratorService: AdministratorsService,
   ) {}
 
-  async findAll(filterItemQueryDto: FilterItemQueryDto): Promise<Item[]> {
-    const { limit, offset, type } = filterItemQueryDto;
+  async findAll(filterItemQueryDto: FilterItemQueryDto): Promise<any> {
+    const { limit, offset, type, isAvailable } = filterItemQueryDto;
     return await this.itemModel
-      .find({ isAvailable: true })
+      .find()
       .where(type ? { type } : {})
+      .where(
+        isAvailable !== undefined
+          ? { isAvailable }
+          : { $or: [{ isAvailable: true }, { isAvailable: false }] },
+      )
       .skip(offset)
       .limit(limit)
       .exec();
