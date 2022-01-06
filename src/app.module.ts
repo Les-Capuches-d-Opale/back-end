@@ -16,6 +16,7 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { QuestsModule } from './quests/quests.module';
+import { RequestModule } from './request/request.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { QuestsModule } from './quests/quests.module';
     ItemsController,
     QuestsController,
     TransactionsController,
+    RequestModule,
   ],
   providers: [
     AppService,
