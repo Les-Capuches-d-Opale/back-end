@@ -12,6 +12,6 @@ export class RequestsService {
   ) { }
 
   async findAll(): Promise<Request[]> {
-    return await this.RequestModel.find({}).exec();
+    return await this.RequestModel.find({}).where('status').equals('Unassigned').exec();
   }
 }
