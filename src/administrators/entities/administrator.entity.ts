@@ -1,3 +1,4 @@
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, Schema as MongooseSchema } from 'mongoose';
@@ -40,6 +41,17 @@ export class Administrator extends Document {
   })
   @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Item', required: false })
   items: Item[];
+
+  @ApiProperty({
+    description: 'The list of the transactions of the administrator.',
+    required: false,
+  })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Transaction',
+    required: false,
+  })
+  payments: Transaction[];
 }
 
 export const AdministratorSchema = SchemaFactory.createForClass(Administrator);
