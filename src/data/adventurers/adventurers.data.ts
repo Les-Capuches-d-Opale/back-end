@@ -55,6 +55,7 @@ const adventurers = [
 
 export = adventurers.map((adventurer) => {
   return {
+    _id: adventurer._id,
     name: adventurer.name,
     speciality: adventurer.speciality,
     pictureUrl:
