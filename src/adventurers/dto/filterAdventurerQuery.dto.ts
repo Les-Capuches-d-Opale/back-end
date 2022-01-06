@@ -9,7 +9,15 @@ export class FilterAdventurerQueryDto {
     example: 23,
   })
   @IsPositive()
-  readonly level?: number;
+  readonly exactLevel?: number;
+
+  @IsOptional()
+  @ApiProperty({
+    description: 'The minimum level required of the adventurer.',
+    example: 20,
+  })
+  @IsPositive()
+  readonly minLevel?: number;
 
   @IsOptional()
   @ApiProperty({

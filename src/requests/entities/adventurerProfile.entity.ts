@@ -5,17 +5,18 @@ import { Speciality } from './../../adventurers/entities/speciality.entity';
 
 @Schema()
 export class AdventurerProfile extends Document {
-    @ApiProperty({
-        required: true
-    })
-    @Prop()
-    speciality: Speciality;
+  @ApiProperty({
+    required: true,
+  })
+  @Prop()
+  speciality: Speciality;
 
-    @ApiProperty({
-        required: true
-    })
-    @Prop()
-    experience: number;
+  @ApiProperty({
+    required: true,
+  })
+  @Prop()
+  experience: number;
 }
 
-export const AdventurerProfileSchema = SchemaFactory.createForClass(AdventurerProfile);
+export const AdventurerProfileSchema =
+  SchemaFactory.createForClass(AdventurerProfile);
