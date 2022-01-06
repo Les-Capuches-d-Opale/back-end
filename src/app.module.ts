@@ -1,10 +1,11 @@
+import { RequestsController } from './requests/requests.controller';
 import { TransactionsController } from './transactions/transactions.controller';
 import { QuestsController } from './quests/quests.controller';
 import { TransactionsModule } from './transactions/transactions.module';
 import { AdventurersModule } from './adventurers/adventurers.module';
 import { ItemsController } from './items/items.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Module } from '@nestjs/common';
+import { Module, Req } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ConfigModule } from '@nestjs/config';
 import { AdventurersController } from './adventurers/adventurers.controller';
@@ -16,7 +17,8 @@ import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
 import { QuestsModule } from './quests/quests.module';
-import { RequestModule } from './request/request.module';
+import { RequestsService } from './requests/requests.service';
+import { RequestsModule } from './requests/requests.module';
 
 @Module({
   imports: [
@@ -29,6 +31,7 @@ import { RequestModule } from './request/request.module';
     AdministratorsModule,
     QuestsModule,
     TransactionsModule,
+    RequestsModule
   ],
   controllers: [
     AppController,
@@ -36,7 +39,7 @@ import { RequestModule } from './request/request.module';
     ItemsController,
     QuestsController,
     TransactionsController,
-    RequestModule,
+    RequestsController
   ],
   providers: [
     AppService,
