@@ -17,13 +17,14 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(pass, administrator.password);
 
     if (administrator && isPasswordValid) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...result } = administrator;
       return result;
     }
     return null;
   }
 
-  async login({ _doc }: any) {
+  async login({ _doc }: any): Promise<{ access_token: string }> {
     const payload = {
       username: _doc.username,
       adminId: _doc._id,

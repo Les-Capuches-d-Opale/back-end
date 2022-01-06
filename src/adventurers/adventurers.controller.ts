@@ -1,3 +1,4 @@
+import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { Adventurer } from './entities/adventurer.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
@@ -19,7 +20,7 @@ export class AdventurersController {
   }
 
   @Get('/:id')
-  findOne(@Param('id') id: string): Promise<Adventurer> {
+  findOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Adventurer> {
     return this.adventurerService.findOne(id);
   }
 
@@ -32,7 +33,7 @@ export class AdventurersController {
 
   @Put('/:id')
   updateExp(
-    @Param('id') id: string,
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateExpAdventurerDto: UpdateExpAdventurerDto,
   ): Promise<Adventurer> {
     return this.adventurerService.updateExp(id, updateExpAdventurerDto);

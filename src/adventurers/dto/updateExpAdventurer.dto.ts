@@ -3,8 +3,8 @@ import { IsNumber } from 'class-validator';
 
 export class UpdateExpAdventurerDto {
   @ApiProperty({
-    description: 'The amount of experience of the adventurer.',
-    example: '23.08',
+    description: 'The amount of experience of the adventurer to be increment.',
+    example: 0.24,
   })
   @IsNumber()
   readonly experience: number;

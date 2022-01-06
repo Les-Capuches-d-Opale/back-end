@@ -1,7 +1,8 @@
+import { Item } from 'src/items/entities/item.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
-import { Injectable } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { Injectable, HttpException } from '@nestjs/common';
+import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
@@ -11,26 +12,39 @@ export class AdministratorsService {
     private readonly administratorModel: Model<Administrator>,
   ) {}
 
-  async findOne(email: string): Promise<any> {
-    return this.administratorModel.findOne({ email }).exec();
+  async findOne(email: string): Promise<Administrator> {
+    return await this.administratorModel.findOne({ email }).exec();
   }
 
-  async register() {
-    return await this.administratorModel.create({
-      username: 'test',
-      email: 'email@gmail.com',
-      password: 'try',
-    });
+  async getOne(id: string): Promise<Administrator> {
+    return await this.administratorModel.findById(id).populate('items').exec();
   }
 
   async update(
     id: string,
     updateAdministratorDto: UpdateAdministratorDto,
-  ): Promise<any> {
+  ): Promise<Administrator> {
     return await this.administratorModel
       .findOneAndUpdate(
         { _id: id },
         { $set: updateAdministratorDto },
+        { new: true },
+      )
+      .exec();
+  }
+
+  async addItem(id: string, item: Item): Promise<Administrator> {
+    const administrator = await this.administratorModel.findById(
+      new Types.ObjectId(id),
+    );
+
+    if (administrator.wallet < item.price)
+      throw new HttpException('Not enough money', 400);
+
+    return await this.administratorModel
+      .findOneAndUpdate(
+        { _id: id },
+        { $push: { items: item }, $inc: { wallet: -item.price } },
         { new: true },
       )
       .exec();

@@ -7,6 +7,8 @@ const administrators = [
     username: 'admin',
     email: 'valide@email.com',
     password: bcrypt.hashSync('password-123', salt),
+    wallet: 0,
+    items: [],
   },
 ];
 
