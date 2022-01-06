@@ -2,6 +2,7 @@ import { Speciality } from '../entities/speciality.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 
 @Schema()
 export class Adventurer extends Document {
@@ -43,6 +44,15 @@ export class Adventurer extends Document {
   })
   @Prop({ required: false })
   pictureURL: string;
+
+  @ApiProperty({
+    description: 'The list of transactions of the adventurer.',
+  })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Transaction',
+  })
+  payments: Transaction[];
 }
 
 export const AdventurerSchema = SchemaFactory.createForClass(Adventurer);
