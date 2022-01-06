@@ -62,11 +62,13 @@ export class Request extends Document {
     description: 'the list of profiles required to succeed in the request.',
     required: true,
   })
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'AdventurerProfile',
-    required: true,
-  })
+  @Prop(
+    {
+      type: MongooseSchema.Types.ObjectId,
+      ref: 'Speciality',
+      required: true,
+    },
+  )
   requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({
