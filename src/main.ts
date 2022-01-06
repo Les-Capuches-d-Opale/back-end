@@ -7,7 +7,10 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: ALLOW_ORIGIN,
+    origin: [
+      process.env.ALLOW_ORIGIN_DEV,
+      'https://les-capuches-d-opale.herokuapp.com/',
+    ],
   });
 
   app.useGlobalPipes(
