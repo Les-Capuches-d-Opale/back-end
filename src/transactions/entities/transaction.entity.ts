@@ -1,14 +1,15 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export enum TransactionType {
-  'QuestBounty',
-  'AdventurerPayment',
-  'Purchase',
-  'Tax',
+  QuestBounty = 'QuestBounty',
+  AdventurerPayment = 'AdventurerPayment',
+  Purchase = 'Purchase',
+  Tax = 'Tax',
 }
 
+@Schema()
 export class Transaction extends Document {
   @ApiProperty({
     description: 'The amount of money that is transfered by quest.',
@@ -29,7 +30,7 @@ export class Transaction extends Document {
     example: '2020-06-01T00:00:00.000Z',
   })
   @Prop()
-  data: Date;
+  date: Date;
 }
 
 export const TransactionSchema = SchemaFactory.createForClass(Transaction);
