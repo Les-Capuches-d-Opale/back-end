@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsPositive, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsBoolean, IsOptional, IsPositive, IsString } from 'class-validator';
 
 export class FilterAdventurerQueryDto {
   @IsOptional()
@@ -8,7 +9,15 @@ export class FilterAdventurerQueryDto {
     example: 23,
   })
   @IsPositive()
-  readonly level?: number;
+  readonly exactLevel?: number;
+
+  @IsOptional()
+  @ApiProperty({
+    description: 'The minimum level required of the adventurer.',
+    example: 20,
+  })
+  @IsPositive()
+  readonly minLevel?: number;
 
   @IsOptional()
   @ApiProperty({
@@ -25,4 +34,18 @@ export class FilterAdventurerQueryDto {
   })
   @IsString()
   readonly speciality?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @Transform(({ obj }) => {
+    switch (obj.isAvailableNow) {
+      case 'true' as any:
+        return true;
+      case 'false' as any:
+        return false;
+      default:
+        return obj.isAvailableNow;
+    }
+  })
+  isAvailableNow?: boolean;
 }

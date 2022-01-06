@@ -2,7 +2,7 @@ import { Speciality } from './entities/speciality.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
@@ -16,14 +16,22 @@ export class AdventurersService {
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
   ): Promise<Adventurer[]> {
-    const { level, name, speciality } = filterAdventurerQueryDto;
-    console.log(name)
+    const { exactLevel, minLevel, name, speciality, isAvailableNow } =
+      filterAdventurerQueryDto;
+
+    if (exactLevel && minLevel) {
+      throw new HttpException('You can only use level or minLevel', 400);
+    }
+
+    if (isAvailableNow) {
+    }
+
     return await this.adventurerModel
       .find({
-        name: { $regex: name ? name : "", $options: 'i' },
+        name: { $regex: name ? name : '', $options: 'i' },
         experience: {
-          $gte: Math.floor(level) | 0,
-          $lte: level ? Math.floor(level) + 1 : 1000000,
+          $gte: Math.floor(exactLevel) || Math.floor(minLevel) || 0,
+          $lte: exactLevel ? Math.floor(exactLevel) + 0.99 : 1000000,
         },
       })
       .where(speciality ? { speciality: speciality } : {})
