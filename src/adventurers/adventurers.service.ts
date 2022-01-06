@@ -17,9 +17,10 @@ export class AdventurersService {
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
   ): Promise<Adventurer[]> {
     const { level, name, speciality } = filterAdventurerQueryDto;
+    console.log(name)
     return await this.adventurerModel
       .find({
-        name: { $regex: name, $options: 'i' },
+        name: { $regex: name ? name : "", $options: 'i' },
         experience: {
           $gte: Math.floor(level) | 0,
           $lte: level ? Math.floor(level) + 1 : 1000000,
