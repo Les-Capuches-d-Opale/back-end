@@ -21,11 +21,13 @@ export class Quest extends Document {
     description: 'The list of adventurers that are part of the quest.',
     example: '61bf9b9b0be9cf45263b6f2d',
   })
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Adventurer',
-    required: false,
-  })
+  @Prop([
+    {
+      type: MongooseSchema.Types.ObjectId,
+      ref: 'Adventurer',
+      required: false,
+    },
+  ])
   groups: Adventurer[];
 
   @ApiProperty({
