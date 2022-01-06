@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Request } from './entities/request.entity';
+import { Request } from '../requests/entities/request.entity';
 
 @Injectable()
 export class RequestsService {
@@ -11,6 +11,9 @@ export class RequestsService {
   ) {}
 
   async findAll(): Promise<Request[]> {
-    return await this.RequestModel.find({}).exec();
+    return await this.RequestModel
+    .find({})
+    .where('status').equals('Unassigned')
+    .exec();
   }
 }
