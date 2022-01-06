@@ -11,7 +11,7 @@ import { RequestsService } from './requests.service';
       {
         name: Request.name,
         schema: RequestSchema,
-      },
+      }
     ]),
   ],
   providers: [RequestsService],
