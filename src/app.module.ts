@@ -1,4 +1,6 @@
-import { ItemsService } from './items/items.service';
+import { TransactionsController } from './transactions/transactions.controller';
+import { QuestsController } from './quests/quests.controller';
+import { TransactionsModule } from './transactions/transactions.module';
 import { AdventurersModule } from './adventurers/adventurers.module';
 import { ItemsController } from './items/items.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -13,6 +15,7 @@ import { AdministratorsModule } from './administrators/administrators.module';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { MorganInterceptor, MorganModule } from 'nest-morgan';
+import { QuestsModule } from './quests/quests.module';
 
 @Module({
   imports: [
@@ -23,8 +26,16 @@ import { MorganInterceptor, MorganModule } from 'nest-morgan';
     ItemsModule,
     AuthModule,
     AdministratorsModule,
+    QuestsModule,
+    TransactionsModule,
   ],
-  controllers: [AppController, AdventurersController, ItemsController],
+  controllers: [
+    AppController,
+    AdventurersController,
+    ItemsController,
+    QuestsController,
+    TransactionsController,
+  ],
   providers: [
     AppService,
     {

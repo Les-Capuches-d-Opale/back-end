@@ -7,7 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: [process.env.ALLOW_ORIGIN_DEV, 'https://les-capuches-d-opale.tk/'],
+    origin: [process.env.ALLOW_ORIGIN_DEV, 'https://les-capuches-d-opale.tk'],
     credentials: true,
   });
 
