@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { AdventurerProfile } from './adventurerProfile.entity';
 
 export enum QuestStatus {
@@ -62,7 +62,13 @@ export class Request extends Document {
     description: 'the list of profiles required to succeed in the request.',
     required: true,
   })
-  @Prop()
+  @Prop(
+    {
+      type: MongooseSchema.Types.ObjectId,
+      ref: 'AdventurerProfile',
+      required: true,
+    },
+  )
   requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({
