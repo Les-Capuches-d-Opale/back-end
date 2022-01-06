@@ -12,11 +12,6 @@ export class RequestsController {
 
   @Get('/')
   getAll(): Promise<Request[]> {
-    this.requestsService.findAll().then(_data => {
-      _data.map(data => {
-        console.log(data)
-      })
-    })
     return this.requestsService.findAll();
   }
 }

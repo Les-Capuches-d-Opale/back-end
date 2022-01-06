@@ -65,9 +65,8 @@ export class Request extends Document {
   @Prop(
     {
       type: MongooseSchema.Types.ObjectId,
-      ref: 'Speciality',
-      required: true,
-    },
+      ref: 'AdventurerProfile',
+    }
   )
   requiredProfiles: AdventurerProfile[];
 
