@@ -1,3 +1,4 @@
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { Item } from 'src/items/entities/item.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
@@ -33,7 +34,11 @@ export class AdministratorsService {
       .exec();
   }
 
-  async addItem(id: string, item: Item): Promise<Administrator> {
+  async addItem(
+    id: string,
+    item: Item,
+    transaction: Transaction,
+  ): Promise<Administrator> {
     const administrator = await this.administratorModel.findById(
       new Types.ObjectId(id),
     );
@@ -44,7 +49,10 @@ export class AdministratorsService {
     return await this.administratorModel
       .findOneAndUpdate(
         { _id: id },
-        { $push: { items: item }, $inc: { wallet: -item.price } },
+        {
+          $push: { items: item, payments: transaction },
+          $inc: { wallet: -item.price },
+        },
         { new: true },
       )
       .exec();

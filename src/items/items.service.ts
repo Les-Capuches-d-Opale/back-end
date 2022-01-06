@@ -1,3 +1,4 @@
+import { TransactionsService } from './../transactions/transactions.service';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
@@ -12,6 +13,7 @@ export class ItemsService {
     private readonly itemModel: Model<Item>,
     @InjectConnection() private readonly connection: Connection,
     private readonly administratorService: AdministratorsService,
+    private readonly transactionService: TransactionsService,
   ) {}
 
   async findAll(filterItemQueryDto: FilterItemQueryDto): Promise<any> {
@@ -47,7 +49,12 @@ export class ItemsService {
       if (!item)
         throw new NotFoundException('Item not found or already bought');
 
-      await this.administratorService.addItem(adminId, item);
+      const transaction = await this.transactionService.create({
+        amount: item.price,
+        type: 'Purchase',
+      });
+
+      await this.administratorService.addItem(adminId, item, transaction);
 
       await item.save({ session });
       await session.commitTransaction();
