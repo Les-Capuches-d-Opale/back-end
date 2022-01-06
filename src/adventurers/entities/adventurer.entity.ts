@@ -26,7 +26,7 @@ export class Adventurer extends Document {
     description: 'The amount of experience of the adventurer.',
     example: 23.08,
   })
-  @Prop()
+  @Prop({ default: 0 })
   experience: number;
 
   @ApiProperty({

@@ -44,7 +44,15 @@ export class AdventurersService {
   }
 
   create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
-    const adventurer = new this.adventurerModel(createAdventurerDto);
+    const baseDailyRate = (
+      createAdventurerDto.baseDailyRate * 1 +
+      0.5 * Math.log(createAdventurerDto.experience)
+    ).toFixed(2);
+
+    const adventurer = new this.adventurerModel({
+      ...createAdventurerDto,
+      baseDailyRate,
+    });
     return adventurer.save();
   }
 

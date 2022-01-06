@@ -1,12 +1,16 @@
+import { AuthModule } from 'src/auth/auth.module';
+import { AdministratorsModule } from './../administrators/administrators.module';
 import { ItemSchema } from './entities/item.entity';
 import { Item } from 'src/items/entities/item.entity';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 
 @Module({
   imports: [
+    forwardRef(() => AdministratorsModule),
+    AuthModule,
     MongooseModule.forFeature([
       {
         name: Item.name,
