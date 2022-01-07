@@ -26,7 +26,7 @@ const adventurers = [
   {
     _id: new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e4'),
     name: faker.name.findName(),
-    speciality: '5cabe64dcf0d4447fa60f5e2',
+    speciality: '5cabe64dcf0d4447fa60f5e8',
     baseDailyRate: Math.floor(Math.random() * 100),
     experience: Math.floor(Math.random() * 10),
   },
@@ -47,7 +47,7 @@ const adventurers = [
   {
     _id: new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e7'),
     name: faker.name.findName(),
-    speciality: '5cabe64dcf0d4447fa60f5e1',
+    speciality: '5cabe64dcf0d4447fa60f5f1',
     baseDailyRate: Math.floor(Math.random() * 100),
     experience: Math.floor(Math.random() * 10),
   },

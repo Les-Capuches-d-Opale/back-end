@@ -1,3 +1,4 @@
+import { Speciality } from './../adventurers/entities/speciality.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -11,6 +12,9 @@ export class RequestsService {
   ) {}
 
   async findAll(): Promise<Request[]> {
-    return await this.RequestModel.find({}).populate('requiredProfiles').exec();
+    return await this.RequestModel.find({})
+      .where('status')
+      .equals('Unassigned')
+      .exec();
   }
 }

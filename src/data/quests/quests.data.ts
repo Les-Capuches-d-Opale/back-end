@@ -9,14 +9,6 @@ const quests = [
       new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e6'),
     ],
   },
-  {
-    request: new mongoose.Types.ObjectId('9cabe64dcf0d4447fa60f5e2'),
-    groups: [
-      new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e3'),
-      new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e2'),
-      new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e7'),
-    ],
-  },
 ];
 
 export = quests;
