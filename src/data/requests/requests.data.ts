@@ -9,6 +9,7 @@ const randomItems = (items) => {
 
 const requests = [
     {
+        _id: new mongoose.Types.ObjectId('9cabe64dcf0d4447fa60f5e1'),
         name: "La quête de Dieu",
         description: "Essayant si tu peux Dérober quelques fleurs au beau jardin des cieux",
         questGiver: "Le prètre",
@@ -40,9 +41,11 @@ const requests = [
         }],
         awardedExperience: Math.floor(Math.random() * 10),
         duration: Math.floor(Math.random() * 1000000),
-        dateDebut: "2022-10-01"
+        dateDebut: "2022-10-01",
+        status: "Pending"
     },
     {
+        _id: new mongoose.Types.ObjectId('9cabe64dcf0d4447fa60f5e2'),
         name: "La quête de la Vérité",
         description: "Essayant si tu peux Dérober quelques fleurs au beau jardin des cieux",
         questGiver: "Le mage",
@@ -65,9 +68,11 @@ const requests = [
         }],
         awardedExperience: Math.floor(Math.random() * 10),
         duration: Math.floor(Math.random() * 1000000),
-        dateDebut: "2022-11-03"
+        dateDebut: "2022-11-03",
+        status: "Unassigned"
     },
     {
+        _id: new mongoose.Types.ObjectId('9cabe64dcf0d4447fa60f5e3'),
         name: "La quête fiévreuse",
         description: "Essayant si tu peux Dérober quelques fleurs au beau jardin des cieux",
         questGiver: "Le medecin",
@@ -83,11 +88,13 @@ const requests = [
         }],
         awardedExperience: Math.floor(Math.random() * 10),
         duration: Math.floor(Math.random() * 1000000),
-        dateDebut: "2022-20-01"
+        dateDebut: "2022-20-01",
+        status: "Unassigned"
     }]
 
 export = requests.map((request) => {
     return {
+        _id: request._id,
         name: request.name,
         description: request.description,
         pictureUrl:
@@ -98,6 +105,6 @@ export = requests.map((request) => {
         requiredProfiles: request.requiredProfiles,
         awardedExperience: request.awardedExperience,
         dateDebut: request.dateDebut,
-        status: 'Unassigned',
+        status: request.status,
     };
 });
