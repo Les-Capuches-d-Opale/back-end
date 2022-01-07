@@ -1,4 +1,4 @@
-import { Speciality } from './entities/speciality.entity';
+import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
@@ -11,22 +11,19 @@ export class AdventurersService {
   constructor(
     @InjectModel(Adventurer.name)
     private readonly adventurerModel: Model<Adventurer>,
+    private readonly questsService: QuestsService,
   ) {}
 
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
-  ): Promise<Adventurer[]> {
-    const { exactLevel, minLevel, name, speciality, isAvailableNow } =
-      filterAdventurerQueryDto;
+  ): Promise<Adventurer[] | any> {
+    const { exactLevel, minLevel, name, speciality } = filterAdventurerQueryDto;
 
     if (exactLevel && minLevel) {
       throw new HttpException('You can only use level or minLevel', 400);
     }
 
-    if (isAvailableNow) {
-    }
-
-    return await this.adventurerModel
+    const adventurers = await this.adventurerModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
         experience: {
@@ -36,7 +33,40 @@ export class AdventurersService {
       })
       .where(speciality ? { speciality: speciality } : {})
       .populate('speciality')
+      .lean()
       .exec();
+
+    const quests = await this.questsService.findAll();
+
+    adventurers.forEach((adventurer) => {
+      const adventurerHasQuests = quests.filter((quest) => {
+        const adventurersId = quest.groups.map((questAdventurer) =>
+          questAdventurer._id.toString(),
+        );
+        return adventurersId.includes(adventurer._id.toString());
+      });
+
+      if (!adventurerHasQuests.length)
+        return (adventurer['isAvailableNow'] = true);
+
+      adventurerHasQuests.forEach((adventurerQuest) => {
+        const startDateQuest = new Date(adventurerQuest.request.dateDebut);
+        const endDateQuest = new Date(
+          adventurerQuest.request.dateDebut.setSeconds(
+            adventurerQuest.request.dateDebut.getSeconds() +
+              adventurerQuest.request.duration,
+          ),
+        );
+
+        if (startDateQuest <= new Date() && endDateQuest >= new Date()) {
+          return (adventurer['isAvailableNow'] = false);
+        }
+
+        return (adventurer['isAvailableNow'] = true);
+      });
+    });
+
+    return adventurers;
   }
 
   async findOne(id: string): Promise<Adventurer> {
