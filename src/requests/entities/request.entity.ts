@@ -59,15 +59,16 @@ export class Request extends Document {
   duration: number;
 
   @ApiProperty({
-    description: 'the list of profiles required to succeed in the request.',
+    description: 'The list of profiles required to succeed in the request.',
     required: true,
   })
-  @Prop(
+  @Prop([
     {
       type: MongooseSchema.Types.ObjectId,
       ref: 'AdventurerProfile',
-    }
-  )
+      required: true,
+    },
+  ])
   requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({

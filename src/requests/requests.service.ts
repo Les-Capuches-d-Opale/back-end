@@ -9,9 +9,12 @@ export class RequestsService {
   constructor(
     @InjectModel(Request.name)
     private readonly RequestModel: Model<Request>,
-  ) { }
+  ) {}
 
   async findAll(): Promise<Request[]> {
-    return await this.RequestModel.find({}).where('status').equals('Unassigned').exec();
+    return await this.RequestModel.find({})
+      .where('status')
+      .equals('Unassigned')
+      .exec();
   }
 }
