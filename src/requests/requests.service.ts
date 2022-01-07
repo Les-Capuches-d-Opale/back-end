@@ -8,10 +8,17 @@ import { Request } from './entities/request.entity';
 export class RequestsService {
   constructor(
     @InjectModel(Request.name)
-    private readonly RequestModel: Model<Request>,
+    private RequestModel: Model<Request>,
   ) { }
 
   async findAll(): Promise<Request[]> {
     return await this.RequestModel.find({}).where('status').equals('Unassigned').exec();
+  }
+
+  async create(data: Request): Promise<Request>{
+    const req = new this.RequestModel({
+      ...data
+    });
+    return req.save();
   }
 }
