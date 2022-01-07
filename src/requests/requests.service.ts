@@ -45,4 +45,11 @@ export class RequestsService {
 
     return requests;
   }
+
+  async create(data: Request): Promise<Request>{
+    const req = new this.RequestModel({
+      ...data
+    });
+    return req.save();
+  }
 }

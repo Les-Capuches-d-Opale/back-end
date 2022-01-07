@@ -1,5 +1,5 @@
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
 
@@ -12,5 +12,13 @@ export class RequestsController {
   @Get('/')
   getAll(): Promise<Request[]> {
     return this.requestsService.findAll();
+  }
+
+  @Post()
+  create(
+    @Body() data: Request,
+  ){
+    console.log(data);
+   // return this.requestsService.create(data);
   }
 }
