@@ -14,7 +14,7 @@ const requests = [
         questGiver: "Le prètre",
         bounty: Math.floor(Math.random() * 1000),
         requiredProfiles: [{
-            specificity: {
+            speciality: {
                 name: 'Archer',
                 description:
                     "L'archer se consacre à la maîtrise de l'arc. Des années d'entraînement ont perfectionné ses compétences, il s'est affûté jour après jour sur des cibles, à la chasse ou à la guerre, faisant pleuvoir la mort sur les lignes ennemies.",
@@ -22,7 +22,7 @@ const requests = [
             },
             experience: Math.floor(Math.random() * 10)
         }, {
-            specificity: {
+            speciality: {
                 name: 'Babare',
                 description:
                     'Certains barbares sont véritablement sauvages et n’ont presque aucune connaissance des armes modernes. Ils apprennent à éviter les coups et à endurcir leur peau.',
@@ -30,7 +30,7 @@ const requests = [
             },
             experience: Math.floor(Math.random() * 10)
         }, {
-            specificity: {
+            speciality: {
                 name: 'Mage',
                 description:
                     'Ayant été initié à de sombres mystères, le mage a suivi une formation qui lui permet de manipuler le pouvoir des ombres pour renforcer ses incantations.',
@@ -48,7 +48,7 @@ const requests = [
         questGiver: "Le mage",
         bounty: Math.floor(Math.random() * 1000),
         requiredProfiles: [{
-            specificity: {
+            speciality: {
                 name: 'Forgeron',
                 description:
                     'Armuriers extrêmement talentueux, les prêtres forgerons tirent leur inspiration de leur divinité pour produire les armes et les armures les plus parfaites possible et améliorer l’équipement utilisé par les armées de fidèles.',
@@ -56,7 +56,7 @@ const requests = [
             },
             experience: Math.floor(Math.random() * 10)
         }, {
-            specificity: {
+            speciality: {
                 name: 'messagers',
                 description: "C'est juste un gars de La Poste.",
                 requiredItems: randomItems(items),
@@ -73,7 +73,7 @@ const requests = [
         questGiver: "Le medecin",
         bounty: Math.floor(Math.random() * 1000),
         requiredProfiles: [{
-            specificity: {
+            speciality: {
                 name: 'Forgeron',
                 description:
                     'Armuriers extrêmement talentueux, les prêtres forgerons tirent leur inspiration de leur divinité pour produire les armes et les armures les plus parfaites possible et améliorer l’équipement utilisé par les armées de fidèles.',
