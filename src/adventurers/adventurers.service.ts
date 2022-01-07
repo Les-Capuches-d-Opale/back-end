@@ -50,6 +50,8 @@ export class AdventurersService {
         return (adventurer['isAvailableNow'] = true);
 
       adventurerHasQuests.forEach((adventurerQuest) => {
+        if (!adventurerQuest.request.dateDebut) console.log(adventurerQuest);
+
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
         const endDateQuest = new Date(
           adventurerQuest.request.dateDebut.setSeconds(

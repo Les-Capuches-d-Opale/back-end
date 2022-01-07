@@ -6,12 +6,18 @@ import { Speciality } from './../../adventurers/entities/speciality.entity';
 @Schema()
 export class AdventurerProfile extends Document {
   @ApiProperty({
+    description: 'The speciality of the adventurer.',
     required: true,
   })
-  @Prop({ ref: 'Speciality', type: MongooseSchema.Types.ObjectId })
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Speciality',
+    required: true,
+  })
   speciality: Speciality;
 
   @ApiProperty({
+    description: 'The experience of the adventurer.',
     required: true,
   })
   @Prop()

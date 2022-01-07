@@ -9,12 +9,33 @@ export class RequestsService {
   constructor(
     @InjectModel(Request.name)
     private readonly RequestModel: Model<Request>,
+    @InjectModel(Speciality.name)
+    private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
-  async findAll(): Promise<Request[]> {
-    return await this.RequestModel.find({})
+  async findAll(): Promise<Request[] | any> {
+    const requests = await this.RequestModel.find({})
       .where('status')
+      .populate('requiredProfiles')
       .equals('Unassigned')
+      .lean()
       .exec();
+
+    await Promise.all(
+      requests.map(async (request) => {
+        const requiredProfilesIds = request.requiredProfiles.map(
+          (profile) => profile.speciality,
+        );
+
+        await Promise.all(
+          requiredProfilesIds.map(async (id, index) => {
+            request.requiredProfiles[index].speciality =
+              await this.SpecialityModel.findById(id);
+          }),
+        );
+      }),
+    );
+
+    return requests;
   }
 }
