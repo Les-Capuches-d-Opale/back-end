@@ -9,6 +9,7 @@ export enum QuestStatus {
   Failed = 'Failed',
   Pending = 'Pending',
   Unassigned = 'Unassigned',
+  Accepted = "Accepted"
 }
 @Schema()
 export class Request extends Document {
