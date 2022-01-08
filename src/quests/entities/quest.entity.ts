@@ -4,6 +4,7 @@ import { Adventurer } from './../../adventurers/entities/adventurer.entity';
 import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { timestamp } from 'rxjs';
 
 @Schema()
 export class Quest extends Document {
@@ -39,6 +40,9 @@ export class Quest extends Document {
     ref: 'Transaction',
   })
   payment: Transaction;
+
+  @Prop() createdAt?: Date
+  @Prop() updatedAt?: Date
 }
 
 export const QuestSchema = SchemaFactory.createForClass(Quest);

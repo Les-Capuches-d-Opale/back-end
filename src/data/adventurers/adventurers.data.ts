@@ -51,6 +51,22 @@ const adventurers = [
     baseDailyRate: Math.floor(Math.random() * 100),
     experience: Math.floor(Math.random() * 10),
   },
+  {
+    _id: new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e8'),
+    name: faker.name.findName(),
+    speciality: '5cabe64dcf0d4447fa60f5e4',
+    baseDailyRate: Math.floor(Math.random() * 100),
+    experience: Math.floor(Math.random() * 10),
+  },
+
+  {
+    _id: new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e9'),
+    name: faker.name.findName(),
+    speciality: '5cabe64dcf0d4447fa60f5e5',
+    baseDailyRate: Math.floor(Math.random() * 100),
+    experience: Math.floor(Math.random() * 10),
+  },
+  
 ];
 
 export = adventurers.map((adventurer) => {
