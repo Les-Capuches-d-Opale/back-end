@@ -13,6 +13,10 @@ export class RequestsService {
     private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
+  async setStatusByID(id: string, status: string): Promise<any> {
+    return this.RequestModel.updateOne({_id: id}, {status: status})
+  }
+
   async findAll(): Promise<Request[] | any> {
     const requests = await this.RequestModel.find({})
       .where('status')
