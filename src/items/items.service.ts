@@ -17,15 +17,10 @@ export class ItemsService {
   ) {}
 
   async findAll(filterItemQueryDto: FilterItemQueryDto): Promise<any> {
-    const { limit, offset, type, isAvailable } = filterItemQueryDto;
+    const { limit, offset, type } = filterItemQueryDto;
     return await this.itemModel
       .find()
       .where(type ? { type } : {})
-      .where(
-        isAvailable !== undefined
-          ? { isAvailable }
-          : { $or: [{ isAvailable: true }, { isAvailable: false }] },
-      )
       .skip(offset)
       .limit(limit)
       .exec();
@@ -36,15 +31,7 @@ export class ItemsService {
     session.startTransaction();
 
     try {
-      const item = await this.itemModel
-        .findOneAndUpdate(
-          { _id: id, isAvailable: true },
-          {
-            $set: { isAvailable: false },
-          },
-          { new: true, session: session },
-        )
-        .exec();
+      const item = await this.itemModel.findById(id).session(session).exec();
 
       if (!item)
         throw new NotFoundException('Item not found or already bought');
