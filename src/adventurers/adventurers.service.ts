@@ -17,7 +17,8 @@ export class AdventurersService {
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
   ): Promise<Adventurer[] | any> {
-    const { exactLevel, minLevel, name, speciality } = filterAdventurerQueryDto;
+    const { exactLevel, minLevel, name, speciality, isAvailableNow } =
+      filterAdventurerQueryDto;
 
     if (exactLevel && minLevel) {
       throw new HttpException('You can only use level or minLevel', 400);
@@ -50,8 +51,6 @@ export class AdventurersService {
         return (adventurer['isAvailableNow'] = true);
 
       adventurerHasQuests.forEach((adventurerQuest) => {
-        if (!adventurerQuest.request.dateDebut) console.log(adventurerQuest);
-
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
         const endDateQuest = new Date(
           adventurerQuest.request.dateDebut.setSeconds(
@@ -67,6 +66,11 @@ export class AdventurersService {
         return (adventurer['isAvailableNow'] = true);
       });
     });
+
+    if (isAvailableNow !== undefined)
+      return adventurers.filter(
+        (adventurer) => adventurer['isAvailableNow'] === isAvailableNow,
+      );
 
     return adventurers;
   }

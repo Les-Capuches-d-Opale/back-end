@@ -50,6 +50,10 @@ const requests = [
         speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e5'),
         experience: Math.floor(Math.random() * 10),
       },
+      {
+        speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e4'),
+        experience: Math.floor(Math.random() * 10),
+      },
     ],
     awardedExperience: Math.floor(Math.random() * 10),
     duration: Math.floor(Math.random() * 1000000),
