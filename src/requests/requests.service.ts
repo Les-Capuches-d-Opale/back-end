@@ -13,8 +13,11 @@ export class RequestsService {
     private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
-  async setStatusByID(id: string, status: string): Promise<UpdateWriteOpResult> {
-    return this.RequestModel.updateOne({_id: id}, {status: status})
+  async setStatusByID(
+    id: string,
+    status: string,
+  ): Promise<UpdateWriteOpResult> {
+    return this.RequestModel.updateOne({ _id: id }, { status: status });
   }
 
   async findAll(): Promise<Request[] | any> {
