@@ -31,10 +31,18 @@ export class QuestsService {
         const requiredProfilesIds = quest.request.requiredProfiles.map(
           (profile) => profile.speciality,
         );
+        const groupIds = quest.groups.map((profile) => profile.speciality);
 
         await Promise.all(
           requiredProfilesIds.map(async (id, index) => {
             quest.request.requiredProfiles[index].speciality =
+              await this.specialityModel.findById(id);
+          }),
+        );
+
+        await Promise.all(
+          groupIds.map(async (id, index) => {
+            quest.groups[index].speciality =
               await this.specialityModel.findById(id);
           }),
         );
@@ -54,11 +62,20 @@ export class QuestsService {
     const requiredProfilesIds = quest.request.requiredProfiles.map(
       (profile) => profile.speciality,
     );
+    const groupIds = quest.groups.map((profile) => profile.speciality);
 
     await Promise.all(
       requiredProfilesIds.map(async (id, index) => {
         quest.request.requiredProfiles[index].speciality =
           await this.specialityModel.findById(id);
+      }),
+    );
+
+    await Promise.all(
+      groupIds.map(async (id, index) => {
+        quest.groups[index].speciality = await this.specialityModel.findById(
+          id,
+        );
       }),
     );
 
