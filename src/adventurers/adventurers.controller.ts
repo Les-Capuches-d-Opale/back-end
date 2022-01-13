@@ -20,6 +20,11 @@ export class AdventurersController {
     return this.adventurerService.findAll(filterAdventurerQueryDto);
   }
 
+  @Get('/specialities')
+  getSpecialities(): Promise<Speciality[]> {
+    return this.adventurerService.getAllSpecialities();
+  }
+
   @Get('/:id')
   findOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Adventurer> {
     return this.adventurerService.findOne(id);
@@ -38,10 +43,5 @@ export class AdventurersController {
     @Body() updateExpAdventurerDto: UpdateExpAdventurerDto,
   ): Promise<Adventurer> {
     return this.adventurerService.updateExp(id, updateExpAdventurerDto);
-  }
-
-  @Get('/specialities')
-  getSpecialities(): Promise<Speciality[]> {
-    return this.adventurerService.getAllSpecialities();
   }
 }
