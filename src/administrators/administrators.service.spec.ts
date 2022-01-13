@@ -33,6 +33,7 @@ describe('AdministratorsService', () => {
             update: jest.fn(),
             create: jest.fn(),
             populate: jest.fn(),
+            findOneAndUpdate: jest.fn(),
             exec: jest.fn(),
           },
         },
@@ -132,6 +133,32 @@ describe('AdministratorsService', () => {
         } catch (err) {
           expect(err.message).toEqual(`Administrator #${_id} not found`);
         }
+      });
+    });
+  });
+
+  describe('update', () => {
+    describe('when administrator with _id exists', () => {
+      it('should return a administrator', async () => {
+        const _id = 'abc123';
+
+        const mockAdminTest = mockAdministrator(
+          'abc123',
+          'usernameUpdate',
+          'valide@gmail.com',
+          'password-123',
+        );
+
+        jest.spyOn(administratorModel, 'findOneAndUpdate').mockReturnValue({
+          exec: jest.fn().mockResolvedValueOnce(mockAdminTest),
+        } as any);
+
+        const administrator = await administratorService.update(
+          _id,
+          mockAdminTest,
+        );
+
+        expect(administrator).toEqual(mockAdminTest);
       });
     });
   });
