@@ -1,3 +1,4 @@
+import { Speciality } from './../../../ui/src/types/adventurers';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { Adventurer } from './entities/adventurer.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
@@ -37,5 +38,10 @@ export class AdventurersController {
     @Body() updateExpAdventurerDto: UpdateExpAdventurerDto,
   ): Promise<Adventurer> {
     return this.adventurerService.updateExp(id, updateExpAdventurerDto);
+  }
+
+  @Get('/specialities')
+  getSpecialities(): Promise<Speciality[]> {
+    return this.adventurerService.getAllSpecialities();
   }
 }
