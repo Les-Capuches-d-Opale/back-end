@@ -1,6 +1,6 @@
 {
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src",
+  "sourceRoot": "/back-end/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "plugins": ["@nestjs/swagger/plugin"]

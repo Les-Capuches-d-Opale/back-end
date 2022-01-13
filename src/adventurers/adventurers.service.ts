@@ -1,3 +1,4 @@
+import { Speciality } from './../../../ui/src/types/adventurers';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
@@ -110,5 +111,9 @@ export class AdventurersService {
       { $inc: { experience: updateExpAdventurerDto.experience } },
       { new: true },
     );
+  }
+
+  async getAllSpecialities(): Promise<Speciality[]> {
+    return await this.adventurerModel.find({}).exec();
   }
 }

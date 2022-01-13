@@ -5,6 +5,7 @@ import { AdministratorsService } from './administrators.service';
 import { Model } from 'mongoose';
 
 const mockAdministrator = (
+  _id: 'abc123',
   username = 'username',
   email = 'email@email.com',
   password = 'password-123', // not encrypted
@@ -28,8 +29,10 @@ describe('AdministratorsService', () => {
             constructor: jest.fn().mockResolvedValue(Administrator),
             find: jest.fn(),
             findOne: jest.fn(),
+            findById: jest.fn(),
             update: jest.fn(),
             create: jest.fn(),
+            populate: jest.fn(),
             exec: jest.fn(),
           },
         },
@@ -49,10 +52,11 @@ describe('AdministratorsService', () => {
     expect(administratorService).toBeDefined();
   });
 
-  describe('findOne', () => {
+  describe('login', () => {
     describe('when administrator with email exists', () => {
       it('should return a administrator', async () => {
         const mockAdminTest = mockAdministrator(
+          'abc123',
           'username',
           'valide@gmail.com',
           'password-123',
@@ -80,6 +84,53 @@ describe('AdministratorsService', () => {
           await administratorService.findOne('valide@gmail.com');
         } catch (err) {
           expect(err.message).toEqual('Not found');
+        }
+      });
+    });
+  });
+
+  describe('getOne', () => {
+    describe('when administrator with _id exists', () => {
+      it('should return a administrator', async () => {
+        const _id = 'abc123';
+
+        const mockAdminTest = mockAdministrator(
+          'abc123',
+          'username',
+          'valide@gmail.com',
+          'password-123',
+        );
+
+        jest.spyOn(administratorModel, 'findById').mockReturnValue({
+          populate: jest.spyOn(administratorModel, 'populate').mockReturnValue({
+            exec: jest.fn().mockResolvedValueOnce(mockAdminTest),
+          } as any),
+        } as any);
+
+        const administrator = await administratorService.getOne(_id);
+
+        expect(administrator).toEqual(mockAdminTest);
+      });
+    });
+
+    describe('otherwise', () => {
+      it('should throw the "NotFoundException"', async () => {
+        const _id = 'abc123';
+
+        jest.spyOn(administratorModel, 'findById').mockReturnValue({
+          populate: jest.spyOn(administratorModel, 'populate').mockReturnValue({
+            exec: jest
+              .fn()
+              .mockRejectedValueOnce(
+                new Error(`Administrator #${_id} not found`),
+              ),
+          } as any),
+        } as any);
+
+        try {
+          await administratorService.getOne('abc123');
+        } catch (err) {
+          expect(err.message).toEqual(`Administrator #${_id} not found`);
         }
       });
     });
