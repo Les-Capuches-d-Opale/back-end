@@ -1,4 +1,3 @@
-import { Speciality } from './../../../ui/src/types/adventurers';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { Adventurer } from './entities/adventurer.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
@@ -7,6 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { Speciality } from './entities/speciality.entity';
 @ApiTags('adventurers')
 @ApiBearerAuth()
 @Controller('adventurers')
@@ -18,6 +18,11 @@ export class AdventurersController {
     @Query() filterAdventurerQueryDto: FilterAdventurerQueryDto,
   ): Promise<Adventurer[]> {
     return this.adventurerService.findAll(filterAdventurerQueryDto);
+  }
+
+  @Get('/specialities')
+  getSpecialities(): Promise<Speciality[]> {
+    return this.adventurerService.getAllSpecialities();
   }
 
   @Get('/:id')
@@ -38,10 +43,5 @@ export class AdventurersController {
     @Body() updateExpAdventurerDto: UpdateExpAdventurerDto,
   ): Promise<Adventurer> {
     return this.adventurerService.updateExp(id, updateExpAdventurerDto);
-  }
-
-  @Get('/specialities')
-  getSpecialities(): Promise<Speciality[]> {
-    return this.adventurerService.getAllSpecialities();
   }
 }
