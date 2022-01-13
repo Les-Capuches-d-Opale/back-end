@@ -42,6 +42,7 @@ describe('Administrator Controller', () => {
           provide: AuthService,
           useValue: {
             validateUser: jest.fn(),
+            login: jest.fn(),
           },
         },
       ],
@@ -62,14 +63,12 @@ describe('Administrator Controller', () => {
 
   describe('login', () => {
     it('should return a access token', async () => {
-      const accessToken = jest
-        .spyOn(authService, 'validateUser')
-        .mockResolvedValueOnce({
-          accessToken: 'accessToken',
-        });
+      jest.spyOn(authService, 'login').mockResolvedValueOnce({
+        accessToken: 'accessToken',
+      } as any);
 
       expect(
-        await administratorsController.login('', mockAdministratorLogin),
+        administratorsController.login('', mockAdministratorLogin),
       ).resolves.toEqual({
         accessToken: 'accessToken',
       });
