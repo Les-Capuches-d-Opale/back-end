@@ -1,4 +1,3 @@
-import { Speciality } from './../../../ui/src/types/adventurers';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { Adventurer } from './entities/adventurer.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
@@ -7,6 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { Speciality } from './entities/speciality.entity';
 @ApiTags('adventurers')
 @ApiBearerAuth()
 @Controller('adventurers')

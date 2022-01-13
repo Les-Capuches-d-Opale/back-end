@@ -1,4 +1,3 @@
-import { Speciality } from './../../../ui/src/types/adventurers';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
@@ -7,11 +6,14 @@ import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { Speciality } from './entities/speciality.entity';
 @Injectable()
 export class AdventurersService {
   constructor(
     @InjectModel(Adventurer.name)
     private readonly adventurerModel: Model<Adventurer>,
+    @InjectModel(Speciality.name)
+    private readonly specialityModel: Model<Speciality>,
     private readonly questsService: QuestsService,
   ) {}
 
@@ -114,6 +116,6 @@ export class AdventurersService {
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {
-    return await this.adventurerModel.find({}).exec();
+    return await this.specialityModel.find({}).exec();
   }
 }
