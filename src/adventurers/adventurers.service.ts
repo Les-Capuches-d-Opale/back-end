@@ -2,7 +2,7 @@ import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, forwardRef, Inject } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
@@ -14,8 +14,9 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
-  ) {}
+  ) { }
 
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
@@ -58,7 +59,7 @@ export class AdventurersService {
         const endDateQuest = new Date(
           adventurerQuest.request.dateDebut.setSeconds(
             adventurerQuest.request.dateDebut.getSeconds() +
-              adventurerQuest.request.duration,
+            adventurerQuest.request.duration,
           ),
         );
 
@@ -121,9 +122,10 @@ export class AdventurersService {
   ): Promise<Adventurer> {
     return await this.adventurerModel.findByIdAndUpdate(
       id,
-      { $inc: { experience: /* updateAmountAdventurerDto.amount  */ 1} },
+      { $inc: { experience: /* updateAmountAdventurerDto.amount  */ 1 } },
       { new: true },
     );
+  }
 
   async getAllSpecialities(): Promise<Speciality[]> {
     return await this.specialityModel.find({}).exec();

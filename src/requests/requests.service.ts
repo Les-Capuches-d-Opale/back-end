@@ -3,7 +3,6 @@ import { Speciality } from './../adventurers/entities/speciality.entity';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Request } from './entities/request.entity';
 import { CreateRequestDto } from './dto/createRequest.dto';
 const mongoose = require('mongoose');
 import { Request, QuestStatus } from './entities/request.entity';
@@ -28,7 +27,7 @@ export class RequestsService {
     setStatusRequest: SetStatusRequestDto,
   ): Promise<UpdateWriteOpResult> {
     const { request, status } = setStatusRequest;
-    return this.setStatusByID(request, status);
+    return this.changeStatusByID(request, status);
   }
 
   async findAll(): Promise<Request[] | any> {
