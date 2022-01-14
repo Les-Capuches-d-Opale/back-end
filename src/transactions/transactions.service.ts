@@ -1,4 +1,4 @@
-import { CreateTransactionDto } from './entities/dto/createTransaction.dto';
+import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,8 +15,10 @@ export class TransactionsService {
     return await this.TransactionModel.find({}).exec();
   }
 
-  create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
-    const transaction = new this.TransactionModel({
+  async create(
+    createTransactionDto: CreateTransactionDto,
+  ): Promise<Transaction> {
+    const transaction = await this.TransactionModel.create({
       ...createTransactionDto,
       date: new Date(),
     });
