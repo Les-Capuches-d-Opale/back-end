@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Request } from './entities/request.entity';
 import { CreateRequestDto } from './dto/createRequest.dto';
 const mongoose = require('mongoose');
+import { Request, QuestStatus } from './entities/request.entity';
 
 @Injectable()
 export class RequestsService {
@@ -16,9 +17,9 @@ export class RequestsService {
     private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
-  async setStatusByID(
+  async changeStatusByID(
     id: string,
-    status: string,
+    status: QuestStatus,
   ): Promise<UpdateWriteOpResult> {
     return this.RequestModel.updateOne({ _id: id }, { status: status });
   }

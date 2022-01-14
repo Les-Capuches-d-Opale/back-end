@@ -1,19 +1,20 @@
-import { RequestsModule } from './../requests/requests.module';
-import { RequestSchema } from './../requests/entities/request.entity';
-import { Quest, QuestSchema } from './entities/quest.entity';
+import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { forwardRef, Module } from '@nestjs/common';
-import { QuestsService } from './quests.service';
-import { QuestsController } from './quests.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Request } from 'src/requests/entities/request.entity';
 import {
   Speciality,
-  SpecialitySchema,
+  SpecialitySchema
 } from 'src/adventurers/entities/speciality.entity';
+import { AdventurersModule } from './../adventurers/adventurers.module';
+import { RequestsModule } from './../requests/requests.module';
+import { Quest, QuestSchema } from './entities/quest.entity';
+import { QuestsController } from './quests.controller';
+import { QuestsService } from './quests.service';
 
 @Module({
   imports: [
     forwardRef(() => RequestsModule),
+    forwardRef(() => AdventurersModule),
     MongooseModule.forFeature([
       {
         name: Quest.name,
@@ -29,4 +30,4 @@ import {
   controllers: [QuestsController],
   exports: [QuestsService],
 })
-export class QuestsModule {}
+export class QuestsModule { }
