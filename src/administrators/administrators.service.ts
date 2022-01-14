@@ -66,4 +66,8 @@ export class AdministratorsService {
       )
       .exec();
   }
+
+  async addBounty(bounty: number) {
+    
+  }
 }
