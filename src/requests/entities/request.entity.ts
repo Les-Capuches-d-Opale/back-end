@@ -60,15 +60,10 @@ export class Request extends Document {
 
   @ApiProperty({
     description: 'the list of profiles required to succeed in the request.',
-    required: true,
+    example: '61bf9b9b0be4cf45263b6f2d',
   })
-  @Prop(
-    {
-      type: MongooseSchema.Types.ObjectId,
-      ref: 'AdventurerProfile',
-    }
-  )
-  requiredProfiles: AdventurerProfile[];
+  @Prop()
+ requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({
     description: 'How many experience they gonna win.',
@@ -82,11 +77,14 @@ export class Request extends Document {
 
   @ApiProperty({
     description: 'The date when the request will start.',
-    example: '20/10/2021',
+    example: '2021-12-01',
     required: true,
   })
   @Prop()
   dateDebut: Date;
+
+  @Prop() createdAt?: Date
+  @Prop() updatedAt?: Date
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);
