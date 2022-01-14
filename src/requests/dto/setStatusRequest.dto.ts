@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { QuestStatus } from '../entities/request.entity';
 
 export class SetStatusRequestDto {
     @ApiProperty({
@@ -14,5 +15,5 @@ export class SetStatusRequestDto {
         example: "Rejected"
     })
     @IsString()
-    readonly status: string;
+    readonly status: QuestStatus;
 }
