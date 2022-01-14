@@ -1,6 +1,6 @@
 import { LocalStrategy } from './local.strategy';
 import { AdministratorsModule } from './../administrators/administrators.module';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
@@ -10,7 +10,7 @@ import { JwtStrategy } from './jwt.strategy';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    AdministratorsModule,
+    forwardRef(() => AdministratorsModule),
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET,
@@ -20,4 +20,4 @@ import { JwtStrategy } from './jwt.strategy';
   providers: [AuthService, LocalStrategy, JwtStrategy],
   exports: [AuthService, AuthModule],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -1,11 +1,12 @@
+import { forwardRef, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
+import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable, NotFoundException, HttpException, Inject, forwardRef } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 import { Speciality } from './entities/speciality.entity';
 @Injectable()
 export class AdventurersService {
@@ -16,7 +17,7 @@ export class AdventurersService {
     private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
-  ) {}
+  ) { }
 
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
@@ -59,7 +60,7 @@ export class AdventurersService {
         const endDateQuest = new Date(
           adventurerQuest.request.dateDebut.setSeconds(
             adventurerQuest.request.dateDebut.getSeconds() +
-              adventurerQuest.request.duration,
+            adventurerQuest.request.duration,
           ),
         );
 
@@ -108,23 +109,34 @@ export class AdventurersService {
   async updateExp(
     id: string,
     updateExpAdventurerDto: UpdateExpAdventurerDto,
+    session?: ClientSession
   ): Promise<Adventurer> {
-    return await this.adventurerModel.findByIdAndUpdate(
+    return session ? await this.adventurerModel.findByIdAndUpdate(
       id,
       { $inc: { experience: updateExpAdventurerDto.experience } },
       { new: true },
-    );
+    ).session(session) : await this.adventurerModel.findByIdAndUpdate(
+      id,
+      { $inc: { experience: updateExpAdventurerDto.experience } },
+      { new: true },
+    )
   }
 
   async updateAmount(
     id: string,
-    // updateAmountAdventurerDto: UpdateAmountAdventurerDto,
+    updateAmountAdventurerDto: UpdateAmountAdventurerDto,
+    session?: ClientSession
   ): Promise<Adventurer> {
-    return await this.adventurerModel.findByIdAndUpdate(
-      id,
-      { $inc: { experience: /* updateAmountAdventurerDto.amount  */ 1} },
-      { new: true },
-    );
+    return session ? await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { amount: updateAmountAdventurerDto.amount } },
+        { new: true },
+      ).session(session)
+    : await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { amount: updateAmountAdventurerDto.amount } },
+        { new: true },
+      )
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {
