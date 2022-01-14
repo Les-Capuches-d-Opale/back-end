@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Speciality } from './../adventurers/entities/speciality.entity';
+import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
 import { Request } from './entities/request.entity';
 
 @Injectable()
@@ -44,5 +45,47 @@ export class RequestsService {
     );
 
     return requests;
+  }
+
+  async FilterAll(
+    filterRequestQueryDto: FilterRequestQueryDto,
+  ): Promise<Request[] | any> {
+    const { name, questGiver, awardedExperience, bountyMin, bountyMax, duration } = filterRequestQueryDto;
+
+    let res = [];
+    
+    const requests = await this.RequestModel.find();
+    
+    if(name){
+      res = requests.filter(e => e.name === name);
+    }
+    
+    if(questGiver && name){
+      res = res.filter(e => e.questGiver === questGiver);
+    }else{
+      res = requests.filter(e => e.questGiver === questGiver);
+    }
+
+    
+    if(awardedExperience && questGiver && name){
+      res = res.filter(e => e.awardedExperience === awardedExperience);
+    }else{
+      res = requests.filter(e => e.awardedExperience === awardedExperience);
+    }
+
+    if(bountyMin && bountyMax && awardedExperience && questGiver && name){
+      res = res.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
+    }else{
+      res = requests.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
+    }
+
+    if(duration && bountyMin && bountyMax && awardedExperience && questGiver && name){
+      res = res.filter(e => e.duration >= duration);
+    }else{
+      res = requests.filter(e => e.duration >= duration);
+    }
+    
+    return res;
+
   }
 }
