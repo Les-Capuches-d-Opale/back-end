@@ -5,7 +5,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { Model } from 'mongoose';
 
-describe('AdministratorsService', () => {
+describe('Transactions Service', () => {
   let transactionsService: TransactionsService;
   let transactionModel: Model<Transaction>;
 
@@ -16,7 +16,7 @@ describe('AdministratorsService', () => {
         {
           provide: getModelToken('Transaction'),
           useValue: {
-            constructor: jest.fn().mockResolvedValue(this),
+            constructor: jest.fn().mockResolvedValue(Transaction),
             find: jest.fn(),
             exec: jest.fn(),
             create: jest.fn(),
