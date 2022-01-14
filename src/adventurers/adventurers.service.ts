@@ -2,7 +2,7 @@ import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, Inject, forwardRef } from '@nestjs/common';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
@@ -14,6 +14,7 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
   ) {}
 
@@ -124,6 +125,7 @@ export class AdventurersService {
       { $inc: { experience: /* updateAmountAdventurerDto.amount  */ 1} },
       { new: true },
     );
+  }
 
   async getAllSpecialities(): Promise<Speciality[]> {
     return await this.specialityModel.find({}).exec();

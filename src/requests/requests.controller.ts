@@ -1,5 +1,5 @@
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
