@@ -24,8 +24,8 @@ export class QuestsController {
   }
 
   @Post("/")
-  createQuest(@Body() createQuestDto: CreateQuestDto): Promise<Quest> {
-    return this.questsService.createQuest(createQuestDto)
+  createQuest(@Body() createQuestDto: CreateQuestDto, @Request() req): Promise<Quest> {
+    return this.questsService.createQuest(createQuestDto, req.user.adminId)
   }
 
   @Put("/")
