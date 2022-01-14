@@ -1,3 +1,4 @@
+import { RequestSchema } from './../requests/entities/request.entity';
 import { AdministratorsModule } from './../administrators/administrators.module';
 import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Module } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { RequestsModule } from './../requests/requests.module';
 import { Quest, QuestSchema } from './entities/quest.entity';
 import { QuestsController } from './quests.controller';
 import { QuestsService } from './quests.service';
+import { Request } from 'src/requests/entities/request.entity';
 
 @Module({
   imports: [
@@ -27,6 +29,10 @@ import { QuestsService } from './quests.service';
       {
         name: Speciality.name,
         schema: SpecialitySchema,
+      },
+      {
+        name: Request.name,
+        schema: RequestSchema,
       },
     ]),
   ],

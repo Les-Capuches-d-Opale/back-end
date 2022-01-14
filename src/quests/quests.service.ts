@@ -4,13 +4,12 @@ import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { format } from 'date-fns';
-import { Session } from 'inspector';
-import { Model, UpdateWriteOpResult, Connection, ClientSession } from 'mongoose';
+import { Model, UpdateWriteOpResult, Connection } from 'mongoose';
 import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
 import { AdventurersService } from './../adventurers/adventurers.service';
 import { Adventurer } from './../adventurers/entities/adventurer.entity';
 import { Speciality } from './../adventurers/entities/speciality.entity';
-import { QuestStatus } from './../requests/entities/request.entity';
+import { QuestStatus, Request } from './../requests/entities/request.entity';
 import { RequestsService } from './../requests/requests.service';
 import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
@@ -23,6 +22,8 @@ export class QuestsService {
   constructor(
     @InjectModel(Quest.name)
     private readonly questModel: Model<Quest>,
+    @InjectModel(Request.name)
+    private readonly requestModel: Model<Request>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
     @InjectConnection() private readonly connection: Connection,
@@ -100,15 +101,25 @@ export class QuestsService {
     return quest;
   }
 
-  async createQuest(createQuestDto: CreateQuestDto): Promise<Quest> {
+  async createQuest(createQuestDto: CreateQuestDto, adminId: string): Promise<Quest> {
     const { request, groups } = createQuestDto;
-    const quest = new this.questModel({
+    const _quest = new this.questModel({
       request: new mongoose.Types.ObjectId(request),
       groups: groups,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    return quest.save({ timestamps: true });
+    const quest = _quest.save({ timestamps: true });
+
+    if (quest) {
+      const requestById = await this.requestModel.findById(request)
+      await this.requestService.changeStatusByID(request, QuestStatus.Accepted)
+      await this.administratorsService.addBounty(adminId, (requestById.bounty * 0.2))
+      await this.transactionsService.create({ amount: (requestById.bounty * 0.2), type: TransactionType.QuestBounty })
+      return quest
+    } else {
+      throw new Error("La quête n'a pas pu être créer")
+    }
   }
 
   async changeStatus(
@@ -130,10 +141,11 @@ export class QuestsService {
         if (format(quest.request.dateDebut, 't') + quest.request.duration < format(new Date(), 't')) {
           const rate = await this.succesRate(quest.groups, quest.request.requiredProfiles)
           if (Math.random() < rate) {
+            await this.successAdventurer(quest.groups, quest.request.duration, quest.request.awardedExperience, "failed")
             await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Failed)
           } else {
             await this.administratorsService.addBounty(adminId, (quest.request.bounty * 0.8))
-            await this.successAdventurer(quest.groups, quest.request.duration, quest.request.awardedExperience)
+            await this.successAdventurer(quest.groups, quest.request.duration, quest.request.awardedExperience, "success")
             await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Succeeded)
           }
         } else {
@@ -154,7 +166,7 @@ export class QuestsService {
     return expRequired !== 0 ? (Math.min(experienceAdventurer, expRequired) / expRequired) : 0
   }
 
-  async successAdventurer(groups: Adventurer[], duration: number, awardedExperience: number) {
+  async successAdventurer(groups: Adventurer[], duration: number, awardedExperience: number, type: string) {
     groups.map(async (adventurer: Adventurer) => {
 
       const session = await this.connection.startSession();
@@ -162,9 +174,15 @@ export class QuestsService {
 
       const amount = (adventurer.baseDailyRate * (1 + (0.5 * Math.log(adventurer.experience)))) * (duration / 60 / 60 / 24)
       try {
-        await this.adventurerService.updateAmount(adventurer.id, { amount: amount > 0 ? amount : 0 }, session)
-        await this.transactionsService.create({ amount: amount > 0 ? amount : 0, type: TransactionType.AdventurerPayment })
-        await this.adventurerService.updateExp(adventurer.id, { experience: awardedExperience }, session)
+        if (type === "success") {
+          await this.adventurerService.updateAmount(adventurer.id, { amount: amount > 0 ? amount : 0 }, session)
+          await this.transactionsService.create({ amount: amount > 0 ? amount : 0, type: TransactionType.AdventurerPayment })
+          await this.adventurerService.updateExp(adventurer.id, { experience: awardedExperience }, session)
+        }
+        if (type === "failed") {
+          await this.adventurerService.updateAmount(adventurer.id, { amount: amount > 0 ? amount * 0.4 : 0 }, session)
+          await this.transactionsService.create({ amount: amount > 0 ? amount * 0.4 : 0, type: TransactionType.AdventurerPayment })
+        }
 
         await session.commitTransaction();
       } catch (e) {
