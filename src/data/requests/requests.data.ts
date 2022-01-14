@@ -57,8 +57,8 @@ const requests = [
     ],
     awardedExperience: Math.floor(Math.random() * 10),
     duration: Math.floor(Math.random() * 1000000),
-    dateDebut: '2022-11-03',
-    status: 'Unassigned',
+    dateDebut: '2022-01-03',
+    status: 'Pending',
   },
   {
     _id: new mongoose.Types.ObjectId('9cabe64dcf0d4447fa60f5e3'),
@@ -68,6 +68,10 @@ const requests = [
     questGiver: 'Le medecin',
     bounty: Math.floor(Math.random() * 1000),
     requiredProfiles: [
+      {
+        speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e6'),
+        experience: Math.floor(Math.random() * 10),
+      },
       {
         speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e6'),
         experience: Math.floor(Math.random() * 10),

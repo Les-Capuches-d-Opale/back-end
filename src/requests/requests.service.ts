@@ -13,7 +13,7 @@ export class RequestsService {
     private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
-  async setStatusByID(
+  async changeStatusByID(
     id: string,
     status: string,
   ): Promise<UpdateWriteOpResult> {

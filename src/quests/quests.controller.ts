@@ -29,7 +29,7 @@ export class QuestsController {
   }
 
   @Put("/")
-  setStatusQuest(@Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
-    return this.questsService.setStatus(setStatusQuest)
+  changeStatus(@Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
+    return this.questsService.changeStatus(setStatusQuest)
   }
 }
