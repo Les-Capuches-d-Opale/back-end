@@ -57,9 +57,20 @@ export class RequestsService {
   }
 
   async findOne(id: string): Promise<Request> {
-    return this.RequestModel.findById(id)
+    const request = await this.RequestModel.findById(id)
       .populate('requiredProfiles')
       .exec();
+
+
+
+    await Promise.all(
+      request.requiredProfiles.map(async (id, index) => {
+        request.requiredProfiles[index].speciality =
+         await this.SpecialityModel.findById(id.speciality);
+      }),
+    );
+
+    return request
   }
 
   async create(createRequestDto: CreateRequestDto): Promise<Request> {
