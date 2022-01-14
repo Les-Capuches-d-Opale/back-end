@@ -14,8 +14,10 @@ export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
   @Get('/')
-  getAll(): Promise<Request[]> {
-    return this.requestsService.findAll();
+  FilterAll(
+    @Query() filterRequestQueryDto: FilterRequestQueryDto,
+  ): Promise<Request[]> {
+    return this.requestsService.FilterAll(filterRequestQueryDto);
   }
 
   @Put("/")
@@ -29,11 +31,4 @@ export class RequestsController {
   ): Promise<Request> {
     return this.requestsService.create(createRequestDto);
   }
-  @Get('/')
-  FilterAll(
-    @Query() filterRequestQueryDto: FilterRequestQueryDto,
-  ): Promise<Request[]> {
-    return this.requestsService.FilterAll(filterRequestQueryDto);
-  }
-
 }

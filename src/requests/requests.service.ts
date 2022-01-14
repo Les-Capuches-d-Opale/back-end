@@ -118,30 +118,21 @@ export class RequestsService {
     
     if(questGiver && name){
       res = res.filter(e => e.questGiver === questGiver);
-    }else{
-      res = requests.filter(e => e.questGiver === questGiver);
     }
 
-    
     if(awardedExperience && questGiver && name){
       res = res.filter(e => e.awardedExperience === awardedExperience);
-    }else{
-      res = requests.filter(e => e.awardedExperience === awardedExperience);
     }
 
     if(bountyMin && bountyMax && awardedExperience && questGiver && name){
       res = res.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
-    }else{
-      res = requests.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
     }
 
     if(duration && bountyMin && bountyMax && awardedExperience && questGiver && name){
       res = res.filter(e => e.duration >= duration);
-    }else{
-      res = requests.filter(e => e.duration >= duration);
     }
     
-    if(res){
+    if(res.length > 0){
       return res;
     }else{
       return this.findAll();
