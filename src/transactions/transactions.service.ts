@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { CreateTransactionDto } from './entities/dto/createTransaction.dto';
+import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
 
@@ -16,8 +16,10 @@ export class TransactionsService {
     return await this.transactionModel.find({}).exec();
   }
 
-  create(createTransactionDto: CreateTransactionDto): Promise<Transaction> {
-    const transaction = new this.transactionModel({
+  async create(
+    createTransactionDto: CreateTransactionDto,
+  ): Promise<Transaction> {
+    const transaction = await this.transactionModel.create({
       ...createTransactionDto,
       date: new Date(),
     });
@@ -31,19 +33,17 @@ export class TransactionsService {
     const { transactionType } = filterTransactionQueryDto;
 
     let res = [];
-    
+
     const requests = await this.transactionModel.find();
-    
-    if(transactionType){
-      res = requests.filter(e => e.type === transactionType);
+
+    if (transactionType) {
+      res = requests.filter((e) => e.type === transactionType);
     }
-    
-    if(res.length > 0){
+
+    if (res.length > 0) {
       return res;
-    }else{
+    } else {
       return this.findAll();
     }
-
   }
-
 }

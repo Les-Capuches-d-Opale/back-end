@@ -102,13 +102,11 @@ export class QuestsService {
 
   async createQuest(createQuestDto: CreateQuestDto): Promise<Quest> {
     const { request, groups } = createQuestDto;
-    const quest = new this.questModel({
+    const quest = await this.questModel.create({
       request: new mongoose.Types.ObjectId(request),
       groups: groups,
-      createdAt: new Date(),
-      updatedAt: new Date(),
     });
-    return quest.save({ timestamps: true });
+    return quest.save();
   }
 
   async changeStatus(
