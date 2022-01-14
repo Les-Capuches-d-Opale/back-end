@@ -158,9 +158,7 @@ export class RequestsService {
       res = requests.filter(e => e.duration >= duration);
     }
 
-    return res;
-
-    if (res) {
+    if (res.length > 0) {
       return res;
     } else {
       return this.findAll();
