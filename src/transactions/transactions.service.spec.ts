@@ -20,6 +20,7 @@ describe('Transactions Service', () => {
             find: jest.fn(),
             exec: jest.fn(),
             create: jest.fn(),
+            save: jest.fn(),
           },
         },
       ],

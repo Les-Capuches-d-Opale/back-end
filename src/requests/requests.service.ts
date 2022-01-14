@@ -15,7 +15,7 @@ export class RequestsService {
 
   async setStatusByID(
     id: string,
-    status: QuestStatus,
+    status: string,
   ): Promise<UpdateWriteOpResult> {
     return this.RequestModel.updateOne({ _id: id }, { status: status });
   }

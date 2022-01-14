@@ -33,8 +33,7 @@ export class ItemsService {
     try {
       const item = await this.itemModel.findById(id).session(session).exec();
 
-      if (!item)
-        throw new NotFoundException('Item not found or already bought');
+      if (!item) throw new NotFoundException('Item not found');
 
       const transaction = await this.transactionService.create({
         amount: item.price,
