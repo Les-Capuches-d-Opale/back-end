@@ -1,5 +1,5 @@
+import { AdministratorsService } from 'src/administrators/administrators.service';
 /* eslint-disable @typescript-eslint/no-this-alias */
-import { AdministratorsService } from './administrators.service';
 import { AdministratorsController } from './administrators.controller';
 import * as bcrypt from 'bcrypt';
 import {
