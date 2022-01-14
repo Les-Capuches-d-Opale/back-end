@@ -8,8 +8,6 @@ import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
 
-
-
 @ApiBearerAuth()
 @ApiTags('requests')
 @Controller('requests')
@@ -39,4 +37,5 @@ export class RequestsController {
   ): Promise<Request> {
     return this.requestsService.create(createRequestDto);
   }
+
 }
