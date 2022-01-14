@@ -133,21 +133,28 @@ export class RequestsService {
       res = requests.filter(e => e.name === name);
     }
 
-    if (questGiver && name) {
+    if (questGiver && res.length > 0) {
       res = res.filter(e => e.questGiver === questGiver);
+    } else if(questGiver) {
+      res = requests.filter(e => e.questGiver === questGiver);
     }
 
-
-    if (awardedExperience && questGiver && name) {
+    if (awardedExperience && res.length > 0) {
       res = res.filter(e => e.awardedExperience === awardedExperience);
+    } else if(awardedExperience) {
+      res = requests.filter(e => e.awardedExperience === awardedExperience);
     }
 
-    if (bountyMin && bountyMax && awardedExperience && questGiver && name) {
+    if (bountyMin && bountyMax && res.length > 0) {
       res = res.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
+    } else if (bountyMin && bountyMax) {
+      res = requests.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
     }
-    
-    if (duration && bountyMin && bountyMax && awardedExperience && questGiver && name) {
+
+    if (duration && res.length > 0) {
       res = res.filter(e => e.duration >= duration);
+    } else if(duration){
+      res = requests.filter(e => e.duration >= duration);
     }
 
     if (res.length > 0) {
