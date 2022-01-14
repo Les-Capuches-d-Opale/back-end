@@ -1,10 +1,11 @@
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
-import { Request } from './entities/request.entity';
-import { RequestsService } from './requests.service';
-import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
+import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateWriteOpResult } from 'mongoose';
 import { CreateRequestDto } from './dto/createRequest.dto';
+import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
+import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
+import { Request } from './entities/request.entity';
+import { RequestsService } from './requests.service';
 
 @ApiBearerAuth()
 @ApiTags('requests')
@@ -28,4 +29,11 @@ export class RequestsController {
   ): Promise<Request> {
     return this.requestsService.create(createRequestDto);
   }
+  @Get('/filter')
+  FilterAll(
+    @Query() filterRequestQueryDto: FilterRequestQueryDto,
+  ): Promise<Request[]> {
+    return this.requestsService.FilterAll(filterRequestQueryDto);
+  }
+
 }
