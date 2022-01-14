@@ -1,3 +1,4 @@
+import { AdministratorsModule } from './../administrators/administrators.module';
 import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -17,6 +18,7 @@ import { QuestsService } from './quests.service';
     forwardRef(() => RequestsModule),
     forwardRef(() => AdventurersModule),
     forwardRef(() => TransactionsModule),
+    forwardRef(() => AdministratorsModule),
     MongooseModule.forFeature([
       {
         name: Quest.name,

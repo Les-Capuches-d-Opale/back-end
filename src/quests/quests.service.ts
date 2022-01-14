@@ -1,3 +1,4 @@
+import { AdministratorsService } from 'src/administrators/administrators.service';
 import { TransactionType } from './../transactions/entities/transaction.entity';
 import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
@@ -29,11 +30,13 @@ export class QuestsService {
     private readonly adventurerService: AdventurersService,
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
+    @Inject(forwardRef(() => AdministratorsService))
+    private readonly administratorsService: AdministratorsService,
   ) { }
 
-  async findAll(): Promise<Quest[] | any> {
+  async findAll(adminId?: string): Promise<Quest[] | any> {
 
-    await this.setAllStatus()
+    await this.setAllStatus(adminId)
 
     const quests = await this.questModel
       .find({})
@@ -115,7 +118,7 @@ export class QuestsService {
     return this.requestService.changeStatusByID(request, status);
   }
 
-  async setAllStatus() {
+  async setAllStatus(adminId: string) {
     const quests = await this.questModel
       .find({})
       .populate('request')
@@ -129,6 +132,7 @@ export class QuestsService {
           if (Math.random() < rate) {
             await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Failed)
           } else {
+            await this.administratorsService.addBounty(adminId, (quest.request.bounty * 0.8))
             await this.successAdventurer(quest.groups, quest.request.duration, quest.request.awardedExperience)
             await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Succeeded)
           }
@@ -170,9 +174,5 @@ export class QuestsService {
         session.endSession();
       }
     })
-  }
-
-  async successGuild(idAdmin: string, bounty: number) {
-
   }
 }
