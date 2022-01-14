@@ -18,16 +18,7 @@ export class AdministratorsService {
   }
 
   async getOne(id: string): Promise<Administrator> {
-    const administrator = await this.administratorModel
-      .findById(id)
-      .populate('items')
-      .exec();
-
-    if (!administrator) {
-      throw new NotFoundException(`Administrator #${id} not found`);
-    }
-
-    return administrator;
+    return await this.administratorModel.findById(id).populate('items').exec();
   }
 
   async update(
@@ -48,9 +39,9 @@ export class AdministratorsService {
     item: Item,
     transaction: Transaction,
   ): Promise<Administrator> {
-    const administrator = await this.administratorModel.findById(
-      new Types.ObjectId(id),
-    );
+    const administrator = await this.administratorModel
+      .findById(new Types.ObjectId(id))
+      .exec();
 
     if (administrator.wallet < item.price)
       throw new HttpException('Not enough money', 400);
