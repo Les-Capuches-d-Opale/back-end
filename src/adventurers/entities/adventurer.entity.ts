@@ -36,14 +36,14 @@ export class Adventurer extends Document {
   })
   @Prop({ index: true })
   baseDailyRate: number;
-/* 
+
   @ApiProperty({
     description: 'The amout of the adventurer.',
     example: 1.2,
   })
   @Prop({ default: 0 })
-  amount: number; */
- 
+  amount: number;
+
   @ApiProperty({
     description: "The picture's url of the adventurer.",
     example:

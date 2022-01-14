@@ -1,6 +1,7 @@
 import { QuestStatus } from './../entities/request.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
+import { QuestStatus } from '../entities/request.entity';
 
 export class SetStatusRequestDto {
     @ApiProperty({

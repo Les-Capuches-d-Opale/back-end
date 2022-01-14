@@ -1,7 +1,8 @@
 import { Transaction } from './entities/transaction.entity';
 import { TransactionsService } from './../transactions/transactions.service';
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 
 @ApiBearerAuth()
 @ApiTags('transactions')
@@ -12,5 +13,12 @@ export class TransactionsController {
   @Get('/')
   getAll(): Promise<Transaction[]> {
     return this.transactionsService.findAll();
+  }
+
+  @Get('/filter')
+  FilterAll(
+    @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
+  ): Promise<Transaction[]> {
+    return this.transactionsService.FilterAll(filterTransactionQueryDto);
   }
 }
