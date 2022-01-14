@@ -1,3 +1,4 @@
+import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { Request } from './entities/request.entity';
@@ -15,6 +16,11 @@ export class RequestsController {
   @Get('/')
   getAll(): Promise<Request[]> {
     return this.requestsService.findAll();
+  }
+
+  @Get('/:id')
+  getOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Request> {
+    return this.requestsService.findOne(id);
   }
 
   @Put("/")
