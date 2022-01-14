@@ -38,7 +38,11 @@ export class TransactionsService {
       res = requests.filter(e => e.type === transactionType);
     }
     
-    return res;
+    if(res){
+      return res;
+    }else{
+      return this.findAll();
+    }
 
   }
 

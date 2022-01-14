@@ -15,7 +15,7 @@ export class TransactionsController {
     return this.transactionsService.findAll();
   }
 
-  @Get('/filter')
+  @Get('/')
   FilterAll(
     @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[]> {
