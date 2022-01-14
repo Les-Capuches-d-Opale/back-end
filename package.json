@@ -45,6 +45,7 @@
     "nest-morgan": "^2.0.0",
     "nest-winston": "^1.6.2",
     "npm": "^8.3.1",
+    "package.json": "^2.0.1",
     "passport": "^0.5.2",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
