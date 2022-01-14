@@ -158,6 +158,8 @@ export class RequestsService {
       res = requests.filter(e => e.duration >= duration);
     }
 
+    return res;
+
     if (res) {
       return res;
     } else {
