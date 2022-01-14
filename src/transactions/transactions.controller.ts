@@ -11,11 +11,6 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Get('/')
-  getAll(): Promise<Transaction[]> {
-    return this.transactionsService.findAll();
-  }
-
-  @Get('/')
   FilterAll(
     @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[]> {
