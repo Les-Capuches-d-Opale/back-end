@@ -5,7 +5,12 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { format } from 'date-fns';
 import { Session } from 'inspector';
-import { Model, UpdateWriteOpResult, Connection, ClientSession } from 'mongoose';
+import {
+  Model,
+  UpdateWriteOpResult,
+  Connection,
+  ClientSession,
+} from 'mongoose';
 import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
 import { AdventurersService } from './../adventurers/adventurers.service';
 import { Adventurer } from './../adventurers/entities/adventurer.entity';
@@ -32,11 +37,10 @@ export class QuestsService {
     private readonly transactionsService: TransactionsService,
     @Inject(forwardRef(() => AdministratorsService))
     private readonly administratorsService: AdministratorsService,
-  ) { }
+  ) {}
 
   async findAll(adminId?: string): Promise<Quest[] | any> {
-
-    await this.setAllStatus(adminId)
+    if (adminId) await this.setAllStatus(adminId);
 
     const quests = await this.questModel
       .find({})
@@ -125,52 +129,101 @@ export class QuestsService {
 
     quests.map(async (quest) => {
       if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
-        if (format(quest.request.dateDebut, 't') + quest.request.duration < format(new Date(), 't')) {
-          const rate = await this.succesRate(quest.groups, quest.request.requiredProfiles)
+        if (
+          format(quest.request.dateDebut, 't') + quest.request.duration <
+          format(new Date(), 't')
+        ) {
+          const rate = await this.succesRate(
+            quest.groups,
+            quest.request.requiredProfiles,
+          );
           if (Math.random() < rate) {
-            await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Failed)
+            await this.requestService.changeStatusByID(
+              quest.request.id,
+              QuestStatus.Failed,
+            );
           } else {
-            await this.administratorsService.addBounty(adminId, (quest.request.bounty * 0.8))
-            await this.successAdventurer(quest.groups, quest.request.duration, quest.request.awardedExperience)
-            await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Succeeded)
+            await this.administratorsService.addBounty(
+              adminId,
+              quest.request.bounty * 0.8,
+            );
+            await this.successAdventurer(
+              quest.groups,
+              quest.request.duration,
+              quest.request.awardedExperience,
+            );
+            await this.requestService.changeStatusByID(
+              quest.request.id,
+              QuestStatus.Succeeded,
+            );
           }
         } else {
-          await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Pending)
+          await this.requestService.changeStatusByID(
+            quest.request.id,
+            QuestStatus.Pending,
+          );
         }
       }
-    })
+    });
   }
 
-  async succesRate(groups: Adventurer[], requiredProfiles: AdventurerProfile[]) {
-    var expGlobal: number[] = await Promise.all(groups.map(async (group, index): Promise<number> => {
-      return await this.individualRate(group.experience, requiredProfiles[index].experience)
-    }));
-    return (lodash.sum(expGlobal) / groups.length) * 0.8
+  async succesRate(
+    groups: Adventurer[],
+    requiredProfiles: AdventurerProfile[],
+  ) {
+    var expGlobal: number[] = await Promise.all(
+      groups.map(async (group, index): Promise<number> => {
+        return await this.individualRate(
+          group.experience,
+          requiredProfiles[index].experience,
+        );
+      }),
+    );
+    return (lodash.sum(expGlobal) / groups.length) * 0.8;
   }
 
   async individualRate(experienceAdventurer: number, expRequired: number) {
-    return expRequired !== 0 ? (Math.min(experienceAdventurer, expRequired) / expRequired) : 0
+    return expRequired !== 0
+      ? Math.min(experienceAdventurer, expRequired) / expRequired
+      : 0;
   }
 
-  async successAdventurer(groups: Adventurer[], duration: number, awardedExperience: number) {
+  async successAdventurer(
+    groups: Adventurer[],
+    duration: number,
+    awardedExperience: number,
+  ) {
     groups.map(async (adventurer: Adventurer) => {
-
       const session = await this.connection.startSession();
       session.startTransaction();
 
-      const amount = (adventurer.baseDailyRate * (1 + (0.5 * Math.log(adventurer.experience)))) * (duration / 60 / 60 / 24)
+      const amount =
+        adventurer.baseDailyRate *
+        (1 + 0.5 * Math.log(adventurer.experience)) *
+        (duration / 60 / 60 / 24);
       try {
-        await this.adventurerService.updateAmount(adventurer.id, { amount: amount > 0 ? amount : 0 }, session)
-        await this.transactionsService.create({ amount: amount > 0 ? amount : 0, type: TransactionType.AdventurerPayment })
-        await this.adventurerService.updateExp(adventurer.id, { experience: awardedExperience }, session)
+        await this.adventurerService.updateAmount(
+          adventurer.id,
+          { amount: amount > 0 ? amount : 0 },
+          session,
+        );
+        await this.transactionsService.create({
+          amount: amount > 0 ? amount : 0,
+          type: TransactionType.AdventurerPayment,
+        });
+        await this.adventurerService.updateExp(
+          adventurer.id,
+          { experience: awardedExperience },
+          session,
+        );
 
         await session.commitTransaction();
       } catch (e) {
         await session.abortTransaction();
-        throw e
+        throw e;
       } finally {
         session.endSession();
       }
-    })
+    });
   }
 }

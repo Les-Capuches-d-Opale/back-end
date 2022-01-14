@@ -27,23 +27,15 @@ export class TransactionsService {
     return transaction.save();
   }
 
-  async FilterAll(
+  async filterAll(
     filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[] | any> {
     const { transactionType } = filterTransactionQueryDto;
+    const transactions = await this.transactionModel
+      .find()
+      .where(transactionType ? { type: transactionType } : {})
+      .exec();
 
-    let res = [];
-
-    const requests = await this.transactionModel.find();
-
-    if (transactionType) {
-      res = requests.filter((e) => e.type === transactionType);
-    }
-
-    if (res.length > 0) {
-      return res;
-    } else {
-      return this.findAll();
-    }
+    return transactions;
   }
 }

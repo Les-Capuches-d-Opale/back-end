@@ -26,16 +26,15 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
-  @Put("/")
-  setStatusRequest(@Body() setStatusRequest: SetStatusRequestDto): Promise<UpdateWriteOpResult> {
-    return this.requestsService.setStatus(setStatusRequest)
+  @Put('/')
+  setStatusRequest(
+    @Body() setStatusRequest: SetStatusRequestDto,
+  ): Promise<UpdateWriteOpResult> {
+    return this.requestsService.setStatus(setStatusRequest);
   }
 
   @Post()
-  create(
-    @Body() createRequestDto: CreateRequestDto,
-  ): Promise<Request> {
+  create(@Body() createRequestDto: CreateRequestDto): Promise<Request> {
     return this.requestsService.create(createRequestDto);
   }
-
 }

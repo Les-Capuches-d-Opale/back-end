@@ -11,9 +11,9 @@ export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) {}
 
   @Get('/')
-  FilterAll(
+  filterAll(
     @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[]> {
-    return this.transactionsService.FilterAll(filterTransactionQueryDto);
+    return this.transactionsService.filterAll(filterTransactionQueryDto);
   }
 }

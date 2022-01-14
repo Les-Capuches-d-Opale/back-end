@@ -28,7 +28,7 @@ export class RequestsService {
     setStatusRequest: SetStatusRequestDto,
   ): Promise<UpdateWriteOpResult> {
     const { request, status } = setStatusRequest;
-    return this.changeStatusByID(request, status);
+    return await this.changeStatusByID(request, status);
   }
 
   async findAll(): Promise<Request[] | any> {

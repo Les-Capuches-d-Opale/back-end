@@ -58,9 +58,12 @@ describe('Transactions Service', () => {
 
       jest.spyOn(requestModel, 'updateOne').mockResolvedValue(request);
 
-      expect(
-        requestsService.setStatusByID('abc123', QuestStatus.Pending),
-      ).resolves.toEqual(request);
+      const PDO = {
+        request: 'abc123',
+        status: QuestStatus.Pending,
+      };
+
+      expect(requestsService.setStatus(PDO)).resolves.toEqual(request);
     });
   });
 

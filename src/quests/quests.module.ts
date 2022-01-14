@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import {
   Speciality,
-  SpecialitySchema
+  SpecialitySchema,
 } from 'src/adventurers/entities/speciality.entity';
 import { TransactionsModule } from './../transactions/transactions.module';
 import { AdventurersModule } from './../adventurers/adventurers.module';
@@ -34,4 +34,4 @@ import { QuestsService } from './quests.service';
   controllers: [QuestsController],
   exports: [QuestsService],
 })
-export class QuestsModule { }
+export class QuestsModule {}
