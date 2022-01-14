@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Speciality } from './../adventurers/entities/speciality.entity';
-import { Request } from './entities/request.entity';
+import { Request, QuestStatus } from './entities/request.entity';
 
 @Injectable()
 export class RequestsService {
@@ -13,9 +13,9 @@ export class RequestsService {
     private readonly SpecialityModel: Model<Speciality>,
   ) {}
 
-  async setStatusByID(
+  async changeStatusByID(
     id: string,
-    status: string,
+    status: QuestStatus,
   ): Promise<UpdateWriteOpResult> {
     return this.RequestModel.updateOne({ _id: id }, { status: status });
   }

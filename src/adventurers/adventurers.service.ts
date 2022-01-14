@@ -115,6 +115,16 @@ export class AdventurersService {
     );
   }
 
+  async updateAmount(
+    id: string,
+    // updateAmountAdventurerDto: UpdateAmountAdventurerDto,
+  ): Promise<Adventurer> {
+    return await this.adventurerModel.findByIdAndUpdate(
+      id,
+      { $inc: { experience: /* updateAmountAdventurerDto.amount  */ 1} },
+      { new: true },
+    );
+
   async getAllSpecialities(): Promise<Speciality[]> {
     return await this.specialityModel.find({}).exec();
   }
