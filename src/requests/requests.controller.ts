@@ -1,7 +1,9 @@
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
+import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
+import { UpdateWriteOpResult } from 'mongoose';
 
 @ApiBearerAuth()
 @ApiTags('requests')
@@ -13,4 +15,10 @@ export class RequestsController {
   getAll(): Promise<Request[]> {
     return this.requestsService.findAll();
   }
+
+  @Put("/")
+  setStatusRequest(@Body() setStatusRequest: SetStatusRequestDto): Promise<UpdateWriteOpResult> {
+    return this.requestsService.setStatus(setStatusRequest)
+  }
+
 }
