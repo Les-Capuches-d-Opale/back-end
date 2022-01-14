@@ -1,15 +1,16 @@
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { format } from 'date-fns';
+import { Model, UpdateWriteOpResult } from 'mongoose';
+import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
+import { AdventurersService } from './../adventurers/adventurers.service';
 import { Adventurer } from './../adventurers/entities/adventurer.entity';
 import { Speciality } from './../adventurers/entities/speciality.entity';
+import { QuestStatus } from './../requests/entities/request.entity';
 import { RequestsService } from './../requests/requests.service';
-import { Quest } from './entities/quest.entity';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, UpdateWriteOpResult } from 'mongoose';
 import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
-import { Request } from 'src/requests/entities/request.entity';
-import { format } from 'date-fns';
-import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
+import { Quest } from './entities/quest.entity';
 const mongoose = require('mongoose');
 var lodash = require('lodash');
 
@@ -21,6 +22,7 @@ export class QuestsService {
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
     private readonly requestService: RequestsService,
+    private readonly adventurerService: AdventurersService
   ) { }
 
   async findAll(): Promise<Quest[] | any> {
@@ -118,13 +120,14 @@ export class QuestsService {
       if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
         if (format(quest.request.dateDebut, 't') + quest.request.duration < format(new Date(), 't')) {
           const rate = await this.succesRate(quest.groups, quest.request.requiredProfiles)
+          await this.dailyRate(quest.groups)
           if (Math.random() < rate) {
-            await this.requestService.changeStatusByID(quest.request.id, "Failed")
+            await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Failed)
           } else {
-            await this.requestService.changeStatusByID(quest.request.id, "Success")
+            await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Succeeded)
           }
         } else {
-          await this.requestService.changeStatusByID(quest.request.id, "Pending")
+          await this.requestService.changeStatusByID(quest.request.id, QuestStatus.Pending)
         }
       }
     })
@@ -139,5 +142,12 @@ export class QuestsService {
 
   async individualRate(experienceAdventurer: number, expRequired: number) {
     return expRequired !== 0 ? (Math.min(experienceAdventurer, expRequired) / expRequired) : 0
+  }
+
+  async dailyRate(/* expAvdenturer: number, baseDailyRate: number */groups: Adventurer[]) {
+    groups.map(async (adventurer: Adventurer) => {
+      const amount = (adventurer.baseDailyRate * (1 + (0.5 * Math.log(adventurer.experience))))
+      await this.adventurerService.updateAmount(adventurer.id/* ,  {amount: amount} */ )
+    })
   }
 }
