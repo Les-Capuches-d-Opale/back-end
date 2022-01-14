@@ -1,4 +1,10 @@
-import { forwardRef, HttpException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model } from 'mongoose';
 import { QuestsService } from './../quests/quests.service';
@@ -17,7 +23,7 @@ export class AdventurersService {
     private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
-  ) { }
+  ) {}
 
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
@@ -49,7 +55,7 @@ export class AdventurersService {
         const adventurersId = quest.groups.map((questAdventurer) =>
           questAdventurer._id.toString(),
         );
-        return adventurersId.includes(adventurer._id.toString());
+        return adventurersId.includes(adventurer._id?.toString());
       });
 
       if (!adventurerHasQuests.length)
@@ -58,9 +64,9 @@ export class AdventurersService {
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
         const endDateQuest = new Date(
-          adventurerQuest.request.dateDebut.setSeconds(
-            adventurerQuest.request.dateDebut.getSeconds() +
-            adventurerQuest.request.duration,
+          new Date(adventurerQuest.request.dateDebut).setSeconds(
+            new Date(adventurerQuest.request.dateDebut).getSeconds() +
+              adventurerQuest.request.duration,
           ),
         );
 
@@ -93,13 +99,13 @@ export class AdventurersService {
     return adventurer;
   }
 
-  create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
+  async create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
     const baseDailyRate = (
       createAdventurerDto.baseDailyRate * 1 +
       0.5 * Math.log(createAdventurerDto.experience)
     ).toFixed(2);
 
-    const adventurer = new this.adventurerModel({
+    const adventurer = await this.adventurerModel.create({
       ...createAdventurerDto,
       baseDailyRate,
     });
@@ -109,34 +115,41 @@ export class AdventurersService {
   async updateExp(
     id: string,
     updateExpAdventurerDto: UpdateExpAdventurerDto,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<Adventurer> {
-    return session ? await this.adventurerModel.findByIdAndUpdate(
-      id,
-      { $inc: { experience: updateExpAdventurerDto.experience } },
-      { new: true },
-    ).session(session) : await this.adventurerModel.findByIdAndUpdate(
-      id,
-      { $inc: { experience: updateExpAdventurerDto.experience } },
-      { new: true },
-    )
+    return session
+      ? await this.adventurerModel
+          .findByIdAndUpdate(
+            id,
+            { $inc: { experience: updateExpAdventurerDto.experience } },
+            { new: true },
+          )
+          .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+          id,
+          { $inc: { experience: updateExpAdventurerDto.experience } },
+          { new: true },
+        );
   }
 
   async updateAmount(
     id: string,
     updateAmountAdventurerDto: UpdateAmountAdventurerDto,
-    session?: ClientSession
+    session?: ClientSession,
   ): Promise<Adventurer> {
-    return session ? await this.adventurerModel.findByIdAndUpdate(
-        id,
-        { $inc: { amount: updateAmountAdventurerDto.amount } },
-        { new: true },
-      ).session(session)
-    : await this.adventurerModel.findByIdAndUpdate(
-        id,
-        { $inc: { amount: updateAmountAdventurerDto.amount } },
-        { new: true },
-      )
+    return session
+      ? await this.adventurerModel
+          .findByIdAndUpdate(
+            id,
+            { $inc: { amount: updateAmountAdventurerDto.amount } },
+            { new: true },
+          )
+          .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+          id,
+          { $inc: { amount: updateAmountAdventurerDto.amount } },
+          { new: true },
+        );
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {

@@ -1,11 +1,12 @@
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { UpdateWriteOpResult } from 'mongoose';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { CreateRequestDto } from './dto/createRequest.dto';
+import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
+import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
-import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
-import { UpdateWriteOpResult } from 'mongoose';
-import { CreateRequestDto } from './dto/createRequest.dto';
 
 @ApiBearerAuth()
 @ApiTags('requests')
@@ -14,8 +15,10 @@ export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
   @Get('/')
-  getAll(): Promise<Request[]> {
-    return this.requestsService.findAll();
+  FilterAll(
+    @Query() filterRequestQueryDto: FilterRequestQueryDto,
+  ): Promise<Request[]> {
+    return this.requestsService.FilterAll(filterRequestQueryDto);
   }
 
   @Get('/:id')
@@ -23,15 +26,15 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
-  @Put("/")
-  setStatusRequest(@Body() setStatusRequest: SetStatusRequestDto): Promise<UpdateWriteOpResult> {
-    return this.requestsService.setStatus(setStatusRequest)
+  @Put('/')
+  setStatusRequest(
+    @Body() setStatusRequest: SetStatusRequestDto,
+  ): Promise<UpdateWriteOpResult> {
+    return this.requestsService.setStatus(setStatusRequest);
   }
 
   @Post()
-  create(
-    @Body() createRequestDto: CreateRequestDto,
-  ): Promise<Request> {
+  create(@Body() createRequestDto: CreateRequestDto): Promise<Request> {
     return this.requestsService.create(createRequestDto);
   }
 }

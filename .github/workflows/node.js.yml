@@ -14,6 +14,10 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    env:
+      DATABASE_URI: mongodb+srv://admin:Mdp-123@cluster0.y1as3.mongodb.net/db?retryWrites=true&w=majority
+
+
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
