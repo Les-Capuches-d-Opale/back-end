@@ -32,7 +32,7 @@ export class TransactionsService {
 
     let res = [];
     
-    const requests = await this.TransactionModel.find();
+    const requests = await this.transactionModel.find();
     
     if(transactionType){
       res = requests.filter(e => e.type === transactionType);
