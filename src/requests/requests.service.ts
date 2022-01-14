@@ -15,7 +15,7 @@ export class RequestsService {
     private readonly RequestModel: Model<Request>,
     @InjectModel(Speciality.name)
     private readonly SpecialityModel: Model<Speciality>,
-  ) {}
+  ) { }
 
   async changeStatusByID(
     id: string,
@@ -57,51 +57,51 @@ export class RequestsService {
     return requests;
   }
 
-  async create(createRequestDto: CreateRequestDto): Promise<Request>{
+  async create(createRequestDto: CreateRequestDto): Promise<Request> {
 
     let newRequiredProfile = [];
 
-  const { name, description, pictureUrl, questGiver, bounty, duration, requiredProfiles, 
-    awardedExperience, status, dateDebut } = createRequestDto
+    const { name, description, pictureUrl, questGiver, bounty, duration, requiredProfiles,
+      awardedExperience, status, dateDebut } = createRequestDto
 
- requiredProfiles.map((profil) => {
+    requiredProfiles.map((profil) => {
 
-  if(!profil.speciality){
-    throw new HttpException({
-      status: HttpStatus.FORBIDDEN,
-      error: 'speciality is required',
-    }, HttpStatus.FORBIDDEN);
-  }else if(!profil.experience){
-    throw new HttpException({
-      status: HttpStatus.FORBIDDEN,
-      error: 'experience is required',
-    }, HttpStatus.FORBIDDEN);
+      if (!profil.speciality) {
+        throw new HttpException({
+          status: HttpStatus.FORBIDDEN,
+          error: 'speciality is required',
+        }, HttpStatus.FORBIDDEN);
+      } else if (!profil.experience) {
+        throw new HttpException({
+          status: HttpStatus.FORBIDDEN,
+          error: 'experience is required',
+        }, HttpStatus.FORBIDDEN);
+      }
+
+      newRequiredProfile.push({
+        speciality: new mongoose.Types.ObjectId(profil.speciality),
+        experience: profil.experience
+      })
+
+    })
+
+    const req = new this.RequestModel({
+      name: name,
+      description: description,
+      pictureUrl: pictureUrl,
+      questGiver: questGiver,
+      bounty: bounty,
+      duration: duration,
+      requiredProfiles: newRequiredProfile,
+      awardedExperience: awardedExperience,
+      status: status,
+      dateDebut: dateDebut,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    })
+
+    return req.save({ timestamps: true })
   }
-
-   newRequiredProfile.push({
-     speciality: new mongoose.Types.ObjectId(profil.speciality),
-     experience: profil.experience
-   })
-   
- })
- 
-  const req = new this.RequestModel({
-    name: name,
-    description: description,
-    pictureUrl: pictureUrl,
-    questGiver: questGiver,
-    bounty: bounty,
-    duration: duration,
-    requiredProfiles:  newRequiredProfile,
-    awardedExperience: awardedExperience,
-    status: status,
-    dateDebut: dateDebut,  
-    createdAt: new Date(),
-    updatedAt: new Date()
-  })
-  
-  return req.save({timestamps: true})
- }
 
   async FilterAll(
     filterRequestQueryDto: FilterRequestQueryDto,
@@ -109,38 +109,38 @@ export class RequestsService {
     const { name, questGiver, awardedExperience, bountyMin, bountyMax, duration } = filterRequestQueryDto;
 
     let res = [];
-    
+
     const requests = await this.RequestModel.find();
-    
-    if(name){
+
+    if (name) {
       res = requests.filter(e => e.name === name);
     }
-    
-    if(questGiver && name){
+
+    if (questGiver && name) {
       res = res.filter(e => e.questGiver === questGiver);
-    }else{
+    } else {
       res = requests.filter(e => e.questGiver === questGiver);
     }
 
-    
-    if(awardedExperience && questGiver && name){
+
+    if (awardedExperience && questGiver && name) {
       res = res.filter(e => e.awardedExperience === awardedExperience);
-    }else{
+    } else {
       res = requests.filter(e => e.awardedExperience === awardedExperience);
     }
 
-    if(bountyMin && bountyMax && awardedExperience && questGiver && name){
+    if (bountyMin && bountyMax && awardedExperience && questGiver && name) {
       res = res.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
-    }else{
+    } else {
       res = requests.filter(e => e.bounty <= bountyMax && e.bounty >= bountyMin);
     }
 
-    if(duration && bountyMin && bountyMax && awardedExperience && questGiver && name){
+    if (duration && bountyMin && bountyMax && awardedExperience && questGiver && name) {
       res = res.filter(e => e.duration >= duration);
-    }else{
+    } else {
       res = requests.filter(e => e.duration >= duration);
     }
-    
+
     return res;
 
   }
