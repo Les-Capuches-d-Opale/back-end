@@ -47,7 +47,7 @@ export class AdventurersService {
         const adventurersId = quest.groups.map((questAdventurer) =>
           questAdventurer._id.toString(),
         );
-        return adventurersId.includes(adventurer._id.toString());
+        return adventurersId.includes(adventurer._id?.toString());
       });
 
       if (!adventurerHasQuests.length)
@@ -56,8 +56,8 @@ export class AdventurersService {
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
         const endDateQuest = new Date(
-          adventurerQuest.request.dateDebut.setSeconds(
-            adventurerQuest.request.dateDebut.getSeconds() +
+          new Date(adventurerQuest.request.dateDebut).setSeconds(
+            new Date(adventurerQuest.request.dateDebut).getSeconds() +
               adventurerQuest.request.duration,
           ),
         );
@@ -91,13 +91,13 @@ export class AdventurersService {
     return adventurer;
   }
 
-  create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
+  async create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
     const baseDailyRate = (
       createAdventurerDto.baseDailyRate * 1 +
       0.5 * Math.log(createAdventurerDto.experience)
     ).toFixed(2);
 
-    const adventurer = new this.adventurerModel({
+    const adventurer = await this.adventurerModel.create({
       ...createAdventurerDto,
       baseDailyRate,
     });
