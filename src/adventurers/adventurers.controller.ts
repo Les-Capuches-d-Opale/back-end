@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { Speciality } from './entities/speciality.entity';
 @ApiTags('adventurers')
 @ApiBearerAuth()
 @Controller('adventurers')
@@ -17,6 +18,11 @@ export class AdventurersController {
     @Query() filterAdventurerQueryDto: FilterAdventurerQueryDto,
   ): Promise<Adventurer[]> {
     return this.adventurerService.findAll(filterAdventurerQueryDto);
+  }
+
+  @Get('/specialities')
+  getSpecialities(): Promise<Speciality[]> {
+    return this.adventurerService.getAllSpecialities();
   }
 
   @Get('/:id')

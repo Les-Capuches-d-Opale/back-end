@@ -2,7 +2,7 @@ import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { Item } from 'src/items/entities/item.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
-import { Injectable, HttpException } from '@nestjs/common';
+import { Injectable, HttpException, NotFoundException } from '@nestjs/common';
 import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -18,7 +18,16 @@ export class AdministratorsService {
   }
 
   async getOne(id: string): Promise<Administrator> {
-    return await this.administratorModel.findById(id).populate('items').exec();
+    const administrator = await this.administratorModel
+      .findById(id)
+      .populate('items')
+      .exec();
+
+    if (!administrator) {
+      throw new NotFoundException(`Administrator #${id} not found`);
+    }
+
+    return administrator;
   }
 
   async update(
