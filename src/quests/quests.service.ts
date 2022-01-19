@@ -1,22 +1,19 @@
-import { AdministratorsService } from 'src/administrators/administrators.service';
-import { TransactionType } from './../transactions/entities/transaction.entity';
-import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { format } from 'date-fns';
-import { Session } from 'inspector';
 import {
-  Model,
-  UpdateWriteOpResult,
-  Connection,
-  ClientSession,
+  Connection, Model,
+  UpdateWriteOpResult
 } from 'mongoose';
+import { AdministratorsService } from 'src/administrators/administrators.service';
 import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
 import { AdventurersService } from './../adventurers/adventurers.service';
 import { Adventurer } from './../adventurers/entities/adventurer.entity';
 import { Speciality } from './../adventurers/entities/speciality.entity';
 import { QuestStatus } from './../requests/entities/request.entity';
 import { RequestsService } from './../requests/requests.service';
+import { TransactionType } from './../transactions/entities/transaction.entity';
+import { TransactionsService } from './../transactions/transactions.service';
 import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
 import { Quest } from './entities/quest.entity';
@@ -106,10 +103,25 @@ export class QuestsService {
 
   async createQuest(createQuestDto: CreateQuestDto): Promise<Quest> {
     const { request, groups } = createQuestDto;
-    const quest = await this.questModel.create({
-      request: new mongoose.Types.ObjectId(request),
-      groups: groups,
+    const _request = await this.requestService.findOne(request);
+    let groupToPush = []
+    groups.map(group => {
+      groupToPush.push(null)
+    })
+    groups.map((group) => {
+      const index = _request.requiredProfiles.findIndex(
+        (profile: any) =>
+          profile.speciality.id === group.reqProfile.id &&
+          profile.experience === group.reqProfile.experience,
+      );
+      groupToPush[index] = group.adventurer
     });
+     const quest = await this.questModel.create({
+      request: new mongoose.Types.ObjectId(request),
+      groups: groupToPush,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }); 
     return quest.save();
   }
 
@@ -137,17 +149,19 @@ export class QuestsService {
             quest.groups,
             quest.request.requiredProfiles,
           );
+          console.log({rate})
           if (Math.random() < rate) {
-            await this.requestService.changeStatusByID(
+            const changeStatus = await this.requestService.changeStatusByID(
               quest.request.id,
               QuestStatus.Failed,
             );
+            console.log({changeStatus})
           } else {
-            await this.administratorsService.addBounty(
+            const addBounty =await this.administratorsService.addBounty(
               adminId,
               quest.request.bounty * 0.8,
             );
-            await this.successAdventurer(
+            const successAdventurer = await this.successAdventurer(
               quest.groups,
               quest.request.duration,
               quest.request.awardedExperience,
