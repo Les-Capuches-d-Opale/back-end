@@ -116,7 +116,6 @@ export class RequestsService {
     const adventuriesAvailableNow = await this.adventurersService.findAll({
       isAvailableNow: true,
     });
-    console.log('adventuriesAvailableNow', adventuriesAvailableNow);
     return adventuriesAvailableNow;
   }
 
@@ -179,7 +178,7 @@ export class RequestsService {
     return req.save({ timestamps: true });
   }
 
-  async FilterAll(
+  async filterAll(
     filterRequestQueryDto: FilterRequestQueryDto,
   ): Promise<Request[] | any> {
     const {
@@ -208,6 +207,21 @@ export class RequestsService {
       .where({})
       .lean()
       .exec();
+
+    await Promise.all(
+      requests.map(async (request) => {
+        const requiredProfilesIds = request.requiredProfiles.map(
+          (profile) => profile.speciality,
+        );
+
+        await Promise.all(
+          requiredProfilesIds.map(async (id, index) => {
+            request.requiredProfiles[index].speciality =
+              await this.specialityModel.findById(id);
+          }),
+        );
+      }),
+    );
 
     return requests;
   }
