@@ -126,10 +126,11 @@ export class QuestsService {
   }
 
   async changeStatus(
+    id: string,
     setStatusQuest: SetStatusQuestDto,
   ): Promise<UpdateWriteOpResult> {
-    const { request, status } = setStatusQuest;
-    return this.requestService.changeStatusByID(request, status);
+    const { status } = setStatusQuest;
+    return this.requestService.changeStatusByID(id, status);
   }
 
   async setAllStatus(adminId: string) {
