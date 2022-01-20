@@ -13,13 +13,15 @@ const mongoose = require('mongoose');
 @Injectable()
 export class RequestsService {
   constructor(
+    @InjectModel(Adventurer.name)
+    private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Request.name)
     private readonly requestModel: Model<Request>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => AdventurersService))
     private readonly adventurersService: AdventurersService,
-  ) {}
+  ) { }
 
   async changeStatusByID(
     id: string,
@@ -37,7 +39,7 @@ export class RequestsService {
   }
 
   async findAll(): Promise<Request[] | any> {
-    const requests = await this.requestModel.find({status: {$in: ['Unassigned', 'Rejected']}})
+    const requests = await this.requestModel.find({ status: { $in: ['Unassigned', 'Rejected'] } })
       .where('status')
       .populate('requiredProfiles')
       .lean()
@@ -87,11 +89,10 @@ export class RequestsService {
           await this.specialityModel.findById(id.speciality);
       }),
     );
-    const adventuriesAvailableNow = await this.adventurersService.findAll({isAvailableNow: true});
+    const adventuriesAvailableNow = await this.adventurersService.findAll({ isAvailableNow: true });
 
     return adventuriesAvailableNow;
   }
-
 
   async create(createRequestDto: CreateRequestDto): Promise<Request> {
     const newRequiredProfile = [];
@@ -173,9 +174,9 @@ export class RequestsService {
           $gte: bountyMin ? bountyMin : 0,
           $lte: bountyMax ? bountyMax : 999999999999999,
         },
-        duration: { 
+        duration: {
           $gte: duration ? duration : 0,
-         },
+        },
         status: { $in: ['Unassigned', 'Rejected'] },
       })
       .where({})
