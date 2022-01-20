@@ -137,19 +137,25 @@ export class AdventurersService {
     updateAmountAdventurerDto: UpdateAmountAdventurerDto,
     session?: ClientSession,
   ): Promise<Adventurer> {
-    return session
-      ? await this.adventurerModel
+    if(session) {
+      const adventurer = await this.adventurerModel
           .findByIdAndUpdate(
             id,
             { $inc: { amount: updateAmountAdventurerDto.amount } },
             { new: true },
           )
           .session(session)
-      : await this.adventurerModel.findByIdAndUpdate(
+    } else {
+      const adventurer = await this.adventurerModel.findByIdAndUpdate(
           id,
           { $inc: { amount: updateAmountAdventurerDto.amount } },
           { new: true },
         );
+    }
+      
+      if (!adventurer) {
+        throw new NotFoundException(`Adventurer #${id} not found`);
+      }
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {

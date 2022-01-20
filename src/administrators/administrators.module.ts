@@ -6,7 +6,7 @@ import {
   Administrator,
   AdministratorSchema,
 } from './entities/administrator.entity';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 

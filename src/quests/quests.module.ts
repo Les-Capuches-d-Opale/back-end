@@ -1,3 +1,5 @@
+import { RequestsModule } from './../requests/requests.module';
+import { Quest, QuestSchema } from './entities/quest.entity';
 import { AdministratorsModule } from './../administrators/administrators.module';
 import { TransactionsService } from './../transactions/transactions.service';
 import { forwardRef, Module } from '@nestjs/common';
@@ -5,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import {
   Speciality,
   SpecialitySchema,
+} from '../adventurers/entities/speciality.entity';
 } from 'src/adventurers/entities/speciality.entity';
 import { TransactionsModule } from './../transactions/transactions.module';
 import { AdventurersModule } from './../adventurers/adventurers.module';

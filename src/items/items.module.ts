@@ -1,8 +1,8 @@
 import { TransactionsModule } from './../transactions/transactions.module';
-import { AuthModule } from 'src/auth/auth.module';
+import { AuthModule } from '../auth/auth.module';
 import { AdministratorsModule } from './../administrators/administrators.module';
 import { ItemSchema } from './entities/item.entity';
-import { Item } from 'src/items/entities/item.entity';
+import { Item } from '../items/entities/item.entity';
 import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ItemsService } from './items.service';
