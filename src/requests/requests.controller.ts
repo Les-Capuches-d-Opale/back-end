@@ -26,6 +26,12 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
+
+  @Get('/:id/available')
+  getAvailableAdv(@Param('id', ParseObjectIdPipe) id: string): Promise<Request> {
+    return this.requestsService.findAvailableAdventurers(id);
+  }
+
   @Put('/:id')
   setStatusRequest(
     @Param('id', ParseObjectIdPipe) id: string,
