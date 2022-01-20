@@ -11,6 +11,7 @@ import {
 
 @Module({
   imports: [
+    forwardRef(() => AdventurersModule),
     MongooseModule.forFeature([
       {
         name: Request.name,

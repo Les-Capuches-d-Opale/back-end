@@ -13,7 +13,8 @@ describe('Transaction Controller', () => {
         {
           provide: TransactionsService,
           useValue: {
-            findAll: jest.fn(),
+            find: jest.fn(),
+            filterAll: jest.fn(),
           },
         },
       ],
@@ -47,10 +48,14 @@ describe('Transaction Controller', () => {
       ];
 
       jest
-        .spyOn(transactionsService, 'findAll')
+        .spyOn(transactionsService, 'filterAll')
         .mockResolvedValueOnce(transactions);
 
-      expect(transactionsController.getAll()).resolves.toEqual(transactions);
+      expect(
+        await transactionsController.filterAll({
+          transactionType: 'Purchase',
+        } as any),
+      ).toEqual(transactions);
     });
   });
 });

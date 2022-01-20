@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateWriteOpResult } from 'mongoose';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
@@ -14,8 +14,8 @@ export class QuestsController {
   constructor(private readonly questsService: QuestsService) { }
 
   @Get('/')
-  getAll(): Promise<Quest[]> {
-    return this.questsService.findAll();
+  getAll(@Request() req): Promise<Quest[]> {
+    return this.questsService.findAll(req.user.adminId);
   }
 
   @Get('/:id')
@@ -28,8 +28,8 @@ export class QuestsController {
     return this.questsService.createQuest(createQuestDto)
   }
 
-  @Put("/")
-  setStatusQuest(@Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
-    return this.questsService.setStatus(setStatusQuest)
+  @Put("/:id")
+  changeStatus(@Param('id', ParseObjectIdPipe) id: string, @Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
+    return this.questsService.changeStatus(id, setStatusQuest)
   }
 }

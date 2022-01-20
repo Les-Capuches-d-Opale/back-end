@@ -90,7 +90,7 @@ describe('Administrator Controller', () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         JwtModule.register({
-          secret: process.env.JWT_SECRET,
+          secret: 'secret',
           signOptions: { expiresIn: '24h' },
         }),
       ],

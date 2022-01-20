@@ -15,6 +15,7 @@ describe('Requests Controller', () => {
           provide: RequestsService,
           useValue: {
             findAll: jest.fn(),
+            FilterAll: jest.fn(),
           },
         },
       ],
@@ -73,9 +74,9 @@ describe('Requests Controller', () => {
         },
       ];
 
-      jest.spyOn(requestsService, 'findAll').mockResolvedValue(requests);
+      jest.spyOn(requestsService, 'FilterAll').mockResolvedValue(requests);
 
-      expect(requestsController.getAll()).resolves.toEqual(requests);
+      expect(requestsController.FilterAll({})).resolves.toEqual(requests);
     });
   });
 });
