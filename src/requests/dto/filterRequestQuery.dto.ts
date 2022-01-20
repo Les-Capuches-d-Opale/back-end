@@ -51,11 +51,4 @@ export class FilterRequestQueryDto {
   })
   @IsPositive()
   readonly duration?: number;
-
-  @IsOptional()
-  @ApiProperty({
-    description: 'The status of the request.',
-    example: 'Unassigned'
-  })
-  readonly status?: QuestStatus;
 }

@@ -140,8 +140,7 @@ export class RequestsService {
       awardedExperience,
       bountyMin,
       bountyMax,
-      duration,
-      status
+      duration
     } = filterRequestQueryDto;
 
     const requests = await this.RequestModel
@@ -156,7 +155,7 @@ export class RequestsService {
         duration: { 
           $gte: duration ? duration : 0,
          },
-        status: { $regex: status ? status : '', $options: 'i' },
+        status: { $in: ['Unassigned', 'Rejected'] },
       })
       .where({})
       .lean()
