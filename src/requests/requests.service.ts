@@ -60,10 +60,10 @@ export class RequestsService {
       .exec();
 
     const counts = await this.requestModel
-      .find({})
+      .find({
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
       .where('status')
-      .equals('Unassigned')
-      .equals('Rejected')
       .count();
 
     await Promise.all(
