@@ -144,8 +144,6 @@ export class RequestsService {
       status
     } = filterRequestQueryDto;
 
-    console.log(filterRequestQueryDto)
-
     const requests = await this.RequestModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
@@ -165,6 +163,6 @@ export class RequestsService {
       .exec();
 
     return requests;
-    
+
   }
 }
