@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsBoolean, IsDate, IsOptional, IsPositive, IsString } from 'class-validator';
+import { QuestStatus } from '../entities/request.entity';
 
 export class FilterRequestQueryDto {
   @IsOptional()

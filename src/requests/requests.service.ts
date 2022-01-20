@@ -140,47 +140,28 @@ export class RequestsService {
       awardedExperience,
       bountyMin,
       bountyMax,
-      duration,
+      duration
     } = filterRequestQueryDto;
 
-    let res = [];
+    const requests = await this.RequestModel
+      .find({
+        name: { $regex: name ? name : '', $options: 'i' },
+        questGiver: { $regex: questGiver ? questGiver : '', $options: 'i' },
+        awardedExperience: { $gte: awardedExperience ? awardedExperience : 0 },
+        bounty: {
+          $gte: bountyMin ? bountyMin : 0,
+          $lte: bountyMax ? bountyMax : 999999999999999,
+        },
+        duration: { 
+          $gte: duration ? duration : 0,
+         },
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
+      .where({})
+      .lean()
+      .exec();
 
-    const requests = await this.RequestModel.find();
+    return requests;
 
-    if (name) {
-      res = requests.filter((e) => e.name === name);
-    }
-
-    if (questGiver && res.length > 0) {
-      res = res.filter((e) => e.questGiver === questGiver);
-    } else if (questGiver) {
-      res = requests.filter((e) => e.questGiver === questGiver);
-    }
-
-    if (awardedExperience && res.length > 0) {
-      res = res.filter((e) => e.awardedExperience === awardedExperience);
-    } else if (awardedExperience) {
-      res = requests.filter((e) => e.awardedExperience === awardedExperience);
-    }
-
-    if (bountyMin && bountyMax && res.length > 0) {
-      res = res.filter((e) => e.bounty <= bountyMax && e.bounty >= bountyMin);
-    } else if (bountyMin && bountyMax) {
-      res = requests.filter(
-        (e) => e.bounty <= bountyMax && e.bounty >= bountyMin,
-      );
-    }
-
-    if (duration && res.length > 0) {
-      res = res.filter((e) => e.duration >= duration);
-    } else if (duration) {
-      res = requests.filter((e) => e.duration >= duration);
-    }
-
-    if (res.length > 0) {
-      return res;
-    } else {
-      return this.findAll();
-    }
   }
 }
