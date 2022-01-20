@@ -101,13 +101,9 @@ describe('Transactions Service', () => {
       jest.spyOn(requestModel, 'find').mockReturnValueOnce({
         where: jest.spyOn(requestModel, 'where').mockReturnValueOnce({
           populate: jest.spyOn(requestModel, 'populate').mockReturnValueOnce({
-            equals: jest.fn().mockReturnValueOnce({
-              equals: jest.fn().mockReturnValueOnce({
                 lean: jest.fn().mockReturnValueOnce({
                   exec: jest.fn().mockResolvedValue(requests),
                 } as any),
-              } as any),
-            } as any),
           } as any),
         } as any),
       } as any);

@@ -33,11 +33,9 @@ export class RequestsService {
   }
 
   async findAll(): Promise<Request[] | any> {
-    const requests = await this.RequestModel.find({})
+    const requests = await this.RequestModel.find({status: {$in: ['Unassigned', 'Rejected']}})
       .where('status')
       .populate('requiredProfiles')
-      .equals('Unassigned')
-      .equals('Rejected')
       .lean()
       .exec();
 
