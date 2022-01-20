@@ -74,7 +74,7 @@ describe('Requests Controller', () => {
         },
       ];
 
-      jest.spyOn(requestsService, 'FilterAll').mockResolvedValue(requests);
+      jest.spyOn(requestsService, 'filterAll').mockResolvedValue(requests);
 
       expect(requestsController.FilterAll({})).resolves.toEqual(requests);
     });
