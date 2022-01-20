@@ -28,7 +28,9 @@ export class QuestsService {
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
     @InjectConnection() private readonly connection: Connection,
+    @Inject(forwardRef(() => RequestsService))
     private readonly requestService: RequestsService,
+    @Inject(forwardRef(() => AdventurersService))
     private readonly adventurerService: AdventurersService,
     @Inject(forwardRef(() => TransactionsService))
     private readonly transactionsService: TransactionsService,
