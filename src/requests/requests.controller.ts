@@ -26,11 +26,12 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
-  @Put('/')
+  @Put('/:id')
   setStatusRequest(
+    @Param('id', ParseObjectIdPipe) id: string,
     @Body() setStatusRequest: SetStatusRequestDto,
   ): Promise<UpdateWriteOpResult> {
-    return this.requestsService.setStatus(setStatusRequest);
+    return this.requestsService.setStatus(id, setStatusRequest);
   }
 
   @Post()

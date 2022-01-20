@@ -25,10 +25,11 @@ export class RequestsService {
   }
 
   async setStatus(
+    id: string,
     setStatusRequest: SetStatusRequestDto,
   ): Promise<UpdateWriteOpResult> {
-    const { request, status } = setStatusRequest;
-    return await this.changeStatusByID(request, status);
+    const { status } = setStatusRequest;
+    return await this.changeStatusByID(id, status);
   }
 
   async findAll(): Promise<Request[] | any> {

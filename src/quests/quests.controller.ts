@@ -28,8 +28,8 @@ export class QuestsController {
     return this.questsService.createQuest(createQuestDto)
   }
 
-  @Put("/")
-  changeStatus(@Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
-    return this.questsService.changeStatus(setStatusQuest)
+  @Put("/:id")
+  changeStatus(@Param('id', ParseObjectIdPipe) id: string, @Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
+    return this.questsService.changeStatus(id, setStatusQuest)
   }
 }
