@@ -13,8 +13,6 @@ const mongoose = require('mongoose');
 @Injectable()
 export class RequestsService {
   constructor(
-    @InjectModel(Adventurer.name)
-    private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Request.name)
     private readonly requestModel: Model<Request>,
     @InjectModel(Speciality.name)
