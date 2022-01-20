@@ -40,7 +40,7 @@ export class AdventurersService {
       .lean()
       .exec();
 
-    const quests = await this.questsService.findAll();
+    const quests = await this.questsService.findAll({});
 
     adventurers.forEach((adventurer) => {
       const adventurerHasQuests = quests.filter((quest) => {

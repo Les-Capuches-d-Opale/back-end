@@ -1,3 +1,4 @@
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { Speciality } from './../adventurers/entities/speciality.entity';
 import { RequestsService } from './../requests/requests.service';
 import { Quest } from './entities/quest.entity';
@@ -6,7 +7,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
-import { Request } from 'src/requests/entities/request.entity';
 const mongoose = require('mongoose');
 
 @Injectable()
@@ -19,12 +19,20 @@ export class QuestsService {
     private readonly requestService: RequestsService,
   ) {}
 
-  async findAll(): Promise<Quest[] | any> {
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<Quest[] | any> {
+    const { limit = 25, offset = 0 } = paginationQueryDto;
+
     const quests = await this.questModel
       .find({})
       .populate('request')
       .populate('groups')
+      .limit(limit)
+      .skip(offset)
       .exec();
+
+    const counts = await this.questModel.find({}).count();
 
     await Promise.all(
       quests.map(async (quest) => {
@@ -49,7 +57,7 @@ export class QuestsService {
       }),
     );
 
-    return quests;
+    return { quests, counts };
   }
 
   async findOne(id: string): Promise<Quest | any> {

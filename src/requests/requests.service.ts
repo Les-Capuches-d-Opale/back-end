@@ -1,3 +1,5 @@
+import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
+import { FilterItemQueryDto } from './../items/dto/filterItemQuery.dto';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
@@ -20,14 +22,26 @@ export class RequestsService {
     return this.RequestModel.updateOne({ _id: id }, { status: status });
   }
 
-  async findAll(): Promise<Request[] | any> {
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<Request[] | any> {
+    const { limit = 25, offset = 0 } = paginationQueryDto;
+
     const requests = await this.RequestModel.find({})
       .where('status')
       .populate('requiredProfiles')
       .equals('Unassigned')
       .equals('Rejected')
+      .skip(offset)
+      .limit(limit)
       .lean()
       .exec();
+
+    const counts = await this.RequestModel.find({})
+      .where('status')
+      .equals('Unassigned')
+      .equals('Rejected')
+      .count();
 
     await Promise.all(
       requests.map(async (request) => {
@@ -44,6 +58,6 @@ export class RequestsService {
       }),
     );
 
-    return requests;
+    return { requests, counts };
   }
 }

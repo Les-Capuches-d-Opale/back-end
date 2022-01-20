@@ -25,6 +25,7 @@ describe('Transactions Service', () => {
             where: jest.fn(),
             lean: jest.fn(),
             exec: jest.fn(),
+            count: jest.fn(),
           },
         },
         {
@@ -96,11 +97,17 @@ describe('Transactions Service', () => {
       ];
 
       jest.spyOn(requestModel, 'find').mockReturnValueOnce({
-        where: jest.spyOn(requestModel, 'where').mockReturnValueOnce({
+        where: jest.fn().mockReturnValueOnce({
           populate: jest.spyOn(requestModel, 'populate').mockReturnValueOnce({
             equals: jest.fn().mockReturnValueOnce({
-              lean: jest.fn().mockReturnValueOnce({
-                exec: jest.fn().mockResolvedValue(requests),
+              equals: jest.fn().mockReturnValueOnce({
+                skip: jest.fn().mockReturnValueOnce({
+                  limit: jest.fn().mockReturnValueOnce({
+                    lean: jest.fn().mockReturnValueOnce({
+                      exec: jest.fn().mockResolvedValue(requests),
+                    }),
+                  } as any),
+                } as any),
               } as any),
             } as any),
           } as any),
@@ -115,6 +122,18 @@ describe('Transactions Service', () => {
         createdAt: '2022-01-13T14:59:32.198Z',
         updatedAt: '2022-01-13T14:59:32.207Z',
       } as any);
+
+      jest.spyOn(requestModel, 'find').mockReturnValueOnce({
+        where: jest.fn().mockReturnValueOnce({
+          equals: jest.fn().mockReturnValueOnce({
+            equals: jest.fn().mockReturnValueOnce({
+              count: jest.fn().mockResolvedValueOnce(1),
+            } as any),
+          } as any),
+        } as any),
+      } as any);
+
+      const counts = 1;
 
       const requestsReturned = [
         {
@@ -159,7 +178,10 @@ describe('Transactions Service', () => {
         },
       ];
 
-      expect(requestsService.findAll()).resolves.toEqual(requestsReturned);
+      expect(requestsService.findAll({})).resolves.toEqual({
+        requests: requestsReturned,
+        counts,
+      });
     });
   });
 });
