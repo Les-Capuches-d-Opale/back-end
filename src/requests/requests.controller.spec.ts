@@ -1,11 +1,12 @@
+import { Model } from 'mongoose';
 import { RequestsService } from './requests.service';
 import { RequestsController } from './requests.controller';
-import { AuthService } from './../auth/auth.service';
 import { Test, TestingModule } from '@nestjs/testing';
 
 describe('Requests Controller', () => {
   let requestsController: RequestsController;
   let requestsService: RequestsService;
+  let requestsModel: Model<Request>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -74,6 +75,7 @@ describe('Requests Controller', () => {
         },
       ];
 
+      const counts = 1;
       jest.spyOn(requestsService, 'filterAll').mockResolvedValue(requests);
 
       expect(requestsController.FilterAll({})).resolves.toEqual(requests);
