@@ -57,7 +57,10 @@ describe('Adventurers Service', () => {
             constructor: jest.fn().mockResolvedValue(Quest),
             find: jest.fn(),
             populate: jest.fn(),
+            count: jest.fn(),
             exec: jest.fn(),
+            limit: jest.fn(),
+            skip: jest.fn(),
           },
         },
         {
@@ -639,12 +642,17 @@ describe('Adventurers Service', () => {
           } as any),
         } as any);
 
-        jest.spyOn(questModel, 'find').mockReturnValueOnce({
-          populate: jest.spyOn(questModel, 'populate').mockReturnValueOnce({
-            populate: jest.fn().mockReturnValueOnce({
-              exec: jest.fn().mockResolvedValueOnce(quests),
+        jest.spyOn(questModel, 'find').mockReturnValue({
+          populate: jest.spyOn(questModel, 'populate').mockReturnValue({
+            populate: jest.fn().mockReturnValue({
+              limit: jest.fn().mockReturnValue({
+                skip: jest.fn().mockReturnValue({
+                  exec: jest.fn().mockResolvedValueOnce(quests),
+                } as any),
+              } as any),
             } as any),
           } as any),
+          count: jest.fn().mockResolvedValue(quests.length),
         } as any);
 
         expect(
@@ -1181,12 +1189,17 @@ describe('Adventurers Service', () => {
           } as any),
         } as any);
 
-        jest.spyOn(questModel, 'find').mockReturnValueOnce({
-          populate: jest.spyOn(questModel, 'populate').mockReturnValueOnce({
-            populate: jest.fn().mockReturnValueOnce({
-              exec: jest.fn().mockResolvedValueOnce(quests),
+        jest.spyOn(questModel, 'find').mockReturnValue({
+          populate: jest.spyOn(questModel, 'populate').mockReturnValue({
+            populate: jest.fn().mockReturnValue({
+              limit: jest.fn().mockReturnValue({
+                skip: jest.fn().mockReturnValue({
+                  exec: jest.fn().mockResolvedValueOnce(quests),
+                } as any),
+              } as any),
             } as any),
           } as any),
+          count: jest.fn().mockResolvedValue(quests.length),
         } as any);
 
         expect(
@@ -2094,20 +2107,17 @@ describe('Adventurers Service', () => {
           } as any),
         } as any);
 
-        jest.spyOn(questModel, 'find').mockReturnValueOnce({
-          populate: jest.spyOn(questModel, 'populate').mockReturnValueOnce({
-            populate: jest.fn().mockReturnValueOnce({
-              limit: jest.fn().mockReturnValueOnce({
-                skip: jest.fn().mockReturnValueOnce({
+        jest.spyOn(questModel, 'find').mockReturnValue({
+          populate: jest.spyOn(questModel, 'populate').mockReturnValue({
+            populate: jest.fn().mockReturnValue({
+              limit: jest.fn().mockReturnValue({
+                skip: jest.fn().mockReturnValue({
                   exec: jest.fn().mockResolvedValueOnce(quests),
                 } as any),
               } as any),
             } as any),
           } as any),
-        } as any);
-
-        jest.spyOn(questModel, 'find').mockReturnValueOnce({
-          count: jest.fn().mockReturnValueOnce(1),
+          count: jest.fn().mockResolvedValue(quests.length),
         } as any);
 
         const result = await adventurersService.findAll({
@@ -2901,17 +2911,17 @@ describe('Adventurers Service', () => {
           } as any),
         } as any);
 
-        jest.spyOn(questModel, 'find').mockReturnValueOnce({
-          populate: jest.spyOn(questModel, 'populate').mockReturnValueOnce({
-            populate: jest.fn().mockReturnValueOnce({
-              limit: jest.fn().mockReturnValueOnce({
-                skip: jest.fn().mockReturnValueOnce({
+        jest.spyOn(questModel, 'find').mockReturnValue({
+          populate: jest.spyOn(questModel, 'populate').mockReturnValue({
+            populate: jest.fn().mockReturnValue({
+              limit: jest.fn().mockReturnValue({
+                skip: jest.fn().mockReturnValue({
                   exec: jest.fn().mockResolvedValueOnce(quests),
                 } as any),
               } as any),
             } as any),
           } as any),
-          count: jest.fn().mockReturnValueOnce(quests.length),
+          count: jest.fn().mockResolvedValue(quests.length),
         } as any);
 
         const result = await adventurersService.findAll({});
