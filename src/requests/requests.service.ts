@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Speciality } from './../adventurers/entities/speciality.entity';
@@ -6,15 +6,21 @@ import { CreateRequestDto } from './dto/createRequest.dto';
 import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { QuestStatus, Request } from './entities/request.entity';
+import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
+import { AdventurersService } from 'src/adventurers/adventurers.service';
 const mongoose = require('mongoose');
 
 @Injectable()
 export class RequestsService {
   constructor(
+    @InjectModel(Adventurer.name)
+    private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Request.name)
     private readonly RequestModel: Model<Request>,
     @InjectModel(Speciality.name)
     private readonly SpecialityModel: Model<Speciality>,
+    @Inject(forwardRef(() => AdventurersService))
+    private readonly adventurersService: AdventurersService,
   ) {}
 
   async changeStatusByID(
@@ -73,6 +79,23 @@ export class RequestsService {
 
     return request;
   }
+
+  async findAvailableAdv(id: string): Promise<Request> {
+    const request = await this.RequestModel.findById(id)
+      .populate('requiredProfiles')
+      .exec();
+
+    await Promise.all(
+      request.requiredProfiles.map(async (id, index) => {
+        request.requiredProfiles[index].speciality =
+          await this.SpecialityModel.findById(id.speciality);
+      }),
+    );
+    
+
+    return request;
+  }
+
 
   async create(createRequestDto: CreateRequestDto): Promise<Request> {
     const newRequiredProfile = [];
