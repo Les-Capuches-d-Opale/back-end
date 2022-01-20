@@ -1,16 +1,20 @@
+import { AdministratorsService } from 'src/administrators/administrators.service';
+import { TransactionsService } from './../transactions/transactions.service';
 import { QuestsService } from './../quests/quests.service';
 import { Adventurer } from './entities/adventurer.entity';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
-import { getModelToken } from '@nestjs/mongoose';
+import { getConnectionToken, getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
-import { Model } from 'mongoose';
 import { Speciality } from './entities/speciality.entity';
 import { Quest } from 'src/quests/entities/quest.entity';
 import { RequestsService } from 'src/requests/requests.service';
 import { Request } from 'src/requests/entities/request.entity';
 import { HttpException } from '@nestjs/common';
+import { Model } from 'mongoose';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Administrator } from 'src/administrators/entities/administrator.entity';
 
-describe('Transactions Service', () => {
+describe('Adventurers Service', () => {
   let adventurersService: AdventurersService;
   let adventurernModel: Model<Adventurer>;
   let questModel: Model<Quest>;
@@ -22,6 +26,8 @@ describe('Transactions Service', () => {
         AdventurersService,
         QuestsService,
         RequestsService,
+        TransactionsService,
+        AdministratorsService,
         {
           provide: getModelToken('Adventurer'),
           useValue: {
@@ -59,6 +65,22 @@ describe('Transactions Service', () => {
           useValue: {
             constructor: jest.fn().mockResolvedValue(Request),
           },
+        },
+        {
+          provide: getModelToken('Transaction'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Transaction),
+          },
+        },
+        {
+          provide: getModelToken('Administrator'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Administrator),
+          },
+        },
+        {
+          provide: getConnectionToken(),
+          useValue: {},
         },
       ],
     }).compile();

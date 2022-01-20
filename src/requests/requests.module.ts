@@ -8,9 +8,11 @@ import {
   Speciality,
   SpecialitySchema,
 } from '../adventurers/entities/speciality.entity';
+import { AdventurersModule } from 'src/adventurers/adventurers.module';
 
 @Module({
   imports: [
+    forwardRef(() => AdventurersModule),
     MongooseModule.forFeature([
       {
         name: Request.name,

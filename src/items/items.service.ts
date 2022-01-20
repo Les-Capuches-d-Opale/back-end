@@ -5,6 +5,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection, Model } from 'mongoose';
 import { Item } from './entities/item.entity';
 import { FilterItemQueryDto } from './dto/filterItemQuery.dto';
+import { TransactionType } from 'src/transactions/entities/transaction.entity';
 
 @Injectable()
 export class ItemsService {
@@ -37,7 +38,7 @@ export class ItemsService {
 
       const transaction = await this.transactionService.create({
         amount: item.price,
-        type: 'Purchase',
+        type: TransactionType.Purchase,
       });
 
       await this.administratorService.addItem(adminId, item, transaction);

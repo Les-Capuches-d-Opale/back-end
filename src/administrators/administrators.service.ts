@@ -1,10 +1,10 @@
-import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
-import { Injectable, HttpException, NotFoundException } from '@nestjs/common';
-import { Model, Types } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class AdministratorsService {
@@ -56,5 +56,13 @@ export class AdministratorsService {
         { new: true },
       )
       .exec();
+  }
+
+  async addBounty(id: string, bounty: number) {
+    return await this.administratorModel.findByIdAndUpdate(
+      id,
+      { $inc: { wallet: bounty } },
+      { new: true },
+    )
   }
 }

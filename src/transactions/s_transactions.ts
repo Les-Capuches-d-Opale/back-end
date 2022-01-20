@@ -1,18 +1,29 @@
+import { AdventurersService } from 'src/adventurers/adventurers.service';
+import { RequestsService } from 'src/requests/requests.service';
 import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { TransactionsService } from './transactions.service';
 import { Transaction } from './entities/transaction.entity';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { Model } from 'mongoose';
+import { Request } from 'src/requests/entities/request.entity';
+import { Speciality } from 'src/adventurers/entities/speciality.entity';
+import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
 
 describe('Transactions Service', () => {
   let transactionsService: TransactionsService;
   let transactionModel: Model<Transaction>;
+  let requestsService: RequestsService;
+  let requestModel: Model<Request>;
+  let specialityModel: Model<Speciality>;
+  let adventurersService: AdventurersService;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
       providers: [
+        RequestsService,
         TransactionsService,
+        AdventurersService,
         {
           provide: getModelToken('Transaction'),
           useValue: {
@@ -23,13 +34,42 @@ describe('Transactions Service', () => {
             save: jest.fn(),
           },
         },
+        {
+          provide: getModelToken('Request'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Request),
+            find: jest.fn(),
+            exec: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+          },
+        },
+        {
+          provide: getModelToken('Speciality'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Speciality),
+            find: jest.fn(),
+            exec: jest.fn(),
+            create: jest.fn(),
+            save: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     transactionsService = module.get<TransactionsService>(TransactionsService);
+    adventurersService = module.get<AdventurersService>(AdventurersService);
 
     transactionModel = module.get<Model<Transaction>>(
       getModelToken(Transaction.name),
+    );
+
+    requestModel = module.get<Model<Request>>(
+      getModelToken(Request.name),
+    );
+
+    specialityModel = module.get<Model<Speciality>>(
+      getModelToken(Speciality.name),
     );
   });
 

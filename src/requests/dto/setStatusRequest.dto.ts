@@ -1,11 +1,11 @@
-import { QuestStatus } from './../../requests/entities/request.entity';
+import { QuestStatus } from './../entities/request.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class SetStatusQuestDto {
+export class SetStatusRequestDto {    
     @ApiProperty({
         description: "The status to change",
-        example: "Successed"
+        example: "Rejected"
     })
     @IsString()
     readonly status: QuestStatus;
