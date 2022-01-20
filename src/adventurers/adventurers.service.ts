@@ -108,11 +108,17 @@ export class AdventurersService {
     id: string,
     updateExpAdventurerDto: UpdateExpAdventurerDto,
   ): Promise<Adventurer> {
-    return await this.adventurerModel.findByIdAndUpdate(
+    const adventurer = await this.adventurerModel.findByIdAndUpdate(
       id,
       { $inc: { experience: updateExpAdventurerDto.experience } },
       { new: true },
     );
+
+    if (!adventurer) {
+      throw new NotFoundException(`Adventurer #${id} not found`);
+    }
+
+    return adventurer;
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {

@@ -1,15 +1,13 @@
 import { RequestsModule } from './../requests/requests.module';
-import { RequestSchema } from './../requests/entities/request.entity';
 import { Quest, QuestSchema } from './entities/quest.entity';
 import { forwardRef, Module } from '@nestjs/common';
 import { QuestsService } from './quests.service';
 import { QuestsController } from './quests.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Request } from 'src/requests/entities/request.entity';
 import {
   Speciality,
   SpecialitySchema,
-} from 'src/adventurers/entities/speciality.entity';
+} from '../adventurers/entities/speciality.entity';
 
 @Module({
   imports: [

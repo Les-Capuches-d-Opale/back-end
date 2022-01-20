@@ -1,5 +1,5 @@
 import { TransactionsService } from './../transactions/transactions.service';
-import { AdministratorsService } from 'src/administrators/administrators.service';
+import { AdministratorsService } from '../administrators/administrators.service';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Connection, Model } from 'mongoose';

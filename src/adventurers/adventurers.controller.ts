@@ -1,7 +1,7 @@
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { Adventurer } from './entities/adventurer.entity';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
-import { AdventurersService } from 'src/adventurers/adventurers.service';
+import { AdventurersService } from './adventurers.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
