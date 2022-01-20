@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Speciality } from './../adventurers/entities/speciality.entity';
@@ -6,22 +6,26 @@ import { CreateRequestDto } from './dto/createRequest.dto';
 import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { QuestStatus, Request } from './entities/request.entity';
+import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
+import { AdventurersService } from 'src/adventurers/adventurers.service';
 const mongoose = require('mongoose');
 
 @Injectable()
 export class RequestsService {
   constructor(
     @InjectModel(Request.name)
-    private readonly RequestModel: Model<Request>,
+    private readonly requestModel: Model<Request>,
     @InjectModel(Speciality.name)
-    private readonly SpecialityModel: Model<Speciality>,
-  ) {}
+    private readonly specialityModel: Model<Speciality>,
+    @Inject(forwardRef(() => AdventurersService))
+    private readonly adventurersService: AdventurersService,
+  ) { }
 
   async changeStatusByID(
     id: string,
     status: QuestStatus,
   ): Promise<UpdateWriteOpResult> {
-    return this.RequestModel.updateOne({ _id: id }, { status: status });
+    return this.requestModel.updateOne({ _id: id }, { status: status });
   }
 
   async setStatus(
@@ -33,7 +37,7 @@ export class RequestsService {
   }
 
   async findAll(): Promise<Request[] | any> {
-    const requests = await this.RequestModel.find({status: {$in: ['Unassigned', 'Rejected']}})
+    const requests = await this.requestModel.find({ status: { $in: ['Unassigned', 'Rejected'] } })
       .where('status')
       .populate('requiredProfiles')
       .lean()
@@ -48,7 +52,7 @@ export class RequestsService {
         await Promise.all(
           requiredProfilesIds.map(async (id, index) => {
             request.requiredProfiles[index].speciality =
-              await this.SpecialityModel.findById(id);
+              await this.specialityModel.findById(id);
           }),
         );
       }),
@@ -58,18 +62,35 @@ export class RequestsService {
   }
 
   async findOne(id: string): Promise<Request> {
-    const request = await this.RequestModel.findById(id)
+    const request = await this.requestModel.findById(id)
       .populate('requiredProfiles')
       .exec();
 
     await Promise.all(
       request.requiredProfiles.map(async (id, index) => {
         request.requiredProfiles[index].speciality =
-          await this.SpecialityModel.findById(id.speciality);
+          await this.specialityModel.findById(id.speciality);
       }),
     );
 
     return request;
+  }
+
+  async findAvailableAdventurers(id: string): Promise<Request> {
+    console.log("id", id)
+    const request = await this.requestModel.findById(id)
+      .populate('requiredProfiles')
+      .exec();
+
+    await Promise.all(
+      request.requiredProfiles.map(async (id, index) => {
+        request.requiredProfiles[index].speciality =
+          await this.specialityModel.findById(id.speciality);
+      }),
+    );
+    const adventuriesAvailableNow = await this.adventurersService.findAll({ isAvailableNow: true });
+    console.log("adventuriesAvailableNow",adventuriesAvailableNow)
+    return adventuriesAvailableNow;
   }
 
   async create(createRequestDto: CreateRequestDto): Promise<Request> {
@@ -113,7 +134,7 @@ export class RequestsService {
       });
     });
 
-    const req = new this.RequestModel({
+    const req = new this.requestModel({
       name: name,
       description: description,
       pictureUrl: pictureUrl,
@@ -140,47 +161,27 @@ export class RequestsService {
       awardedExperience,
       bountyMin,
       bountyMax,
-      duration,
+      duration
     } = filterRequestQueryDto;
 
-    let res = [];
+    const requests = await this.requestModel
+      .find({
+        name: { $regex: name ? name : '', $options: 'i' },
+        questGiver: { $regex: questGiver ? questGiver : '', $options: 'i' },
+        awardedExperience: { $gte: awardedExperience ? awardedExperience : 0 },
+        bounty: {
+          $gte: bountyMin ? bountyMin : 0,
+          $lte: bountyMax ? bountyMax : 999999999999999,
+        },
+        duration: {
+          $gte: duration ? duration : 0,
+        },
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
+      .where({})
+      .lean()
+      .exec();
 
-    const requests = await this.RequestModel.find();
-
-    if (name) {
-      res = requests.filter((e) => e.name === name);
-    }
-
-    if (questGiver && res.length > 0) {
-      res = res.filter((e) => e.questGiver === questGiver);
-    } else if (questGiver) {
-      res = requests.filter((e) => e.questGiver === questGiver);
-    }
-
-    if (awardedExperience && res.length > 0) {
-      res = res.filter((e) => e.awardedExperience === awardedExperience);
-    } else if (awardedExperience) {
-      res = requests.filter((e) => e.awardedExperience === awardedExperience);
-    }
-
-    if (bountyMin && bountyMax && res.length > 0) {
-      res = res.filter((e) => e.bounty <= bountyMax && e.bounty >= bountyMin);
-    } else if (bountyMin && bountyMax) {
-      res = requests.filter(
-        (e) => e.bounty <= bountyMax && e.bounty >= bountyMin,
-      );
-    }
-
-    if (duration && res.length > 0) {
-      res = res.filter((e) => e.duration >= duration);
-    } else if (duration) {
-      res = requests.filter((e) => e.duration >= duration);
-    }
-
-    if (res.length > 0) {
-      return res;
-    } else {
-      return this.findAll();
-    }
+    return requests;
   }
 }
