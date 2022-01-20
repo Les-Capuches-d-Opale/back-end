@@ -150,7 +150,7 @@ export class RequestsService {
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
         questGiver: { $regex: questGiver ? questGiver : '', $options: 'i' },
-        awardedExperience: { $eq: awardedExperience ? awardedExperience : null },
+        awardedExperience: { $gte: awardedExperience ? awardedExperience : 0 },
         bounty: {
           $gte: bountyMin ? bountyMin : 0,
           $lte: bountyMax ? bountyMax : 999999999999999,
