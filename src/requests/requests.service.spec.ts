@@ -49,23 +49,23 @@ describe('Transactions Service', () => {
     expect(requestsService).toBeDefined();
   });
 
- /*  describe('setStatusByID', () => {
-    it('should update the request status', async () => {
-      const request = {
-        _id: 'abc123',
-        status: 'Pending',
-      } as any;
-
-      jest.spyOn(requestModel, 'updateOne').mockResolvedValue(request);
-
-      const PDO = {
-        request: 'abc123',
-        status: QuestStatus.Pending,
-      };
-
-      expect(requestsService.setStatus(PDO)).resolves.toEqual(request);
-    });
-  }); */
+  /*  describe('setStatusByID', () => {
+     it('should update the request status', async () => {
+       const request = {
+         _id: 'abc123',
+         status: 'Pending',
+       } as any;
+ 
+       jest.spyOn(requestModel, 'updateOne').mockResolvedValue(request);
+ 
+       const PDO = {
+         request: 'abc123',
+         status: QuestStatus.Pending,
+       };
+ 
+       expect(requestsService.setStatus(PDO)).resolves.toEqual(request);
+     });
+   }); */
 
   describe('findAll', () => {
     it('should return a array of requests', async () => {
@@ -102,8 +102,10 @@ describe('Transactions Service', () => {
         where: jest.spyOn(requestModel, 'where').mockReturnValueOnce({
           populate: jest.spyOn(requestModel, 'populate').mockReturnValueOnce({
             equals: jest.fn().mockReturnValueOnce({
-              lean: jest.fn().mockReturnValueOnce({
-                exec: jest.fn().mockResolvedValue(requests),
+              equals: jest.fn().mockReturnValueOnce({
+                lean: jest.fn().mockReturnValueOnce({
+                  exec: jest.fn().mockResolvedValue(requests),
+                } as any),
               } as any),
             } as any),
           } as any),
