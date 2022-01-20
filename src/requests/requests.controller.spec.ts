@@ -15,7 +15,7 @@ describe('Requests Controller', () => {
           provide: RequestsService,
           useValue: {
             findAll: jest.fn(),
-            FilterAll: jest.fn(),
+            filterAll: jest.fn(),
           },
         },
       ],
