@@ -37,6 +37,7 @@ export class RequestsService {
       .where('status')
       .populate('requiredProfiles')
       .equals('Unassigned')
+      .equals('Rejected')
       .lean()
       .exec();
 
