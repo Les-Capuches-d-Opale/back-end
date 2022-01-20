@@ -163,6 +163,5 @@ export class RequestsService {
       .exec();
 
     return requests;
-
   }
 }
