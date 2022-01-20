@@ -143,42 +143,44 @@ export class QuestsService {
       .exec();
 
     quests.map(async (quest) => {
-      if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
-        if (
-          format(quest.request.dateDebut, 't') + quest.request.duration <
-          format(new Date(), 't')
-        ) {
-          const rate = await this.succesRate(
-            quest.groups,
-            quest.request.requiredProfiles,
-          );
-          console.log({rate})
-          if (Math.random() < rate) {
-            const changeStatus = await this.requestService.changeStatusByID(
-              quest.request.id,
-              QuestStatus.Failed,
-            );
-            console.log({changeStatus})
-          } else {
-            const addBounty =await this.administratorsService.addBounty(
-              adminId,
-              quest.request.bounty * 0.8,
-            );
-            const successAdventurer = await this.successAdventurer(
+      if(quest.request.status !== "Rejected") {
+        if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
+          if (
+            format(quest.request.dateDebut, 't') + quest.request.duration <
+            format(new Date(), 't')
+          ) {
+            const rate = await this.succesRate(
               quest.groups,
-              quest.request.duration,
-              quest.request.awardedExperience,
+              quest.request.requiredProfiles,
             );
+            console.log({rate})
+            if (Math.random() < rate) {
+              const changeStatus = await this.requestService.changeStatusByID(
+                quest.request.id,
+                QuestStatus.Failed,
+              );
+              console.log({changeStatus})
+            } else {
+              const addBounty =await this.administratorsService.addBounty(
+                adminId,
+                quest.request.bounty * 0.8,
+              );
+              const successAdventurer = await this.successAdventurer(
+                quest.groups,
+                quest.request.duration,
+                quest.request.awardedExperience,
+              );
+              await this.requestService.changeStatusByID(
+                quest.request.id,
+                QuestStatus.Succeeded,
+              );
+            }
+          } else {
             await this.requestService.changeStatusByID(
               quest.request.id,
-              QuestStatus.Succeeded,
+              QuestStatus.Pending,
             );
           }
-        } else {
-          await this.requestService.changeStatusByID(
-            quest.request.id,
-            QuestStatus.Pending,
-          );
         }
       }
     });
