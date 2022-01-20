@@ -123,7 +123,8 @@ export class QuestsService {
       groups: groupToPush,
       createdAt: new Date(),
       updatedAt: new Date()
-    }); 
+    });
+    this.changeStatus(request, {status: QuestStatus.Accepted})
     return quest.save();
   }
 
