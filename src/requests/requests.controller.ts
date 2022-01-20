@@ -18,7 +18,7 @@ export class RequestsController {
   FilterAll(
     @Query() filterRequestQueryDto: FilterRequestQueryDto,
   ): Promise<Request[]> {
-    return this.requestsService.FilterAll(filterRequestQueryDto);
+    return this.requestsService.filterAll(filterRequestQueryDto);
   }
 
   @Get('/:id')
