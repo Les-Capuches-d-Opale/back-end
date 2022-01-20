@@ -1,3 +1,4 @@
+import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { RequestsService } from './requests.service';
 import { QuestStatus, Request } from './entities/request.entity';
 import { getModelToken } from '@nestjs/mongoose';
