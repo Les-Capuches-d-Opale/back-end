@@ -1,11 +1,9 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { format } from 'date-fns';
-import {
-  Connection, Model,
-  UpdateWriteOpResult
-} from 'mongoose';
+import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
 import { AdministratorsService } from 'src/administrators/administrators.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
 import { AdventurersService } from './../adventurers/adventurers.service';
 import { Adventurer } from './../adventurers/entities/adventurer.entity';
@@ -19,7 +17,6 @@ import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
 import { Quest } from './entities/quest.entity';
 const mongoose = require('mongoose');
 var lodash = require('lodash');
-
 @Injectable()
 export class QuestsService {
   constructor(
@@ -38,14 +35,23 @@ export class QuestsService {
     private readonly administratorsService: AdministratorsService,
   ) {}
 
-  async findAll(adminId?: string): Promise<Quest[] | any> {
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+    adminId?: string,
+  ): Promise<Quest[] | any> {
+    const { limit = 25, offset = 0 } = paginationQueryDto;
+
     if (adminId) await this.setAllStatus(adminId);
 
     const quests = await this.questModel
       .find({})
       .populate('request')
       .populate('groups')
+      .limit(limit)
+      .skip(offset)
       .exec();
+
+    const counts = await this.questModel.find({}).count();
 
     await Promise.all(
       quests.map(async (quest) => {
@@ -70,7 +76,7 @@ export class QuestsService {
       }),
     );
 
-    return quests;
+    return { quests, counts };
   }
 
   async findOne(id: string): Promise<Quest | any> {
@@ -106,24 +112,24 @@ export class QuestsService {
   async createQuest(createQuestDto: CreateQuestDto): Promise<Quest> {
     const { request, groups } = createQuestDto;
     const _request = await this.requestService.findOne(request);
-    let groupToPush = []
-    groups.map(group => {
-      groupToPush.push(null)
-    })
+    const groupToPush = [];
+    groups.map((group) => {
+      groupToPush.push(null);
+    });
     groups.map((group) => {
       const index = _request.requiredProfiles.findIndex(
         (profile: any) =>
           profile.speciality.id === group.reqProfile.id &&
           profile.experience === group.reqProfile.experience,
       );
-      groupToPush[index] = group.adventurer
+      groupToPush[index] = group.adventurer;
     });
-     const quest = await this.questModel.create({
+    const quest = await this.questModel.create({
       request: new mongoose.Types.ObjectId(request),
       groups: groupToPush,
       createdAt: new Date(),
-      updatedAt: new Date()
-    }); 
+      updatedAt: new Date(),
+    });
     return quest.save();
   }
 
@@ -143,7 +149,7 @@ export class QuestsService {
       .exec();
 
     quests.map(async (quest) => {
-      if(quest.request.status !== "Rejected") {
+      if (quest.request.status !== 'Rejected') {
         if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
           if (
             format(quest.request.dateDebut, 't') + quest.request.duration <
@@ -153,15 +159,15 @@ export class QuestsService {
               quest.groups,
               quest.request.requiredProfiles,
             );
-            console.log({rate})
+            console.log({ rate });
             if (Math.random() < rate) {
               const changeStatus = await this.requestService.changeStatusByID(
                 quest.request.id,
                 QuestStatus.Failed,
               );
-              console.log({changeStatus})
+              console.log({ changeStatus });
             } else {
-              const addBounty =await this.administratorsService.addBounty(
+              const addBounty = await this.administratorsService.addBounty(
                 adminId,
                 quest.request.bounty * 0.8,
               );
@@ -190,7 +196,7 @@ export class QuestsService {
     groups: Adventurer[],
     requiredProfiles: AdventurerProfile[],
   ) {
-    var expGlobal: number[] = await Promise.all(
+    const expGlobal: number[] = await Promise.all(
       groups.map(async (group, index): Promise<number> => {
         return await this.individualRate(
           group.experience,

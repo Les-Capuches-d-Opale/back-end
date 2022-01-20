@@ -7,6 +7,7 @@ import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { Request } from './entities/request.entity';
 import { RequestsService } from './requests.service';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 
 @ApiBearerAuth()
 @ApiTags('requests')
@@ -15,6 +16,12 @@ export class RequestsController {
   constructor(private readonly requestsService: RequestsService) {}
 
   @Get('/')
+  getAll(
+    @Query() paginationQueryDto: PaginationQueryDto,
+  ): Promise<Request[] | any> {
+    return this.requestsService.findAll(paginationQueryDto);
+  }
+
   FilterAll(
     @Query() filterRequestQueryDto: FilterRequestQueryDto,
   ): Promise<Request[]> {
@@ -26,9 +33,10 @@ export class RequestsController {
     return this.requestsService.findOne(id);
   }
 
-
   @Get('/:id/available')
-  getAvailableAdv(@Param('id', ParseObjectIdPipe) id: string): Promise<Request> {
+  getAvailableAdv(
+    @Param('id', ParseObjectIdPipe) id: string,
+  ): Promise<Request> {
     return this.requestsService.findAvailableAdventurers(id);
   }
 

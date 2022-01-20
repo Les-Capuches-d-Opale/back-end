@@ -48,7 +48,7 @@ export class AdventurersService {
       .lean()
       .exec();
 
-    const quests = await this.questsService.findAll();
+    const quests = await this.questsService.findAll({});
 
     adventurers.forEach((adventurer) => {
       const adventurerHasQuests = quests.filter((quest) => {
@@ -137,25 +137,29 @@ export class AdventurersService {
     updateAmountAdventurerDto: UpdateAmountAdventurerDto,
     session?: ClientSession,
   ): Promise<Adventurer> {
-    if(session) {
-      const adventurer = await this.adventurerModel
-          .findByIdAndUpdate(
-            id,
-            { $inc: { amount: updateAmountAdventurerDto.amount } },
-            { new: true },
-          )
-          .session(session)
-    } else {
-      const adventurer = await this.adventurerModel.findByIdAndUpdate(
+    let adventurer;
+
+    if (session) {
+      adventurer = await this.adventurerModel
+        .findByIdAndUpdate(
           id,
           { $inc: { amount: updateAmountAdventurerDto.amount } },
           { new: true },
-        );
+        )
+        .session(session);
+    } else {
+      adventurer = await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { amount: updateAmountAdventurerDto.amount } },
+        { new: true },
+      );
     }
-      
-      if (!adventurer) {
-        throw new NotFoundException(`Adventurer #${id} not found`);
-      }
+
+    if (!adventurer) {
+      throw new NotFoundException(`Adventurer #${id} not found`);
+    }
+
+    return adventurer;
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {

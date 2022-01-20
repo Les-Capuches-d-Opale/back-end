@@ -1,4 +1,11 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
 import { Speciality } from './../adventurers/entities/speciality.entity';
@@ -19,7 +26,7 @@ export class RequestsService {
     private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => AdventurersService))
     private readonly adventurersService: AdventurersService,
-  ) { }
+  ) {}
 
   async changeStatusByID(
     id: string,
@@ -36,12 +43,28 @@ export class RequestsService {
     return await this.changeStatusByID(id, status);
   }
 
-  async findAll(): Promise<Request[] | any> {
-    const requests = await this.requestModel.find({ status: { $in: ['Unassigned', 'Rejected'] } })
+  async findAll(
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<Request[] | any> {
+    const { limit = 25, offset = 0 } = paginationQueryDto;
+
+    const requests = await this.requestModel
+      .find({
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
       .where('status')
       .populate('requiredProfiles')
+      .skip(offset)
+      .limit(limit)
       .lean()
       .exec();
+
+    const counts = await this.requestModel
+      .find({})
+      .where('status')
+      .equals('Unassigned')
+      .equals('Rejected')
+      .count();
 
     await Promise.all(
       requests.map(async (request) => {
@@ -58,11 +81,12 @@ export class RequestsService {
       }),
     );
 
-    return requests;
+    return { requests, counts };
   }
 
   async findOne(id: string): Promise<Request> {
-    const request = await this.requestModel.findById(id)
+    const request = await this.requestModel
+      .findById(id)
       .populate('requiredProfiles')
       .exec();
 
@@ -77,8 +101,9 @@ export class RequestsService {
   }
 
   async findAvailableAdventurers(id: string): Promise<Request> {
-    console.log("id", id)
-    const request = await this.requestModel.findById(id)
+    console.log('id', id);
+    const request = await this.requestModel
+      .findById(id)
       .populate('requiredProfiles')
       .exec();
 
@@ -88,8 +113,10 @@ export class RequestsService {
           await this.specialityModel.findById(id.speciality);
       }),
     );
-    const adventuriesAvailableNow = await this.adventurersService.findAll({ isAvailableNow: true });
-    console.log("adventuriesAvailableNow",adventuriesAvailableNow)
+    const adventuriesAvailableNow = await this.adventurersService.findAll({
+      isAvailableNow: true,
+    });
+    console.log('adventuriesAvailableNow', adventuriesAvailableNow);
     return adventuriesAvailableNow;
   }
 
@@ -161,7 +188,7 @@ export class RequestsService {
       awardedExperience,
       bountyMin,
       bountyMax,
-      duration
+      duration,
     } = filterRequestQueryDto;
 
     const requests = await this.requestModel

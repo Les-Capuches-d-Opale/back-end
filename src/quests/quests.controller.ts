@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Request } from '@nestjs/common';
+import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Request,
+} from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UpdateWriteOpResult } from 'mongoose';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
@@ -11,11 +20,14 @@ import { QuestsService } from './quests.service';
 @ApiTags('quests')
 @Controller('quests')
 export class QuestsController {
-  constructor(private readonly questsService: QuestsService) { }
+  constructor(private readonly questsService: QuestsService) {}
 
   @Get('/')
-  getAll(@Request() req): Promise<Quest[]> {
-    return this.questsService.findAll(req.user.adminId);
+  getAll(
+    @Request() req,
+    paginationQueryDto: PaginationQueryDto,
+  ): Promise<Quest[]> {
+    return this.questsService.findAll(paginationQueryDto, req.user.adminId);
   }
 
   @Get('/:id')
@@ -23,13 +35,16 @@ export class QuestsController {
     return this.questsService.findOne(id);
   }
 
-  @Post("/")
+  @Post('/')
   createQuest(@Body() createQuestDto: CreateQuestDto): Promise<Quest> {
-    return this.questsService.createQuest(createQuestDto)
+    return this.questsService.createQuest(createQuestDto);
   }
 
-  @Put("/:id")
-  changeStatus(@Param('id', ParseObjectIdPipe) id: string, @Body() setStatusQuest: SetStatusQuestDto): Promise<UpdateWriteOpResult> {
-    return this.questsService.changeStatus(id, setStatusQuest)
+  @Put('/:id')
+  changeStatus(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() setStatusQuest: SetStatusQuestDto,
+  ): Promise<UpdateWriteOpResult> {
+    return this.questsService.changeStatus(id, setStatusQuest);
   }
 }
