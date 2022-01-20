@@ -29,7 +29,7 @@ export class RequestsController {
 
   @Get('/:id/available')
   getAvailableAdv(@Param('id', ParseObjectIdPipe) id: string): Promise<Request> {
-    return this.requestsService.findAvailableAdv(id);
+    return this.requestsService.findAvailableAdventurers(id);
   }
 
   @Put('/:id')

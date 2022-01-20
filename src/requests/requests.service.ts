@@ -13,12 +13,10 @@ const mongoose = require('mongoose');
 @Injectable()
 export class RequestsService {
   constructor(
-    @InjectModel(Adventurer.name)
-    private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Request.name)
-    private readonly RequestModel: Model<Request>,
+    private readonly requestModel: Model<Request>,
     @InjectModel(Speciality.name)
-    private readonly SpecialityModel: Model<Speciality>,
+    private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => AdventurersService))
     private readonly adventurersService: AdventurersService,
   ) {}
@@ -27,7 +25,7 @@ export class RequestsService {
     id: string,
     status: QuestStatus,
   ): Promise<UpdateWriteOpResult> {
-    return this.RequestModel.updateOne({ _id: id }, { status: status });
+    return this.requestModel.updateOne({ _id: id }, { status: status });
   }
 
   async setStatus(
@@ -39,7 +37,7 @@ export class RequestsService {
   }
 
   async findAll(): Promise<Request[] | any> {
-    const requests = await this.RequestModel.find({status: {$in: ['Unassigned', 'Rejected']}})
+    const requests = await this.requestModel.find({status: {$in: ['Unassigned', 'Rejected']}})
       .where('status')
       .populate('requiredProfiles')
       .lean()
@@ -54,7 +52,7 @@ export class RequestsService {
         await Promise.all(
           requiredProfilesIds.map(async (id, index) => {
             request.requiredProfiles[index].speciality =
-              await this.SpecialityModel.findById(id);
+              await this.specialityModel.findById(id);
           }),
         );
       }),
@@ -64,34 +62,34 @@ export class RequestsService {
   }
 
   async findOne(id: string): Promise<Request> {
-    const request = await this.RequestModel.findById(id)
+    const request = await this.requestModel.findById(id)
       .populate('requiredProfiles')
       .exec();
 
     await Promise.all(
       request.requiredProfiles.map(async (id, index) => {
         request.requiredProfiles[index].speciality =
-          await this.SpecialityModel.findById(id.speciality);
+          await this.specialityModel.findById(id.speciality);
       }),
     );
 
     return request;
   }
 
-  async findAvailableAdv(id: string): Promise<Request> {
-    const request = await this.RequestModel.findById(id)
+  async findAvailableAdventurers(id: string): Promise<Request> {
+    const request = await this.requestModel.findById(id)
       .populate('requiredProfiles')
       .exec();
 
     await Promise.all(
       request.requiredProfiles.map(async (id, index) => {
         request.requiredProfiles[index].speciality =
-          await this.SpecialityModel.findById(id.speciality);
+          await this.specialityModel.findById(id.speciality);
       }),
     );
-    
+    const adventuriesAvailableNow = await this.adventurersService.findAll({isAvailableNow: true});
 
-    return request;
+    return adventuriesAvailableNow;
   }
 
 
@@ -136,7 +134,7 @@ export class RequestsService {
       });
     });
 
-    const req = new this.RequestModel({
+    const req = new this.requestModel({
       name: name,
       description: description,
       pictureUrl: pictureUrl,
@@ -166,7 +164,7 @@ export class RequestsService {
       duration
     } = filterRequestQueryDto;
 
-    const requests = await this.RequestModel
+    const requests = await this.requestModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
         questGiver: { $regex: questGiver ? questGiver : '', $options: 'i' },
