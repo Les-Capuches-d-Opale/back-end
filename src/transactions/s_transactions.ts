@@ -64,9 +64,7 @@ describe('Transactions Service', () => {
       getModelToken(Transaction.name),
     );
 
-    requestModel = module.get<Model<Request>>(
-      getModelToken(Request.name),
-    );
+    requestModel = module.get<Model<Request>>(getModelToken(Request.name));
 
     specialityModel = module.get<Model<Speciality>>(
       getModelToken(Speciality.name),
@@ -123,7 +121,7 @@ describe('Transactions Service', () => {
       } as any);
 
       expect(
-        transactionsService.create(mockCreateTransaction),
+        transactionsService.create(mockCreateTransaction, {} as any),
       ).resolves.toEqual(transactions);
     });
   });

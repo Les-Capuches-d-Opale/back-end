@@ -101,7 +101,6 @@ export class RequestsService {
   }
 
   async findAvailableAdventurers(id: string): Promise<Request> {
-    console.log('id', id);
     const request = await this.requestModel
       .findById(id)
       .populate('requiredProfiles')
@@ -116,7 +115,6 @@ export class RequestsService {
     const adventuriesAvailableNow = await this.adventurersService.findAll({
       isAvailableNow: true,
     });
-    console.log('adventuriesAvailableNow', adventuriesAvailableNow);
     return adventuriesAvailableNow;
   }
 

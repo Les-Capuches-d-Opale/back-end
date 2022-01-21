@@ -5,6 +5,7 @@ import { Item } from 'src/items/entities/item.entity';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
+const mongoose = require('mongoose');
 
 @Injectable()
 export class AdministratorsService {
@@ -36,25 +37,39 @@ export class AdministratorsService {
 
   async addItem(
     id: string,
-    item: Item,
+    items: {
+      quantity: number;
+      price: number;
+      id: string;
+    }[],
     transaction: Transaction,
+    session: ClientSession,
   ): Promise<Administrator> {
     const administrator = await this.administratorModel
       .findById(new Types.ObjectId(id))
       .exec();
 
-    if (administrator.wallet < item.price)
+    const amount: number = items.reduce(
+      (acc, item) => acc + item.price * item.quantity,
+      0,
+    );
+
+    if (administrator.wallet < amount)
       throw new HttpException('Not enough money', 400);
 
     return await this.administratorModel
       .findOneAndUpdate(
         { _id: id },
         {
-          $push: { items: item, payments: transaction },
-          $inc: { wallet: -item.price },
+          $push: {
+            items: items.map((item) => item.id),
+            payments: transaction._id,
+          },
+          $inc: { wallet: -amount },
         },
         { new: true },
       )
+      .session(session)
       .exec();
   }
 
@@ -63,6 +78,6 @@ export class AdministratorsService {
       id,
       { $inc: { wallet: bounty } },
       { new: true },
-    )
+    );
   }
 }

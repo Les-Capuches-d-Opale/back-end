@@ -159,13 +159,11 @@ export class QuestsService {
               quest.groups,
               quest.request.requiredProfiles,
             );
-            console.log({ rate });
             if (Math.random() < rate) {
               const changeStatus = await this.requestService.changeStatusByID(
                 quest.request.id,
                 QuestStatus.Failed,
               );
-              console.log({ changeStatus });
             } else {
               const addBounty = await this.administratorsService.addBounty(
                 adminId,
@@ -232,10 +230,13 @@ export class QuestsService {
           { amount: amount > 0 ? amount : 0 },
           session,
         );
-        await this.transactionsService.create({
-          amount: amount > 0 ? amount : 0,
-          type: TransactionType.AdventurerPayment,
-        });
+        await this.transactionsService.create(
+          {
+            amount: amount > 0 ? amount : 0,
+            type: TransactionType.AdventurerPayment,
+          },
+          session,
+        );
         await this.adventurerService.updateExp(
           adventurer.id,
           { experience: awardedExperience },
