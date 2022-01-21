@@ -1,6 +1,7 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model, Types } from 'mongoose';
+import { FilterItemQueryDto } from 'src/items/dto/filterItemQuery.dto';
 import { Item } from 'src/items/entities/item.entity';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
@@ -12,10 +13,17 @@ export class AdministratorsService {
   constructor(
     @InjectModel(Administrator.name)
     private readonly administratorModel: Model<Administrator>,
-  ) {}
+  ) { }
 
   async findOne(email: string): Promise<Administrator> {
     return await this.administratorModel.findOne({ email }).exec();
+  }
+
+  async getItems(id: string, filter: FilterItemQueryDto): Promise<Administrator> {
+    const admin = await this.administratorModel.findById(id).populate('items').exec()
+    console.log(admin)
+    return admin
+    //return admin
   }
 
   async getOne(id: string): Promise<Administrator> {

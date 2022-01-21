@@ -11,10 +11,13 @@ import {
   Body,
   Put,
   Get,
+  Query,
 } from '@nestjs/common';
 import { LocalAuthGuard } from '../auth/local-auth.guard';
 import { SkipAuth } from '../common/decorators/skip-auth.decorator';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
+import { Item } from 'src/items/entities/item.entity';
+import { FilterItemQueryDto } from 'src/items/dto/filterItemQuery.dto';
 @ApiBearerAuth()
 @ApiTags('administrators')
 @Controller('administrators')
@@ -22,7 +25,7 @@ export class AdministratorsController {
   constructor(
     private authService: AuthService,
     private administratorsService: AdministratorsService,
-  ) {}
+  ) { }
 
   @SkipAuth()
   @UseGuards(LocalAuthGuard)
@@ -48,5 +51,13 @@ export class AdministratorsController {
   @Get('/')
   getOne(@Request() req): Promise<Administrator> {
     return this.administratorsService.getOne(req.user.adminId);
+  }
+
+  @Get('/items')
+  getItems(
+    @Request() req,
+    @Query() filterItemQueryDto: FilterItemQueryDto
+  ): Promise<Administrator> {
+    return this.administratorsService.getItems(req.user.adminId, filterItemQueryDto);
   }
 }
