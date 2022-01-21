@@ -71,9 +71,9 @@ export class TransactionsService {
           }
         }
       )
+      .limit(5)
       .exec();
     const wallet = admin.wallet
-    const firstTransactions = transactions.slice(0, 5)
-    return {wallet, firstTransactions};
+    return {wallet, transactions};
   }
 }
