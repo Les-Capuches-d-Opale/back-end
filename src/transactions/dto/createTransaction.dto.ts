@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsString } from 'class-validator';
+import { TransactionType } from '../entities/transaction.entity';
 
 export class CreateTransactionDto {
   @ApiProperty({
@@ -14,5 +15,5 @@ export class CreateTransactionDto {
     example: 'AdventurerPayment',
   })
   @IsString()
-  readonly type: string;
+  readonly type: TransactionType;
 }

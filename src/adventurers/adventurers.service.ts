@@ -1,12 +1,20 @@
+import {
+  forwardRef,
+  HttpException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model } from 'mongoose';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
+import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
-import { Injectable, NotFoundException, HttpException } from '@nestjs/common';
-import { Model } from 'mongoose';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 import { Speciality } from './entities/speciality.entity';
+const ObjectId = require('mongoose').Types.ObjectId;
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -14,6 +22,7 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
   ) {}
 
@@ -35,19 +44,19 @@ export class AdventurersService {
           $lte: exactLevel ? Math.floor(exactLevel) + 0.99 : 1000000,
         },
       })
-      .where(speciality ? { speciality: speciality } : {})
+      .where(speciality ? { specialityId: speciality } : {})
       .populate('speciality')
       .lean()
       .exec();
 
-    const quests = await this.questsService.findAll();
+    const quests = await this.questsService.findAll({});
 
     adventurers.forEach((adventurer) => {
-      const adventurerHasQuests = quests.filter((quest) => {
+      const adventurerHasQuests = quests.quests.filter((quest) => {
         const adventurersId = quest.groups.map((questAdventurer) =>
           questAdventurer._id.toString(),
         );
-        return adventurersId.includes(adventurer._id.toString());
+        return adventurersId.includes(adventurer._id?.toString());
       });
 
       if (!adventurerHasQuests.length)
@@ -56,8 +65,8 @@ export class AdventurersService {
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
         const endDateQuest = new Date(
-          adventurerQuest.request.dateDebut.setSeconds(
-            adventurerQuest.request.dateDebut.getSeconds() +
+          new Date(adventurerQuest.request.dateDebut).setSeconds(
+            new Date(adventurerQuest.request.dateDebut).getSeconds() +
               adventurerQuest.request.duration,
           ),
         );
@@ -91,13 +100,13 @@ export class AdventurersService {
     return adventurer;
   }
 
-  create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
+  async create(createAdventurerDto: CreateAdventurerDto): Promise<Adventurer> {
     const baseDailyRate = (
       createAdventurerDto.baseDailyRate * 1 +
       0.5 * Math.log(createAdventurerDto.experience)
     ).toFixed(2);
 
-    const adventurer = new this.adventurerModel({
+    const adventurer = await this.adventurerModel.create({
       ...createAdventurerDto,
       baseDailyRate,
     });
@@ -107,12 +116,51 @@ export class AdventurersService {
   async updateExp(
     id: string,
     updateExpAdventurerDto: UpdateExpAdventurerDto,
+    session?: ClientSession,
   ): Promise<Adventurer> {
-    return await this.adventurerModel.findByIdAndUpdate(
-      id,
-      { $inc: { experience: updateExpAdventurerDto.experience } },
-      { new: true },
-    );
+    return session
+      ? await this.adventurerModel
+          .findByIdAndUpdate(
+            id,
+            { $inc: { experience: updateExpAdventurerDto.experience } },
+            { new: true },
+          )
+          .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+          id,
+          { $inc: { experience: updateExpAdventurerDto.experience } },
+          { new: true },
+        );
+  }
+
+  async updateAmount(
+    id: string,
+    updateAmountAdventurerDto: UpdateAmountAdventurerDto,
+    session?: ClientSession,
+  ): Promise<Adventurer> {
+    let adventurer;
+
+    if (session) {
+      adventurer = await this.adventurerModel
+        .findByIdAndUpdate(
+          id,
+          { $inc: { amount: updateAmountAdventurerDto.amount } },
+          { new: true },
+        )
+        .session(session);
+    } else {
+      adventurer = await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { amount: updateAmountAdventurerDto.amount } },
+        { new: true },
+      );
+    }
+
+    if (!adventurer) {
+      throw new NotFoundException(`Adventurer #${id} not found`);
+    }
+
+    return adventurer;
   }
 
   async getAllSpecialities(): Promise<Speciality[]> {

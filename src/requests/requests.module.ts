@@ -1,8 +1,3 @@
-import { AdventurersModule } from './../adventurers/adventurers.module';
-import {
-  AdventurerProfile,
-  AdventurerProfileSchema,
-} from './entities/adventurerProfile.entity';
 import { RequestSchema } from './entities/request.entity';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -12,10 +7,12 @@ import { RequestsService } from './requests.service';
 import {
   Speciality,
   SpecialitySchema,
-} from 'src/adventurers/entities/speciality.entity';
+} from '../adventurers/entities/speciality.entity';
+import { AdventurersModule } from 'src/adventurers/adventurers.module';
 
 @Module({
   imports: [
+    forwardRef(() => AdventurersModule),
     MongooseModule.forFeature([
       {
         name: Request.name,

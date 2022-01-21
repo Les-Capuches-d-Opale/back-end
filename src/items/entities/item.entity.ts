@@ -29,7 +29,7 @@ export class Item extends PartialType(IntersectionType(Equipment, Consumable)) {
     type: MongooseSchema.Types.ObjectId,
     ref: 'Transaction',
   })
-  request: Transaction;
+  transaction: Transaction;
 
   @ApiProperty({
     description: 'The type of the item. Can be "equipment" or "consumable".',

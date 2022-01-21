@@ -1,4 +1,4 @@
-import { Administrator } from 'src/administrators/entities/administrator.entity';
+import { Administrator } from './entities/administrator.entity';
 import { AdministratorsService } from './administrators.service';
 import { LoginDto } from './dto/getAdministrator.dto';
 import { AuthService } from './../auth/auth.service';
@@ -12,8 +12,8 @@ import {
   Put,
   Get,
 } from '@nestjs/common';
-import { LocalAuthGuard } from 'src/auth/local-auth.guard';
-import { SkipAuth } from 'src/common/decorators/skip-auth.decorator';
+import { LocalAuthGuard } from '../auth/local-auth.guard';
+import { SkipAuth } from '../common/decorators/skip-auth.decorator';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 @ApiBearerAuth()
 @ApiTags('administrators')

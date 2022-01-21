@@ -39,7 +39,7 @@ export class Administrator extends Document {
     description: 'The items of the administrator.',
     required: false,
   })
-  @Prop({ type: MongooseSchema.Types.ObjectId, ref: 'Item', required: false })
+  @Prop([{ type: MongooseSchema.Types.ObjectId, ref: 'Item', required: false }])
   items: Item[];
 
   @ApiProperty({
