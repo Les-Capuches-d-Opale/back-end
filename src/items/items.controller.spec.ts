@@ -130,7 +130,10 @@ describe('Item Controller', () => {
       jest.spyOn(itemsService, 'buyOne').mockImplementation(() => item as any);
 
       expect(
-        await itemsController.buyOne('5cabe64dcf0d4447fa6e0000', req),
+        await itemsController.buyOne(
+          { cart: [{ itemId: '5cabe64dcf0d4447fa6e0000', quantity: 3 }] },
+          req,
+        ),
       ).toBe(item);
     });
   });

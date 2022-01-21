@@ -211,7 +211,10 @@ describe('Items Service', () => {
         } as any);
 
         expect(
-          itemsService.buyOne(item._id, '61e02e232ffc933754061ee8'),
+          itemsService.buyOne(
+            item._id as any,
+            '61e02e232ffc933754061ee8' as any,
+          ),
         ).resolves.toEqual(item);
       });
     });
@@ -264,7 +267,7 @@ describe('Items Service', () => {
         } as any);
 
         try {
-          await itemsService.buyOne(item._id, '61e02e232ffc933754061ee8');
+          await itemsService.buyOne({} as any, {} as any);
         } catch (err) {
           expect(err.message).toEqual('Not enough money');
         }
@@ -298,7 +301,10 @@ describe('Items Service', () => {
         } as any);
 
         try {
-          await itemsService.buyOne(item._id, '61e02e232ffc933754061ee8');
+          await itemsService.buyOne(
+            item._id as any,
+            '61e02e232ffc933754061ee8' as any,
+          );
         } catch (err) {
           expect(err.message).toEqual('Item not found');
         }

@@ -1,4 +1,4 @@
-import { TransactionType } from './../transactions/entities/transaction.entity';
+import { TransactionType } from '../transactions/entities/transaction.entity';
 import { Administrator } from './entities/administrator.entity';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
@@ -223,6 +223,7 @@ describe('AdministratorsService', () => {
 
         const administrator = await administratorService.addItem(
           '61e02e232ffc933754061ee8',
+          {} as any,
           {
             durability: 10,
             daysInUse: 4,
@@ -233,7 +234,7 @@ describe('AdministratorsService', () => {
             price: 16.5,
             type: 'equipment',
             transaction: {} as any,
-          },
+          } as any,
           {
             amount: 16.5,
             type: 'Purchase',
@@ -263,22 +264,9 @@ describe('AdministratorsService', () => {
         try {
           await administratorService.addItem(
             '61e02e232ffc933754061ee8',
-            {
-              durability: 10,
-              daysInUse: 4,
-              repairTime: 1.5,
-              charges: 10,
-              usedCharges: 2,
-              name: 'Sword',
-              price: 16.5,
-              type: 'equipment',
-              transaction: {} as any,
-            },
-            {
-              amount: 16.5,
-              type: 'Purchase',
-              date: new Date(),
-            } as any,
+            {} as any,
+            {} as any,
+            {} as any,
           );
         } catch (err) {
           expect(err.message).toEqual('Not enough money');
