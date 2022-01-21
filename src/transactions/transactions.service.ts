@@ -100,5 +100,4 @@ export class TransactionsService {
     });
     return result;
   }
-
 }
