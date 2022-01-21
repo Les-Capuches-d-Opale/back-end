@@ -16,4 +16,14 @@ export class TransactionsController {
   ): Promise<Transaction[]> {
     return this.transactionsService.filterAll(filterTransactionQueryDto);
   }
+
+  @Get('/more')
+  getMore(){
+    return this.transactionsService.getMore();
+  }
+
+  @Get('/less')
+  getLess(){
+    return this.transactionsService.getLess();
+  }
 }
