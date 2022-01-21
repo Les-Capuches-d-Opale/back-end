@@ -1,8 +1,8 @@
-import { Transaction } from './entities/transaction.entity';
-import { TransactionsService } from './../transactions/transactions.service';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { TransactionsService } from './../transactions/transactions.service';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
+import { Transaction } from './entities/transaction.entity';
 
 @ApiBearerAuth()
 @ApiTags('transactions')
@@ -20,5 +20,10 @@ export class TransactionsController {
   @Get('/:date')
   filter(@Param('date') date: number): Promise<Transaction[]> {
     return this.transactionsService.filterByDate(date);
+  }
+
+  @Get('/dashboard')
+  getDashboardData(@Request() req) {
+    return this.transactionsService.getDashboardData(req.user.adminId);
   }
 }

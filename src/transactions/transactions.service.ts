@@ -1,15 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ClientSession } from 'mongoose';
 import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
+import { AdministratorsService } from 'src/administrators/administrators.service'
 
 @Injectable()
 export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<Transaction>,
+    @Inject(forwardRef(() => AdministratorsService))
+    private readonly administratorsService: AdministratorsService,
   ) {}
 
   async findAll(): Promise<Transaction[]> {
@@ -56,5 +59,21 @@ export class TransactionsService {
       .exec();
 
     return transactions;
+  }
+  
+  async getDashboardData(id: string): Promise<Transaction[] | any> {
+    const admin = await this.administratorsService.getOne(id)
+    const transactions = await this.transactionModel
+      .find(
+        {
+          order: {
+            date: "DESC"
+          }
+        }
+      )
+      .exec();
+    const wallet = admin.wallet
+    const firstTransactions = transactions.slice(0, 5)
+    return {wallet, firstTransactions};
   }
 }
