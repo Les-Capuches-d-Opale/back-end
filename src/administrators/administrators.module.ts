@@ -18,22 +18,11 @@ import { MongooseModule } from '@nestjs/mongoose';
         name: Administrator.name,
         useFactory: () => {
           const schema = AdministratorSchema;
-
-          // eslint-disable-next-line @typescript-eslint/ban-types
-          schema.pre<Administrator>('save', function (next: Function) {
-            const administrator = this;
-
-            const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = bcrypt.hashSync(
-              administrator.password,
-              salt,
-            );
-
-            administrator.password = hashedPassword;
-
-            next();
+          schema.pre<Administrator>('save', async function () {
+            if (this.isModified('password')) {
+              this.password = await bcrypt.hash(this.password, 10);
+            }
           });
-
           return schema;
         },
       },
