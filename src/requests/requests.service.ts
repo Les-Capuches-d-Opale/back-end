@@ -60,10 +60,10 @@ export class RequestsService {
       .exec();
 
     const counts = await this.requestModel
-      .find({})
+      .find({
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
       .where('status')
-      .equals('Unassigned')
-      .equals('Rejected')
       .count();
 
     await Promise.all(
@@ -177,7 +177,7 @@ export class RequestsService {
     return req.save({ timestamps: true });
   }
 
-  async FilterAll(
+  async filterAll(
     filterRequestQueryDto: FilterRequestQueryDto,
   ): Promise<Request[] | any> {
     const {
@@ -206,6 +206,21 @@ export class RequestsService {
       .where({})
       .lean()
       .exec();
+
+    await Promise.all(
+      requests.map(async (request) => {
+        const requiredProfilesIds = request.requiredProfiles.map(
+          (profile) => profile.speciality,
+        );
+
+        await Promise.all(
+          requiredProfilesIds.map(async (id, index) => {
+            request.requiredProfiles[index].speciality =
+              await this.specialityModel.findById(id);
+          }),
+        );
+      }),
+    );
 
     return requests;
   }

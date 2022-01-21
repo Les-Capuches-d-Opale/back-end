@@ -74,7 +74,7 @@ const specialities = [
   },
   {
     _id: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5f1'),
-    name: 'messagers',
+    name: 'Messager',
     description: "C'est juste un gars de La Poste.",
     requiredItems: randomItems(items),
   },

@@ -15,6 +15,14 @@ export class Item extends PartialType(IntersectionType(Equipment, Consumable)) {
   name: string;
 
   @ApiProperty({
+    description: 'The image url of the item.',
+    example:
+      'https://s.ankama.com/www/static.ankama.com/dofus/www/game/items/200/1001.png',
+  })
+  @Prop()
+  imgUrl: string;
+
+  @ApiProperty({
     description: 'The price of the item.',
     example: 16.5,
   })
