@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ClientSession } from 'mongoose';
 import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
-import { Transaction } from './entities/transaction.entity';
+import { Transaction, TransactionType } from './entities/transaction.entity';
 
 @Injectable()
 export class TransactionsService {
@@ -68,14 +68,12 @@ export class TransactionsService {
       return this.calculateAmountTransaction(transactions);
   }
 
-  async getLess(): Promise<Transaction[] | any> {
-    const type1 = 'Tax';
-    const type2 = 'Purchase';
+  async getLess(): Promise<Transaction[]> {
     const transactions = await this.transactionModel
       .find({
         $or: [
-          {type: { $regex: type1, $options: 'i' }},
-          {type: { $regex: type2, $options: 'i' }}
+          {type: { $regex: TransactionType.Tax, $options: 'i' }},
+          {type: { $regex: TransactionType.Purchase, $options: 'i' }}
       ]})
       .where({})
       .exec();
@@ -83,7 +81,7 @@ export class TransactionsService {
       return this.calculateAmountTransaction(transactions);
   }
  
- calculateAmountTransaction = (transactions: any) => {
+ calculateAmountTransaction = (transactions: Transaction[]) => {
     let result = [];
     let amount = 0;
     let date = undefined;
