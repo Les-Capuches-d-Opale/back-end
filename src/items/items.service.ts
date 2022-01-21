@@ -20,6 +20,7 @@ export class ItemsService {
 
   async findAll(filterItemQueryDto: FilterItemQueryDto): Promise<any> {
     const { limit = 25, offset = 0, type } = filterItemQueryDto;
+
     const items = await this.itemModel
       .find()
       .where(type ? { type } : {})

@@ -1,6 +1,6 @@
 import { Transaction } from './entities/transaction.entity';
 import { TransactionsService } from './../transactions/transactions.service';
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 
@@ -15,5 +15,10 @@ export class TransactionsController {
     @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[]> {
     return this.transactionsService.filterAll(filterTransactionQueryDto);
+  }
+
+  @Get('/:date')
+  filter(@Param('date') date: number): Promise<Transaction[]> {
+    return this.transactionsService.filterByDate(date);
   }
 }

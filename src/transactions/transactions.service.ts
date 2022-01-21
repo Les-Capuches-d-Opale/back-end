@@ -44,4 +44,17 @@ export class TransactionsService {
 
     return transactions;
   }
+
+  async filterByDate(date: number): Promise<Transaction[] | any> {
+    const sinceDate = new Date(
+      new Date().setDate(new Date().getDate() - (date || 1)),
+    ).toISOString();
+
+    const transactions = await this.transactionModel
+      .find()
+      .where({ date: { $gte: sinceDate } })
+      .exec();
+
+    return transactions;
+  }
 }

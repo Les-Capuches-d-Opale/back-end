@@ -1,4 +1,4 @@
-import { TransactionsService } from './../transactions/transactions.service';
+import { TransactionsService } from '../transactions/transactions.service';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import {
   getConnectionToken,
