@@ -14,6 +14,7 @@ import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { Adventurer } from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
+const ObjectId = require('mongoose').Types.ObjectId;
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -43,7 +44,7 @@ export class AdventurersService {
           $lte: exactLevel ? Math.floor(exactLevel) + 0.99 : 1000000,
         },
       })
-      .where(speciality ? { speciality: speciality } : {})
+      .where(speciality ? { specialityId: speciality } : {})
       .populate('speciality')
       .lean()
       .exec();
@@ -51,7 +52,7 @@ export class AdventurersService {
     const quests = await this.questsService.findAll({});
 
     adventurers.forEach((adventurer) => {
-      const adventurerHasQuests = quests.filter((quest) => {
+      const adventurerHasQuests = quests.quests.filter((quest) => {
         const adventurersId = quest.groups.map((questAdventurer) =>
           questAdventurer._id.toString(),
         );
