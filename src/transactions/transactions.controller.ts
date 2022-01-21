@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { TransactionsService } from './../transactions/transactions.service';
-import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
+import { FilterTransactionQueryDto } from './dto/filterTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
 
 @ApiBearerAuth()

@@ -2,7 +2,7 @@ import { Injectable, forwardRef, Inject } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ClientSession } from 'mongoose';
 import { CreateTransactionDto } from './dto/createTransaction.dto';
-import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
+import { FilterTransactionQueryDto } from './dto/filterTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
 import { AdministratorsService } from 'src/administrators/administrators.service'
 
