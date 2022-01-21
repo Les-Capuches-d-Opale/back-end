@@ -1,6 +1,6 @@
 import { Transaction } from './entities/transaction.entity';
 import { TransactionsService } from './../transactions/transactions.service';
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 
@@ -15,5 +15,10 @@ export class TransactionsController {
     @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
   ): Promise<Transaction[]> {
     return this.transactionsService.filterAll(filterTransactionQueryDto);
+  }
+
+  @Get('/dashboard')
+  getDashboardData(@Request() req) {
+    return this.transactionsService.getDashboardData(req.user.adminId);
   }
 }
