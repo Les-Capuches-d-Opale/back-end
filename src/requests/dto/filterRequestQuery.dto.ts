@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { IsBoolean, IsDate, IsOptional, IsPositive, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsDate,
+  IsOptional,
+  IsPositive,
+  IsString,
+  Min,
+} from 'class-validator';
 import { QuestStatus } from '../entities/request.entity';
 
 export class FilterRequestQueryDto {
@@ -25,7 +32,7 @@ export class FilterRequestQueryDto {
     description: 'How many experience they gonna win.',
     example: 20,
   })
-  @IsPositive()
+  @Min(0)
   readonly awardedExperience?: number;
 
   @IsOptional()
@@ -33,7 +40,7 @@ export class FilterRequestQueryDto {
     description: 'Value min of bounty for the request.',
     example: 5000,
   })
-  @IsPositive()
+  @Min(0)
   readonly bountyMin?: number;
 
   @IsOptional()
@@ -41,7 +48,7 @@ export class FilterRequestQueryDto {
     description: 'Value max of bounty for the request.',
     example: 5000,
   })
-  @IsPositive()
+  @Min(0)
   readonly bountyMax?: number;
 
   @IsOptional()

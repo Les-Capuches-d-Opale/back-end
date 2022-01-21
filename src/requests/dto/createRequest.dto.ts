@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsArray, IsString, IsDate } from 'class-validator';
+import { IsNumber, IsArray, IsString, IsDate, Min } from 'class-validator';
 import { AdventurerProfile } from '../entities/adventurerProfile.entity';
 
 export class CreateRequestDto {
@@ -33,7 +33,7 @@ export class CreateRequestDto {
     description: 'The bounty of the request.',
     example: '5000',
   })
-  @IsNumber()
+  @Min(0)
   readonly bounty: number;
 
   @ApiProperty({
@@ -47,7 +47,7 @@ export class CreateRequestDto {
     description: 'the list of profiles required to succeed in the request.',
   })
   @IsArray()
-  readonly requiredProfiles: AdventurerProfile[]
+  readonly requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({
     description: 'How many experience they gonna win.',
