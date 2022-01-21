@@ -128,8 +128,9 @@ export class QuestsService {
       request: new mongoose.Types.ObjectId(request),
       groups: groupToPush,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: new Date()
     });
+    this.changeStatus(request, {status: QuestStatus.Accepted})
     return quest.save();
   }
 

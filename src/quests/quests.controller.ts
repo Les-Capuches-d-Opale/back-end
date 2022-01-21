@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Request,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -25,7 +26,7 @@ export class QuestsController {
   @Get('/')
   getAll(
     @Request() req,
-    paginationQueryDto: PaginationQueryDto,
+    @Query() paginationQueryDto: PaginationQueryDto,
   ): Promise<Quest[]> {
     return this.questsService.findAll(paginationQueryDto, req.user.adminId);
   }
