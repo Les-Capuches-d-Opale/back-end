@@ -17,8 +17,13 @@ export class TransactionsController {
     return this.transactionsService.filterAll(filterTransactionQueryDto);
   }
 
-  @Get('/:date')
-  filter(@Param('date') date: number): Promise<Transaction[]> {
-    return this.transactionsService.filterByDate(date);
+  @Get('/more')
+  getMore(){
+    return this.transactionsService.getMore();
+  }
+
+  @Get('/less')
+  getLess(){
+    return this.transactionsService.getLess();
   }
 }
