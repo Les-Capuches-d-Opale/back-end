@@ -57,7 +57,7 @@ export class AdministratorsController {
   getItems(
     @Request() req,
     @Query() filterItemQueryDto: FilterItemQueryDto
-  ): Promise<Administrator> {
+  ): Promise<Item[]> {
     return this.administratorsService.getItems(req.user.adminId, filterItemQueryDto);
   }
 }

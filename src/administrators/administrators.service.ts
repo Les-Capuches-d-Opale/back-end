@@ -19,11 +19,9 @@ export class AdministratorsService {
     return await this.administratorModel.findOne({ email }).exec();
   }
 
-  async getItems(id: string, filter: FilterItemQueryDto): Promise<Administrator> {
+  async getItems(id: string, filter: FilterItemQueryDto): Promise<Item[]> {
     const admin = await this.administratorModel.findById(id).populate('items').exec()
-    console.log(admin)
-    return admin
-    //return admin
+    return admin.items.filter((item) => {return item.type === filter.type})
   }
 
   async getOne(id: string): Promise<Administrator> {
