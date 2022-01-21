@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ClientSession } from 'mongoose';
 import { CreateTransactionDto } from './dto/createTransaction.dto';
 import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto';
 import { Transaction } from './entities/transaction.entity';
@@ -18,13 +18,19 @@ export class TransactionsService {
 
   async create(
     createTransactionDto: CreateTransactionDto,
-  ): Promise<Transaction> {
-    const transaction = await this.transactionModel.create({
-      ...createTransactionDto,
-      date: new Date(),
-    });
+    session: ClientSession,
+  ): Promise<Transaction | any> {
+    const transaction = await this.transactionModel.create(
+      [
+        {
+          ...createTransactionDto,
+          date: new Date(),
+        },
+      ],
+      { session },
+    );
 
-    return transaction.save();
+    return transaction;
   }
 
   async filterAll(

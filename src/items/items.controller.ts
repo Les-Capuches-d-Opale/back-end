@@ -1,8 +1,17 @@
+import { BuyItemDto } from './dto/buyItem.dto';
 import { ParseObjectIdPipe } from './../common/pipes/object-id.pipes';
 import { FilterItemQueryDto } from './dto/filterItemQuery.dto';
 import { ItemsService } from './items.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, Get, Param, Query, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Param,
+  Put,
+  Query,
+  Request,
+  Body,
+} from '@nestjs/common';
 import { Item } from './entities/item.entity';
 
 @ApiBearerAuth()
@@ -18,11 +27,11 @@ export class ItemsController {
     return await this.itemsService.findAll(filterItemQueryDto);
   }
 
-  @Get('/buy/:id')
+  @Put('/buy')
   async buyOne(
-    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() buyItemDto: BuyItemDto,
     @Request() req,
-  ): Promise<Item> {
-    return await this.itemsService.buyOne(id, req.user.adminId);
+  ): Promise<Item[]> {
+    return await this.itemsService.buyOne(buyItemDto, req.user.adminId);
   }
 }
