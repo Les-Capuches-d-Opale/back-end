@@ -1,6 +1,6 @@
 import { AdministratorsService } from 'src/administrators/administrators.service';
-import { TransactionsService } from './../transactions/transactions.service';
-import { QuestsService } from './../quests/quests.service';
+import { TransactionsService } from '../transactions/transactions.service';
+import { QuestsService } from '../quests/quests.service';
 import { Adventurer } from './entities/adventurer.entity';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { getConnectionToken, getModelToken } from '@nestjs/mongoose';

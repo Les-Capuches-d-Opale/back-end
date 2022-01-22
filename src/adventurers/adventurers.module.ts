@@ -1,3 +1,4 @@
+import { ItemsModule } from './../items/items.module';
 import { QuestsModule } from './../quests/quests.module';
 import { Speciality, SpecialitySchema } from './entities/speciality.entity';
 import { Adventurer, AdventurerSchema } from './entities/adventurer.entity';
@@ -9,6 +10,7 @@ import { AdventurersService } from './adventurers.service';
 @Module({
   imports: [
     forwardRef(() => QuestsModule),
+    forwardRef(() => ItemsModule),
     MongooseModule.forFeature([
       {
         name: Adventurer.name,

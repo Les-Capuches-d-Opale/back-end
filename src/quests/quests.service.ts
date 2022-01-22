@@ -1,6 +1,7 @@
+import { ItemsService } from './../items/items.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { format } from 'date-fns';
+import { format, eachDayOfInterval, addSeconds } from 'date-fns';
 import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
@@ -119,7 +120,7 @@ export class QuestsService {
     groups.map((group) => {
       const index = _request.requiredProfiles.findIndex(
         (profile: any) =>
-          profile.speciality.id === group.reqProfile.id &&
+          profile.id === group.reqProfile.id &&
           profile.experience === group.reqProfile.experience,
       );
       groupToPush[index] = group.adventurer;
@@ -128,9 +129,9 @@ export class QuestsService {
       request: new mongoose.Types.ObjectId(request),
       groups: groupToPush,
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
-    this.changeStatus(request, {status: QuestStatus.Accepted})
+    this.changeStatus(request, { status: QuestStatus.Accepted });
     return quest.save();
   }
 
@@ -149,8 +150,35 @@ export class QuestsService {
       .populate('groups')
       .exec();
 
+    await Promise.all(
+      quests.map(async (quest) => {
+        const requiredProfilesIds = quest.request.requiredProfiles.map(
+          (profile) => profile.speciality,
+        );
+        const groupIds = quest.groups.map((profile) => profile.speciality);
+
+        await Promise.all(
+          requiredProfilesIds.map(async (id, index) => {
+            quest.request.requiredProfiles[index].speciality =
+              await this.specialityModel.findById(id);
+          }),
+        );
+
+        await Promise.all(
+          groupIds.map(async (id, index) => {
+            quest.groups[index].speciality =
+              await this.specialityModel.findById(id);
+          }),
+        );
+      }),
+    );
+
     quests.map(async (quest) => {
-      if (quest.request.status !== 'Rejected') {
+      if (
+        quest.request.status !== 'Rejected' /* &&
+        quest.request.status !== 'Failed' &&
+        quest.request.status !== 'Succeeded' */
+      ) {
         if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
           if (
             format(quest.request.dateDebut, 't') + quest.request.duration <
@@ -160,6 +188,24 @@ export class QuestsService {
               quest.groups,
               quest.request.requiredProfiles,
             );
+
+            const numberOfDayRequest = eachDayOfInterval({
+              start: new Date(quest.request.dateDebut),
+              end: new Date(
+                addSeconds(quest.request.dateDebut, quest.request.duration),
+              ),
+            }).length;
+
+            await this.adventurerService.updateAdventurerItem(
+              quest.groups,
+              numberOfDayRequest,
+            );
+
+            await this.administratorsService.buyAllRequiredItems(
+              adminId,
+              quest.groups,
+            );
+
             if (Math.random() < rate) {
               const changeStatus = await this.requestService.changeStatusByID(
                 quest.request.id,

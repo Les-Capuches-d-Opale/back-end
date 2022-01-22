@@ -3,6 +3,34 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Item } from 'src/items/entities/item.entity';
+
+export enum StatusItem {
+  OK = 'Equipped',
+  BROKEN = 'Broken',
+  REPAIRING = 'Repairing',
+}
+
+class AdventurerItem {
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Item',
+    required: true,
+  })
+  item: Item;
+
+  @Prop()
+  daysInUse?: number;
+
+  @Prop()
+  usedCharges?: number;
+
+  @Prop()
+  repairAt?: Date;
+
+  @Prop({ enum: StatusItem })
+  status: StatusItem;
+}
 
 @Schema()
 export class Adventurer extends Document {
@@ -55,11 +83,19 @@ export class Adventurer extends Document {
   @ApiProperty({
     description: 'The list of transactions of the adventurer.',
   })
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Transaction',
-  })
+  @Prop([
+    {
+      type: MongooseSchema.Types.ObjectId,
+      ref: 'Transaction',
+    },
+  ])
   payments: Transaction[];
+
+  @ApiProperty({
+    description: 'The list of transactions of the adventurer.',
+  })
+  @Prop([AdventurerItem])
+  items: AdventurerItem[];
 }
 
 export const AdventurerSchema = SchemaFactory.createForClass(Adventurer);
