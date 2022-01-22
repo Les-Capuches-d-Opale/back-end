@@ -9,6 +9,12 @@ import {
   Transaction,
   TransactionType,
 } from 'src/transactions/entities/transaction.entity';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
+import { FilterItemQueryDto } from 'src/items/dto/filterItemQuery.dto';
+import { Item } from 'src/items/entities/item.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { UpdateAdministratorDto } from './dto/updateAdministrator.dto';
 import { Administrator } from './entities/administrator.entity';
 const mongoose = require('mongoose');
@@ -29,6 +35,11 @@ export class AdministratorsService {
 
   async findOne(email: string): Promise<Administrator> {
     return await this.administratorModel.findOne({ email }).exec();
+  }
+
+  async getItems(id: string, filter: FilterItemQueryDto): Promise<Item[]> {
+    const admin = await this.administratorModel.findById(id).populate('items').exec()
+    return admin.items.filter((item) => {return item.type === filter.type})
   }
 
   async getOne(id: string): Promise<Administrator> {
