@@ -2,16 +2,13 @@ import { TransactionsService } from './../transactions/transactions.service';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { ItemsService } from './../items/items.service';
 import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
-import { forwardRef, HttpException, Inject, Injectable } from '@nestjs/common';
-import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Connection, Model, Types } from 'mongoose';
-import {
-  Transaction,
-  TransactionType,
-} from 'src/transactions/entities/transaction.entity';
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { InjectConnection } from '@nestjs/mongoose';
+import { ClientSession, Connection } from 'mongoose';
+import { TransactionType } from 'src/transactions/entities/transaction.entity';
+import { HttpException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Model, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { FilterItemQueryDto } from 'src/items/dto/filterItemQuery.dto';
 import { Item } from 'src/items/entities/item.entity';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
@@ -38,8 +35,13 @@ export class AdministratorsService {
   }
 
   async getItems(id: string, filter: FilterItemQueryDto): Promise<Item[]> {
-    const admin = await this.administratorModel.findById(id).populate('items').exec()
-    return admin.items.filter((item) => {return item.type === filter.type})
+    const admin = await this.administratorModel
+      .findById(id)
+      .populate('items')
+      .exec();
+    return admin.items.filter((item) => {
+      return item.type === filter.type;
+    });
   }
 
   async getOne(id: string): Promise<Administrator> {
