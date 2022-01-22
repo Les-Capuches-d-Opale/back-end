@@ -4,7 +4,7 @@ import { getModelToken } from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { AdministratorsService } from './administrators.service';
 import { Model, Types } from 'mongoose';
-import { Item } from 'src/items/entities/item.entity';
+import { Item, ItemTypes } from 'src/items/entities/item.entity';
 
 const mockAdministrator = (
   _id: 'abc123',
@@ -209,7 +209,7 @@ describe('AdministratorsService', () => {
                 type: 'Purchase',
                 date: new Date(),
               } as any,
-              type: 'equipment',
+              type: ItemTypes.Equipment,
             },
           ],
         );

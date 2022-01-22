@@ -1,3 +1,6 @@
+import { TransactionsModule } from './../transactions/transactions.module';
+import { Item } from 'src/items/entities/item.entity';
+import { ItemsModule } from './../items/items.module';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 /* eslint-disable @typescript-eslint/no-this-alias */
 import { AdministratorsController } from './administrators.controller';
@@ -9,10 +12,14 @@ import {
 import { AuthModule } from '../auth/auth.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { AdventurersModule } from 'src/adventurers/adventurers.module';
 
 @Module({
   imports: [
     forwardRef(() => AuthModule),
+    forwardRef(() => ItemsModule),
+    forwardRef(() => AdventurersModule),
+    forwardRef(() => TransactionsModule),
     MongooseModule.forFeatureAsync([
       {
         name: Administrator.name,

@@ -2,7 +2,12 @@ import { BuyItemDto } from './dto/buyItem.dto';
 import { TransactionsService } from './../transactions/transactions.service';
 import { AdministratorsService } from '../administrators/administrators.service';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Connection, Model } from 'mongoose';
 import { Item } from './entities/item.entity';
 import { FilterItemQueryDto } from './dto/filterItemQuery.dto';
@@ -14,6 +19,7 @@ export class ItemsService {
     @InjectModel(Item.name)
     private readonly itemModel: Model<Item>,
     @InjectConnection() private readonly connection: Connection,
+    @Inject(forwardRef(() => AdministratorsService))
     private readonly administratorService: AdministratorsService,
     private readonly transactionService: TransactionsService,
   ) {}
@@ -87,5 +93,18 @@ export class ItemsService {
     } finally {
       session.endSession();
     }
+  }
+
+  async getAllById(ids: string[]): Promise<Item[]> {
+    return await this.itemModel
+      .find({
+        _id: ids.map((id) => new mongoose.Types.ObjectId(id)),
+      })
+      .lean()
+      .exec();
+  }
+
+  async findOne(id: string): Promise<Item> {
+    return await this.itemModel.findById(id).lean().exec();
   }
 }
