@@ -34,6 +34,15 @@ export class ItemsService {
       .limit(limit)
       .exec();
 
+    if (type) {
+      const counts = await this.itemModel
+        .find()
+        .where(type ? { type } : {})
+        .count();
+
+      return { items, counts };
+    }
+
     const counts = await this.itemModel.find().count();
 
     return { items, counts };
