@@ -1,3 +1,4 @@
+import { ItemsService } from './../items/items.service';
 import {
   forwardRef,
   HttpException,
@@ -7,14 +8,16 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Model } from 'mongoose';
+import { Item } from 'src/items/entities/item.entity';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
-import { Adventurer } from './entities/adventurer.entity';
+import { Adventurer, StatusItem } from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
 const ObjectId = require('mongoose').Types.ObjectId;
+import { add } from 'date-fns';
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -24,6 +27,8 @@ export class AdventurersService {
     private readonly specialityModel: Model<Speciality>,
     @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
+    @Inject(forwardRef(() => ItemsService))
+    private readonly itemsService: ItemsService,
   ) {}
 
   async findAll(
@@ -165,5 +170,233 @@ export class AdventurersService {
 
   async getAllSpecialities(): Promise<Speciality[]> {
     return await this.specialityModel.find({}).exec();
+  }
+
+  async addItem(id: string, requiredItem: Item[], session: ClientSession) {
+    const items = (
+      await this.adventurerModel.findById(id, 'items').exec()
+    ).items?.map((item) => item.item);
+
+    const itemsToAdd = requiredItem.filter((item) => {
+      return !items.some(
+        (itemAdventurer) => itemAdventurer.toString() === item._id.toString(),
+      );
+    });
+
+    return await this.adventurerModel
+      .findByIdAndUpdate(
+        id,
+        {
+          $push: {
+            items: itemsToAdd.map((item) => {
+              return {
+                item: item._id,
+                daysInUse: item.daysInUse || null,
+                usedCharges: item.charges || null,
+                status: StatusItem.OK,
+              };
+            }),
+          },
+        },
+        { new: true },
+      )
+      .session(session);
+  }
+
+  async updateAdventurerItem(
+    adventurers: Adventurer[],
+    numberOfDayRequest: number,
+  ) {
+    const adventurersReturned = await this.adventurerModel.find({
+      _id: { $in: adventurers.map((adventurer) => adventurer._id) },
+    });
+
+    return await Promise.all(
+      adventurersReturned.map(async (adventurer) => {
+        const items = await Promise.all(
+          adventurer.items.map(async (item) => {
+            if (item.item?._id) return this.itemsService.findOne(item.item._id);
+          }),
+        );
+
+        await this.adventurerModel.findOneAndUpdate(
+          {
+            _id: adventurer._id,
+            items: {
+              $elemMatch: {
+                status: StatusItem.OK,
+                daysInUse: { $ne: null },
+              },
+            },
+          },
+          {
+            $inc: {
+              'items.$.daysInUse': -numberOfDayRequest,
+            },
+            $set: {
+              'items.$.status': StatusItem.BROKEN,
+            },
+          },
+          { new: true },
+        );
+
+        await this.adventurerModel.findOneAndUpdate(
+          {
+            _id: adventurer._id,
+            items: {
+              $elemMatch: {
+                status: StatusItem.OK,
+                usedCharges: { $ne: null },
+              },
+            },
+          },
+          {
+            $inc: {
+              'items.$.usedCharges': -numberOfDayRequest,
+            },
+            $set: {
+              'items.$.status': StatusItem.BROKEN,
+            },
+          },
+          { new: true },
+        );
+
+        await this.adventurerModel.findByIdAndUpdate(
+          {
+            _id: adventurer._id,
+            items: {
+              $elemMatch: {
+                status: StatusItem.BROKEN,
+                usedCharges: { $lte: 0 },
+              },
+            },
+          },
+          {
+            $pull: {
+              items: { status: StatusItem.BROKEN, usedCharges: { $lte: 0 } },
+            },
+          },
+        );
+
+        const brokenEquipments = await this.adventurerModel.aggregate([
+          { $match: { _id: adventurer._id } },
+          {
+            $project: {
+              items: {
+                $filter: {
+                  input: '$items',
+                  as: 'item',
+                  cond: {
+                    $and: [
+                      { $eq: ['$$item.status', StatusItem.BROKEN] },
+                      { $lte: ['$$item.usedCharges', 0] },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ]);
+
+        if (brokenEquipments[0].items && brokenEquipments[0].items.length > 0) {
+          const brokenEquipmentsItems = await Promise.all(
+            brokenEquipments[0].items.map(async (item) => {
+              const itemReturned = await this.itemsService.findOne(item.item);
+              const repairAt: Date = add(new Date(), {
+                days: itemReturned.repairTime,
+              });
+
+              return {
+                ...item,
+                repairAt,
+              };
+            }),
+          );
+
+          await Promise.all(
+            brokenEquipmentsItems.map(async (item) => {
+              return await this.adventurerModel.findOneAndUpdate(
+                {
+                  _id: adventurer._id,
+                  items: {
+                    $elemMatch: { item: item.item },
+                  },
+                },
+                {
+                  $set: {
+                    'items.$.repairAt': item.repairAt,
+                    'items.$.status': StatusItem.REPAIRING,
+                  },
+                },
+              );
+            }),
+          );
+        }
+
+        const repairedEquipments = await this.adventurerModel.aggregate([
+          { $match: { _id: adventurer._id } },
+          {
+            $project: {
+              items: {
+                $filter: {
+                  input: '$items',
+                  as: 'item',
+                  cond: {
+                    $and: [
+                      { $eq: ['$$item.status', StatusItem.REPAIRING] },
+                      {
+                        $lte: [
+                          '$$item.repairAt',
+                          { $lte: new Date().toISOString },
+                        ],
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+        ]);
+
+        if (
+          repairedEquipments[0].items &&
+          repairedEquipments[0].items.length > 0
+        ) {
+          const repairedEquipmentsItems = await Promise.all(
+            repairedEquipments[0].items.map(async (item: { item: string }) => {
+              const itemReturned = await this.itemsService.findOne(item.item);
+
+              return {
+                item: item.item,
+                daysInUse: itemReturned.durability,
+                usedCharges: null,
+                repairAt: null,
+                status: StatusItem.OK,
+              };
+            }),
+          );
+
+          await Promise.all(
+            repairedEquipmentsItems.map(async (item) => {
+              return await this.adventurerModel.findOneAndUpdate(
+                {
+                  _id: adventurer._id,
+                  items: {
+                    $elemMatch: { item: item.item },
+                  },
+                },
+                {
+                  $set: {
+                    'items.$.daysInUse': item.daysInUse,
+                    'items.$.repairAt': item.repairAt,
+                    'items.$.status': item.status,
+                  },
+                },
+              );
+            }),
+          );
+        }
+      }),
+    );
   }
 }

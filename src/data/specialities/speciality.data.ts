@@ -5,7 +5,8 @@ const items = require('../items/item.data');
 const randomItems = (items) => {
   return items
     .sort(() => 0.5 - Math.random())
-    .slice(0, Math.floor(Math.random() * 8 + 4));
+    .slice(0, Math.floor(Math.random() * 8 + 4))
+    .map((item) => item._id);
 };
 
 const specialities = [
