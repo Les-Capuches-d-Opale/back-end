@@ -5,12 +5,10 @@ import { ApiProperty, IntersectionType, PartialType } from '@nestjs/swagger';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 
-
 export enum ItemTypes {
   Equipment = 'equipment',
   Consumable = 'consumable',
 }
-
 @Schema()
 export class Item extends PartialType(IntersectionType(Equipment, Consumable)) {
   @ApiProperty({

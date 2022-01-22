@@ -1,6 +1,7 @@
 import { ItemsService } from './items.service';
 import { ItemsController } from './items.controller';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ItemTypes } from './entities/item.entity';
 
 const req = {
   user: {
@@ -107,9 +108,9 @@ describe('Item Controller', () => {
           .spyOn(itemsService, 'findAll')
           .mockImplementation(() => items as any);
 
-        expect(itemsController.findAll({ type: 'consumable' })).resolves.toBe(
-          items,
-        );
+        expect(
+          itemsController.findAll({ type: ItemTypes.Consumable }),
+        ).resolves.toBe(items);
       });
     });
   });
