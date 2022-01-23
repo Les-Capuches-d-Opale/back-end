@@ -127,7 +127,7 @@ export class RequestsService {
       pictureUrl,
       questGiver,
       bounty,
-      duration,
+      dateFin,
       requiredProfiles,
       awardedExperience,
       status,
@@ -160,16 +160,16 @@ export class RequestsService {
     });
 
     const req = new this.requestModel({
-      name: name,
-      description: description,
-      pictureUrl: pictureUrl,
-      questGiver: questGiver,
-      bounty: bounty,
-      duration: duration,
-      requiredProfiles: newRequiredProfile,
-      awardedExperience: awardedExperience,
-      status: status,
-      dateDebut: dateDebut,
+      name,
+      description,
+      pictureUrl,
+      questGiver,
+      bounty,
+      dateFin,
+      requiredProfiles,
+      awardedExperience,
+      status,
+      dateDebut,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -186,7 +186,7 @@ export class RequestsService {
       awardedExperience,
       bountyMin,
       bountyMax,
-      duration,
+      dateFin,
     } = filterRequestQueryDto;
 
     const requests = await this.requestModel
@@ -198,12 +198,9 @@ export class RequestsService {
           $gte: bountyMin ? bountyMin : 0,
           $lte: bountyMax ? bountyMax : 999999999999999,
         },
-        duration: {
-          $gte: duration ? duration : 0,
-        },
+        dateFin: { $lte: dateFin },
         status: { $in: ['Unassigned', 'Rejected'] },
       })
-      .where({})
       .lean()
       .exec();
 
