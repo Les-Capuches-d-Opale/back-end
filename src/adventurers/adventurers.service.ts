@@ -49,7 +49,7 @@ export class AdventurersService {
           $lte: exactLevel ? Math.floor(exactLevel) + 0.99 : 1000000,
         },
       })
-      .where(speciality ? { specialityId: speciality } : {})
+      .where(speciality ? { speciality: ObjectId(speciality) } : {})
       .populate('speciality')
       .lean()
       .exec();
