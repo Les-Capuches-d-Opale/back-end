@@ -167,4 +167,24 @@ export class AdministratorsService {
       }),
     );
   }
+
+  async updateAdventurerSchedules(
+    ids: string[],
+    dateDebut: Date,
+    dateFin: Date,
+  ) {
+    return await this.administratorModel.updateMany(
+      {
+        _id: { $in: ids },
+      },
+      {
+        $push: {
+          daysOffAdventurer: {
+            dateDebut,
+            dateFin,
+          },
+        },
+      },
+    );
+  }
 }

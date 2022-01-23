@@ -9,7 +9,7 @@ export enum QuestStatus {
   Failed = 'Failed',
   Pending = 'Pending',
   Unassigned = 'Unassigned',
-  Accepted = 'Accepted'
+  Accepted = 'Accepted',
 }
 @Schema()
 export class Request extends Document {
@@ -52,19 +52,19 @@ export class Request extends Document {
   bounty: number;
 
   @ApiProperty({
-    description: 'The duration of the request in second.',
-    example: '60000',
+    description: 'The date end of the request.',
+    example: '2021-12-23',
     required: true,
   })
   @Prop()
-  duration: number;
+  dateFin: Date;
 
   @ApiProperty({
     description: 'the list of profiles required to succeed in the request.',
     example: '61bf9b9b0be4cf45263b6f2d',
   })
   @Prop()
- requiredProfiles: AdventurerProfile[];
+  requiredProfiles: AdventurerProfile[];
 
   @ApiProperty({
     description: 'How many experience they gonna win.',
@@ -84,8 +84,8 @@ export class Request extends Document {
   @Prop()
   dateDebut: Date;
 
-  @Prop() createdAt?: Date
-  @Prop() updatedAt?: Date
+  @Prop() createdAt?: Date;
+  @Prop() updatedAt?: Date;
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);

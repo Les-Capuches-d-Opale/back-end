@@ -131,6 +131,13 @@ export class QuestsService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
+
+    await this.administratorsService.updateAdventurerSchedules(
+      groups.map((group) => group.adventurer),
+      _request.dateDebut,
+      _request.dateFin,
+    );
+
     this.changeStatus(request, { status: QuestStatus.Accepted });
     return quest.save();
   }
@@ -175,15 +182,12 @@ export class QuestsService {
 
     quests.map(async (quest) => {
       if (
-        quest.request.status !== 'Rejected' /* &&
+        quest.request.status !== 'Rejected' &&
         quest.request.status !== 'Failed' &&
-        quest.request.status !== 'Succeeded' */
+        quest.request.status !== 'Succeeded'
       ) {
         if (format(quest.request.dateDebut, 't') < format(new Date(), 't')) {
-          if (
-            format(quest.request.dateDebut, 't') + quest.request.duration <
-            format(new Date(), 't')
-          ) {
+          if (format(quest.request.dateFin, 't') < format(new Date(), 't')) {
             const rate = await this.succesRate(
               quest.groups,
               quest.request.requiredProfiles,
@@ -191,9 +195,7 @@ export class QuestsService {
 
             const numberOfDayRequest = eachDayOfInterval({
               start: new Date(quest.request.dateDebut),
-              end: new Date(
-                addSeconds(quest.request.dateDebut, quest.request.duration),
-              ),
+              end: new Date(quest.request.dateFin),
             }).length;
 
             await this.adventurerService.updateAdventurerItem(
@@ -218,7 +220,7 @@ export class QuestsService {
               );
               const successAdventurer = await this.successAdventurer(
                 quest.groups,
-                quest.request.duration,
+                numberOfDayRequest,
                 quest.request.awardedExperience,
               );
               await this.requestService.changeStatusByID(
@@ -260,7 +262,7 @@ export class QuestsService {
 
   async successAdventurer(
     groups: Adventurer[],
-    duration: number,
+    durationDay: number,
     awardedExperience: number,
   ) {
     groups.map(async (adventurer: Adventurer) => {
@@ -270,7 +272,7 @@ export class QuestsService {
       const amount =
         adventurer.baseDailyRate *
         (1 + 0.5 * Math.log(adventurer.experience)) *
-        (duration / 60 / 60 / 24);
+        (durationDay / 60 / 60 / 24);
       try {
         await this.adventurerService.updateAmount(
           adventurer.id,
