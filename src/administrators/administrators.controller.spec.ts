@@ -75,6 +75,19 @@ const mockAdministratorGet = {
   ],
 };
 
+const mockItemsGet = {
+    durability: 10,
+    daysInUse: 4,
+    repairTime: 1.5,
+    charges: 10,
+    usedCharges: 2,
+    name: 'Sword',
+    imgUrl: 'https://s.ankama.com/www/static.ankama.com/dofus/www/game/items/200/1001.png',
+    price: 16.5,
+    transaction: '61bf9b9b0be9cf45263b6f2d',
+    type: 'equipment'
+}
+
 const req = {
   user: {
     _id: 'abc123',
@@ -101,6 +114,7 @@ describe('Administrator Controller', () => {
           useValue: {
             update: jest.fn(),
             getOne: jest.fn(),
+            getItems: jest.fn()
           },
         },
         {
@@ -196,6 +210,30 @@ describe('Administrator Controller', () => {
       } as any);
 
       expect(administratorsController.getOne(req)).resolves.toEqual({
+        statusCode: 401,
+        message: 'Unauthorized',
+      });
+    });
+  });
+
+  describe('get items', () => {
+    it('should get items', async () => {
+      jest
+        .spyOn(administratorsService, 'getItems')
+        .mockResolvedValueOnce(mockItemsGet as [] | any);
+
+      expect(administratorsController.getItems(req, {})).resolves.toEqual(
+        mockItemsGet,
+      );
+    });
+
+    it('otherwise', () => {
+      jest.spyOn(administratorsService, 'getItems').mockResolvedValueOnce({
+        statusCode: 401,
+        message: 'Unauthorized',
+      } as any);
+
+      expect(administratorsController.getItems(req, {})).resolves.toEqual({
         statusCode: 401,
         message: 'Unauthorized',
       });
