@@ -69,12 +69,7 @@ export class AdventurersService {
 
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
-        const endDateQuest = new Date(
-          new Date(adventurerQuest.request.dateDebut).setSeconds(
-            new Date(adventurerQuest.request.dateDebut).getSeconds() +
-              adventurerQuest.request.duration,
-          ),
-        );
+        const endDateQuest = new Date(adventurerQuest.request.dateFin);
 
         if (startDateQuest <= new Date() && endDateQuest >= new Date()) {
           return (adventurer['isAvailableNow'] = false);
@@ -398,5 +393,14 @@ export class AdventurersService {
         }
       }),
     );
+  }
+
+  async getDaysOffAdventurer(id: string): Promise<Adventurer | any> {
+    const daysOffAdventurer = await this.adventurerModel.findById(
+      id,
+      'daysOffAdventurer',
+    );
+
+    return daysOffAdventurer;
   }
 }

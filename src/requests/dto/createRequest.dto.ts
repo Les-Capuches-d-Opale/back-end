@@ -37,11 +37,11 @@ export class CreateRequestDto {
   readonly bounty: number;
 
   @ApiProperty({
-    description: 'The duration of the request in second.',
+    description: 'The end date of the request.',
     example: '60000',
   })
-  @IsNumber()
-  readonly duration: number;
+  @IsDate()
+  readonly dateFin: Date;
 
   @ApiProperty({
     description: 'the list of profiles required to succeed in the request.',

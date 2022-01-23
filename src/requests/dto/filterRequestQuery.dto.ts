@@ -53,9 +53,9 @@ export class FilterRequestQueryDto {
 
   @IsOptional()
   @ApiProperty({
-    description: 'The duration of the request in second.',
-    example: 60000,
+    description: 'The end date of the request.',
+    example: '2021-12-23',
   })
   @IsPositive()
-  readonly duration?: number;
+  readonly dateFin?: number;
 }

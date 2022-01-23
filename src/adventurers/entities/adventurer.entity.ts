@@ -32,6 +32,14 @@ class AdventurerItem {
   status: StatusItem;
 }
 
+class dayOffAdventurer {
+  @Prop()
+  dateDebut: Date;
+
+  @Prop()
+  dateFin: Date;
+}
+
 @Schema()
 export class Adventurer extends Document {
   @Prop()
@@ -96,6 +104,12 @@ export class Adventurer extends Document {
   })
   @Prop([AdventurerItem])
   items: AdventurerItem[];
+
+  @ApiProperty({
+    description: 'The days off schedule of the adventurer.',
+  })
+  @Prop([dayOffAdventurer])
+  daysOffAdventurer: dayOffAdventurer[];
 }
 
 export const AdventurerSchema = SchemaFactory.createForClass(Adventurer);
