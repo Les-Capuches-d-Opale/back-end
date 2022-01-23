@@ -182,7 +182,7 @@ describe('Transactions Service', () => {
         },
       ];
 
-      expect(requestsService.findAll({})).resolves.toEqual({
+      expect(requestsService.filterAll({})).resolves.toEqual({
         requests: requestsReturned,
         counts,
       });

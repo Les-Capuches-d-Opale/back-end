@@ -8,9 +8,10 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { QuestStatus } from '../entities/request.entity';
 
-export class FilterRequestQueryDto {
+export class FilterRequestQueryDto extends PaginationQueryDto {
   @IsOptional()
   @ApiProperty({
     description: 'The name of the request.',
@@ -56,6 +57,6 @@ export class FilterRequestQueryDto {
     description: 'The end date of the request.',
     example: '2021-12-23',
   })
-  @IsPositive()
-  readonly dateFin?: number;
+  @IsDate()
+  readonly dateFin?: Date;
 }
