@@ -43,47 +43,6 @@ export class RequestsService {
     return await this.changeStatusByID(id, status);
   }
 
-  async findAll(
-    paginationQueryDto: PaginationQueryDto,
-  ): Promise<Request[] | any> {
-    const { limit = 25, offset = 0 } = paginationQueryDto;
-
-    const requests = await this.requestModel
-      .find({
-        status: { $in: ['Unassigned', 'Rejected'] },
-      })
-      .where('status')
-      .populate('requiredProfiles')
-      .skip(offset)
-      .limit(limit)
-      .lean()
-      .exec();
-
-    const counts = await this.requestModel
-      .find({
-        status: { $in: ['Unassigned', 'Rejected'] },
-      })
-      .where('status')
-      .count();
-
-    await Promise.all(
-      requests.map(async (request) => {
-        const requiredProfilesIds = request.requiredProfiles.map(
-          (profile) => profile.speciality,
-        );
-
-        await Promise.all(
-          requiredProfilesIds.map(async (id, index) => {
-            request.requiredProfiles[index].speciality =
-              await this.specialityModel.findById(id);
-          }),
-        );
-      }),
-    );
-
-    return { requests, counts };
-  }
-
   async findOne(id: string): Promise<Request> {
     const request = await this.requestModel
       .findById(id)
@@ -187,6 +146,8 @@ export class RequestsService {
       bountyMin,
       bountyMax,
       dateFin,
+      limit = 25,
+      offset = 0,
     } = filterRequestQueryDto;
 
     const requests = await this.requestModel
@@ -201,8 +162,24 @@ export class RequestsService {
         dateFin: { $lte: dateFin },
         status: { $in: ['Unassigned', 'Rejected'] },
       })
+      .skip(offset)
+      .limit(limit)
       .lean()
       .exec();
+
+    const counts = await this.requestModel
+      .find({
+        name: { $regex: name ? name : '', $options: 'i' },
+        questGiver: { $regex: questGiver ? questGiver : '', $options: 'i' },
+        awardedExperience: { $gte: awardedExperience ? awardedExperience : 0 },
+        bounty: {
+          $gte: bountyMin ? bountyMin : 0,
+          $lte: bountyMax ? bountyMax : 999999999999999,
+        },
+        dateFin: { $lte: dateFin },
+        status: { $in: ['Unassigned', 'Rejected'] },
+      })
+      .count();
 
     await Promise.all(
       requests.map(async (request) => {
@@ -219,6 +196,6 @@ export class RequestsService {
       }),
     );
 
-    return requests;
+    return { requests, counts };
   }
 }

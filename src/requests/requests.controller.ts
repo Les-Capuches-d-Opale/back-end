@@ -17,12 +17,6 @@ export class RequestsController {
 
   @Get('/')
   getAll(
-    @Query() paginationQueryDto: PaginationQueryDto,
-  ): Promise<Request[] | any> {
-    return this.requestsService.findAll(paginationQueryDto);
-  }
-
-  FilterAll(
     @Query() filterRequestQueryDto: FilterRequestQueryDto,
   ): Promise<Request[]> {
     return this.requestsService.filterAll(filterRequestQueryDto);
