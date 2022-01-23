@@ -78,7 +78,7 @@ describe('Requests Controller', () => {
       const counts = 1;
       jest.spyOn(requestsService, 'filterAll').mockResolvedValue(requests);
 
-      expect(requestsController.FilterAll({})).resolves.toEqual(requests);
+      expect(requestsController.getAll({})).resolves.toEqual(requests);
     });
   });
 });
