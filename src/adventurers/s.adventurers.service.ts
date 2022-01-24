@@ -1,3 +1,5 @@
+import { Item } from './../items/entities/item.entity';
+import { ItemsService } from './../items/items.service';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { QuestsService } from '../quests/quests.service';
@@ -16,9 +18,11 @@ import { Administrator } from 'src/administrators/entities/administrator.entity'
 
 describe('Adventurers Service', () => {
   let adventurersService: AdventurersService;
+  let itemsService: ItemsService;
   let adventurernModel: Model<Adventurer>;
   let questModel: Model<Quest>;
   let specialityModel: Model<Speciality>;
+  let itemModel: Model<Item>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -28,6 +32,7 @@ describe('Adventurers Service', () => {
         RequestsService,
         TransactionsService,
         AdministratorsService,
+        ItemsService,
         {
           provide: getModelToken('Adventurer'),
           useValue: {
@@ -82,6 +87,12 @@ describe('Adventurers Service', () => {
           },
         },
         {
+          provide: getModelToken('Item'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Item),
+          },
+        },
+        {
           provide: getConnectionToken(),
           useValue: {},
         },
@@ -90,11 +101,15 @@ describe('Adventurers Service', () => {
 
     adventurersService = module.get<AdventurersService>(AdventurersService);
 
+    itemsService = module.get<ItemsService>(ItemsService);
+
     adventurernModel = module.get<Model<Adventurer>>(
       getModelToken(Adventurer.name),
     );
 
     questModel = module.get<Model<Quest>>(getModelToken(Quest.name));
+
+    itemModel = module.get<Model<Item>>(getModelToken(Item.name));
 
     specialityModel = module.get<Model<Speciality>>(
       getModelToken(Speciality.name),
@@ -2875,7 +2890,7 @@ describe('Adventurers Service', () => {
                 'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
               questGiver: 'Merlin le sorceleur',
               bounty: 136,
-              duration: 41726,
+              dateFin: '2022-04-02T00:00:00.000Z',
               requiredProfiles: [
                 {
                   speciality: {
