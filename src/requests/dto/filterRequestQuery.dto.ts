@@ -1,14 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsPositive, IsString, Min } from 'class-validator';
-import { Transform } from 'class-transformer';
-import {
-  IsBoolean,
-  IsDate,
-  IsOptional,
-  IsPositive,
-  IsString,
-  Min,
-} from 'class-validator';
+import { IsDate, IsOptional, IsString, Min } from 'class-validator';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { QuestStatus } from '../entities/request.entity';
 

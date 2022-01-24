@@ -1,5 +1,5 @@
-import { Item } from './../items/entities/item.entity';
-import { ItemsService } from './../items/items.service';
+import { Item } from '../items/entities/item.entity';
+import { ItemsService } from '../items/items.service';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import { TransactionsService } from '../transactions/transactions.service';
 import { QuestsService } from '../quests/quests.service';
