@@ -7,7 +7,10 @@ import { AdministratorsService } from 'src/administrators/administrators.service
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entity';
 import { AdventurersService } from './../adventurers/adventurers.service';
-import { Adventurer } from './../adventurers/entities/adventurer.entity';
+import {
+  Adventurer,
+  DayOffType,
+} from './../adventurers/entities/adventurer.entity';
 import { Speciality } from './../adventurers/entities/speciality.entity';
 import { QuestStatus } from './../requests/entities/request.entity';
 import { RequestsService } from './../requests/requests.service';
@@ -136,6 +139,8 @@ export class QuestsService {
       groups.map((group) => group.adventurer),
       _request.dateDebut,
       _request.dateFin,
+      DayOffType.REQUEST,
+      request,
     );
 
     this.changeStatus(request, { status: QuestStatus.Accepted });
