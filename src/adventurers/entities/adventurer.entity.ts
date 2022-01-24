@@ -4,11 +4,17 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { Item } from 'src/items/entities/item.entity';
+import { Request } from '../../requests/entities/request.entity';
 
 export enum StatusItem {
   OK = 'Equipped',
   BROKEN = 'Broken',
   REPAIRING = 'Repairing',
+}
+
+export enum DayOffType {
+  REST = 'Rest',
+  REQUEST = 'Request',
 }
 
 class AdventurerItem {
@@ -38,6 +44,16 @@ class dayOffAdventurer {
 
   @Prop()
   dateFin: Date;
+
+  @Prop({ enum: DayOffType, required: true })
+  type: DayOffType;
+
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Request',
+    required: false,
+  })
+  request?: Request;
 }
 
 @Schema()

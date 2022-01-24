@@ -1,3 +1,4 @@
+import { DayOffType } from './../adventurers/entities/adventurer.entity';
 import { TransactionsService } from './../transactions/transactions.service';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { ItemsService } from './../items/items.service';
@@ -172,6 +173,8 @@ export class AdministratorsService {
     ids: string[],
     dateDebut: Date,
     dateFin: Date,
+    type: DayOffType,
+    request: string,
   ) {
     return await this.administratorModel.updateMany(
       {
@@ -182,6 +185,8 @@ export class AdministratorsService {
           daysOffAdventurer: {
             dateDebut,
             dateFin,
+            type,
+            request,
           },
         },
       },

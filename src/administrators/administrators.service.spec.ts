@@ -1,10 +1,25 @@
+import { RequestsService } from './../requests/requests.service';
+import { Quest } from './../quests/entities/quest.entity';
+import { Transaction } from './../transactions/entities/transaction.entity';
+import { QuestsService } from './../quests/quests.service';
+import { Speciality } from './../adventurers/entities/speciality.entity';
+import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
+import { TransactionsService } from './../transactions/transactions.service';
+import { AdventurersService } from 'src/adventurers/adventurers.service';
+import { ItemsService } from './../items/items.service';
 import { TransactionType } from '../transactions/entities/transaction.entity';
 import { Administrator } from './entities/administrator.entity';
-import { getModelToken } from '@nestjs/mongoose';
+import {
+  getConnectionToken,
+  getModelToken,
+  MongooseModule,
+} from '@nestjs/mongoose';
 import { Test } from '@nestjs/testing';
 import { AdministratorsService } from './administrators.service';
-import { Model, Types } from 'mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { Item, ItemTypes } from 'src/items/entities/item.entity';
+import { ConfigModule } from '@nestjs/config';
+import { Request } from 'src/requests/entities/request.entity';
 
 const mockAdministrator = (
   _id: 'abc123',
@@ -24,12 +39,33 @@ const mockAdministrator = (
 
 describe('AdministratorsService', () => {
   let administratorService: AdministratorsService;
+  let itemsService: ItemsService;
+  let adventurersService: AdventurersService;
+  let transactionsService: TransactionsService;
+  let questsService: QuestsService;
+  let requestsService: RequestsService;
+  let connection: Connection;
   let administratorModel: Model<Administrator>;
+  let itemModel: Model<Item>;
+  let adventurerModel: Model<Adventurer>;
+  let specialityModel: Model<Speciality>;
+  let transactionModel: Model<Transaction>;
+  let questModel: Model<Quest>;
+  let requestModel: Model<Request>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({}),
+        MongooseModule.forRoot(process.env.DATABASE_URI),
+      ],
       providers: [
         AdministratorsService,
+        ItemsService,
+        AdventurersService,
+        TransactionsService,
+        QuestsService,
+        RequestsService,
         {
           provide: getModelToken('Administrator'),
           useValue: {
@@ -44,6 +80,42 @@ describe('AdministratorsService', () => {
             exec: jest.fn(),
           },
         },
+        {
+          provide: getModelToken('Item'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Item),
+          },
+        },
+        {
+          provide: getModelToken('Adventurer'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Adventurer),
+          },
+        },
+        {
+          provide: getModelToken('Speciality'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Speciality),
+          },
+        },
+        {
+          provide: getModelToken('Transaction'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Transaction),
+          },
+        },
+        {
+          provide: getModelToken('Quest'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Quest),
+          },
+        },
+        {
+          provide: getModelToken('Request'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Request),
+          },
+        },
       ],
     }).compile();
 
@@ -51,9 +123,21 @@ describe('AdministratorsService', () => {
       AdministratorsService,
     );
 
+    itemsService = module.get<ItemsService>(ItemsService);
+
+    adventurersService = module.get<AdventurersService>(AdventurersService);
+
+    transactionsService = module.get<TransactionsService>(TransactionsService);
+
+    connection = await module.get(getConnectionToken());
+
     administratorModel = module.get<Model<Administrator>>(
       getModelToken(Administrator.name),
     );
+  });
+
+  afterEach(async () => {
+    await connection.close(true);
   });
 
   it('should be defined', () => {
@@ -214,34 +298,23 @@ describe('AdministratorsService', () => {
           ],
         );
 
+        const items = [{ id: '1', quantity: 1, price: 16.5 }];
+
         jest.spyOn(administratorModel, 'findById').mockReturnValueOnce({
           exec: jest.fn().mockResolvedValueOnce(mockAdminTest),
         } as any);
 
         jest.spyOn(administratorModel, 'findOneAndUpdate').mockReturnValueOnce({
-          exec: jest.fn().mockResolvedValueOnce(mockAdminItems),
+          session: jest.fn().mockReturnValueOnce({
+            exec: jest.fn().mockResolvedValueOnce(mockAdminItems),
+          } as any),
         } as any);
 
         const administrator = await administratorService.addItem(
           '61e02e232ffc933754061ee8',
+          items,
           {} as any,
-          {
-            durability: 10,
-            daysInUse: 4,
-            repairTime: 1.5,
-            charges: 10,
-            imgUrl: 'https://i.imgur.com/q1Y9QQh.png',
-            usedCharges: 2,
-            name: 'Sword',
-            price: 16.5,
-            type: 'equipment',
-            transaction: {} as any,
-          } as any,
-          {
-            amount: 16.5,
-            type: 'Purchase',
-            date: new Date(),
-          } as any,
+          {} as any,
         );
 
         expect(administrator).toEqual(mockAdminItems);
@@ -259,6 +332,8 @@ describe('AdministratorsService', () => {
           [],
         );
 
+        const items = [{ id: '1', quantity: 1, price: 16.5 }];
+
         jest.spyOn(administratorModel, 'findById').mockReturnValueOnce({
           exec: jest.fn().mockResolvedValueOnce(mockAdminTest),
         } as any);
@@ -266,7 +341,7 @@ describe('AdministratorsService', () => {
         try {
           await administratorService.addItem(
             '61e02e232ffc933754061ee8',
-            {} as any,
+            items,
             {} as any,
             {} as any,
           );

@@ -18,28 +18,28 @@ export class CreateQuestDto {
           id: '5cabe64dcf0d4447fa60f5e8',
           experience: 0,
         },
-        adventurer:  '7cabe64dcf0d4447fa60f5e4'
+        adventurer: '7cabe64dcf0d4447fa60f5e4',
       },
       {
         reqProfile: {
           id: '5cabe64dcf0d4447fa60f5e4',
           experience: 5,
         },
-        adventurer:  '7cabe64dcf0d4447fa60f5e2',
+        adventurer: '7cabe64dcf0d4447fa60f5e2',
       },
       {
         reqProfile: {
           id: '5cabe64dcf0d4447fa60f5e6',
           experience: 3,
         },
-        adventurer:'5cabe64dcf0d4447fa60f5f0'
+        adventurer: '5cabe64dcf0d4447fa60f5f0',
       },
       {
         reqProfile: {
           id: '5cabe64dcf0d4447fa60f5e9',
           experience: 4,
         },
-        adventurer: '5cabe64dcf0d4447fa60f5f1'
+        adventurer: '5cabe64dcf0d4447fa60f5f1',
       },
     ],
   })
