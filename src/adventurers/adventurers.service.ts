@@ -1,32 +1,31 @@
-import { RequestsService } from './../requests/requests.service';
-import { ItemsService } from './../items/items.service';
 import {
   forwardRef,
   HttpException,
   Inject,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { add } from 'date-fns';
 import { ClientSession, Model, UpdateWriteOpResult } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
+import { ItemsService } from './../items/items.service';
 import { QuestsService } from './../quests/quests.service';
+import { RequestsService } from './../requests/requests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
+import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
 import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
+import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
 import {
   Adventurer,
-  StatusItem,
-  UnavailabilityType,
+  StatusItem
 } from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
-const ObjectId = require('mongoose').Types.ObjectId;
-import { add } from 'date-fns';
-import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
-import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
 import { Unavailability } from './entities/unavailability.entity';
-import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
+const ObjectId = require('mongoose').Types.ObjectId;
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -85,7 +84,7 @@ export class AdventurersService {
         const endDateQuest = new Date(
           new Date(adventurerQuest.request.dateDebut).setSeconds(
             new Date(adventurerQuest.request.dateDebut).getSeconds() +
-              adventurerQuest.request.duration,
+            adventurerQuest.request.duration,
           ),
         );
 
@@ -138,17 +137,17 @@ export class AdventurersService {
   ): Promise<Adventurer> {
     return session
       ? await this.adventurerModel
-          .findByIdAndUpdate(
-            id,
-            { $inc: { experience: updateExpAdventurerDto.experience } },
-            { new: true },
-          )
-          .session(session)
-      : await this.adventurerModel.findByIdAndUpdate(
+        .findByIdAndUpdate(
           id,
           { $inc: { experience: updateExpAdventurerDto.experience } },
           { new: true },
-        );
+        )
+        .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { experience: updateExpAdventurerDto.experience } },
+        { new: true },
+      );
   }
 
   async updateAmount(
@@ -445,7 +444,7 @@ export class AdventurersService {
     return adventurers.filter((adventurer) => adventurer.items);
   }
 
-  async createUnavailability(id: string, createUnavailability: CreateUnavailabilityDto): Promise<Unavailability[]> {
+  async createUnavailability(id: string, createUnavailability: CreateUnavailabilityDto): Promise<Unavailability> {
     if (createUnavailability.type === "Request") {
       if (!createUnavailability.requestId) {
         throw new Error('Request ID is required');

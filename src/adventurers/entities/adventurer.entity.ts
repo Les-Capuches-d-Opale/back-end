@@ -1,10 +1,9 @@
-import { Speciality } from '../entities/speciality.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
-import { Request } from '../../requests/entities/request.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Speciality } from '../entities/speciality.entity';
 import { Unavailability } from './unavailability.entity';
 
 export enum StatusItem {
