@@ -403,4 +403,27 @@ export class AdventurersService {
 
     return daysOffAdventurer;
   }
+
+  async getRepairingItems(): Promise<Adventurer[]> {
+    const adventurers = await this.adventurerModel.aggregate([
+      {
+        $match: {},
+      },
+      {
+        $project: {
+          items: {
+            $filter: {
+              input: '$items',
+              as: 'item',
+              cond: {
+                $eq: ['$$item.status', StatusItem.REPAIRING],
+              },
+            },
+          },
+        },
+      },
+    ]);
+
+    return adventurers.filter((adventurer) => adventurer.items);
+  }
 }

@@ -25,6 +25,11 @@ export class AdventurersController {
     return this.adventurerService.getAllSpecialities();
   }
 
+  @Get('/repairing-items')
+  getRepairingItems(): Promise<Adventurer[]> {
+    return this.adventurerService.getRepairingItems();
+  }
+
   @Get('/:id')
   findOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Adventurer> {
     return this.adventurerService.findOne(id);
