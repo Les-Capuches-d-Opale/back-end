@@ -1,3 +1,4 @@
+import { RequestsService } from './../requests/requests.service';
 import { ItemsService } from './../items/items.service';
 import {
   forwardRef,
@@ -14,10 +15,13 @@ import { CreateAdventurerDto } from './dto/createAdventurer.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
-import { Adventurer, StatusItem } from './entities/adventurer.entity';
+import { Adventurer, StatusItem, UnavailabilityType } from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
 const ObjectId = require('mongoose').Types.ObjectId;
 import { add } from 'date-fns';
+import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
+import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
+import { Unavailability } from './entities/unavailability.entity';
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -25,11 +29,15 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @InjectModel(Unavailability.name)
+    private readonly unavailabilityModel: Model<Unavailability>,
     @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
     @Inject(forwardRef(() => ItemsService))
     private readonly itemsService: ItemsService,
-  ) {}
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestsService: RequestsService,
+  ) { }
 
   async findAll(
     filterAdventurerQueryDto: FilterAdventurerQueryDto,
@@ -72,7 +80,7 @@ export class AdventurersService {
         const endDateQuest = new Date(
           new Date(adventurerQuest.request.dateDebut).setSeconds(
             new Date(adventurerQuest.request.dateDebut).getSeconds() +
-              adventurerQuest.request.duration,
+            adventurerQuest.request.duration,
           ),
         );
 
@@ -125,17 +133,17 @@ export class AdventurersService {
   ): Promise<Adventurer> {
     return session
       ? await this.adventurerModel
-          .findByIdAndUpdate(
-            id,
-            { $inc: { experience: updateExpAdventurerDto.experience } },
-            { new: true },
-          )
-          .session(session)
-      : await this.adventurerModel.findByIdAndUpdate(
+        .findByIdAndUpdate(
           id,
           { $inc: { experience: updateExpAdventurerDto.experience } },
           { new: true },
-        );
+        )
+        .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { experience: updateExpAdventurerDto.experience } },
+        { new: true },
+      );
   }
 
   async updateAmount(
@@ -398,5 +406,56 @@ export class AdventurersService {
         }
       }),
     );
+  }
+
+  async createUnavailability(id: string, createUnavailability: CreateUnavailabilityDto): Promise<Unavailability[]> {
+    if (createUnavailability.type === "Request") {
+      if (!createUnavailability.requestId) {
+        throw new Error("Request ID is required")
+      } else {
+        const request = await this.requestsService.findOne(createUnavailability.requestId)
+        if (!request) {
+          throw new Error("Request doesn't exist")
+        }
+      }
+    }
+
+    // const createIndisponibility = new this.unavailabilityModel({
+    //   type: createUnavailability.type,
+    //   dateStart: createUnavailability.dateStart,
+    //   dateEnd: createUnavailability.dateEnd,
+    //   requestId: createUnavailability.requestId ? createUnavailability.requestId : undefined
+    // })
+    // console.log(createIndisponibility)
+
+    // CANNOT CREATE UNAVAILABILITY
+    const data = new this.unavailabilityModel({
+      type: "DayOf",
+      createUnavailability
+    })
+    console.log(await data.save())
+    return null
+  }
+
+  async putUnavailability(id: string, updateUnavailability: UpdateUnavailabilityDto): Promise<Unavailability> {
+    const adventurer = await this.adventurerModel.findById(id)
+    const unavailabilities = adventurer.unavailabilities
+
+    console.log(unavailabilities.find((data) => data._id === ObjectId("61ed85fe1eb2bd376a38c866")))
+    console.log(unavailabilities.filter(unavailability => unavailability._id === updateUnavailability.id))
+
+    return null
+  }
+
+  async getUnavailability(id: string): Promise<Unavailability[]> {
+    const adventurer = await this.adventurerModel.findById(id).populate('unavailabilities').exec()
+
+    await Promise.all(
+      adventurer.unavailabilities.map((async (unavailability, index) => {
+        adventurer.unavailabilities[index] = await this.unavailabilityModel.findById(unavailability)
+      }))
+    )
+
+    return adventurer.unavailabilities
   }
 }

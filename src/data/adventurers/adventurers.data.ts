@@ -8,6 +8,10 @@ const adventurers = [
     speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e5'),
     baseDailyRate: Math.floor(Math.random() * 100),
     experience: Math.floor(Math.random() * 10),
+    unavailabilities: [
+      new mongoose.Types.ObjectId("61ed85fe1eb2bd376a38c861"),
+      new mongoose.Types.ObjectId("61ed85fe1eb2bd376a38c862")
+    ]
   },
   {
     _id: new mongoose.Types.ObjectId('7cabe64dcf0d4447fa60f5e2'),
@@ -129,7 +133,7 @@ const adventurers = [
     baseDailyRate: Math.floor(Math.random() * 100),
     experience: Math.floor(Math.random() * 10),
   },
-{
+  {
     _id: new mongoose.Types.ObjectId('cabe64dcf0d4447fa60f5f15'),
     name: faker.name.findName(),
     speciality: new mongoose.Types.ObjectId('5cabe64dcf0d4447fa60f5e6'),
@@ -171,6 +175,7 @@ export = adventurers.map((adventurer) => {
     _id: adventurer._id,
     name: adventurer.name,
     speciality: adventurer.speciality,
+    unavailabilities: adventurer.unavailabilities,
     pictureUrl:
       'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
     baseDailyRate: adventurer.baseDailyRate,

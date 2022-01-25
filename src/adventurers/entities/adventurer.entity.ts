@@ -4,11 +4,17 @@ import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transaction } from 'src/transactions/entities/transaction.entity';
 import { Item } from 'src/items/entities/item.entity';
+import { Unavailability } from './unavailability.entity';
 
 export enum StatusItem {
   OK = 'Equipped',
   BROKEN = 'Broken',
   REPAIRING = 'Repairing',
+}
+
+export enum UnavailabilityType {
+  Request = "Request",
+  DayOf = "DayOf",
 }
 
 class AdventurerItem {
@@ -96,6 +102,12 @@ export class Adventurer extends Document {
   })
   @Prop([AdventurerItem])
   items: AdventurerItem[];
+
+  @ApiProperty({
+    description: 'The list of indisponibilty  of the adventurer.',
+  })
+  @Prop([AdventurerItem])
+  unavailabilities: Unavailability[];
 }
 
 export const AdventurerSchema = SchemaFactory.createForClass(Adventurer);
