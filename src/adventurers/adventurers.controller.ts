@@ -10,6 +10,8 @@ import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
 import { Speciality } from './entities/speciality.entity';
 import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
 import { Unavailability } from './entities/unavailability.entity';
+import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
+import { UpdateWriteOpResult } from 'mongoose';
 @ApiTags('adventurers')
 @ApiBearerAuth()
 @Controller('adventurers')
@@ -62,16 +64,17 @@ export class AdventurersController {
 
   @Get('/:id/unavailability')
   getUnavailability(
-    @Param('id', ParseObjectIdPipe) id: string
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Query() filterUnavailabilityDto: FilterUnavailabilityDto,
   ): Promise<Unavailability[]> {
-    return this.adventurerService.getUnavailability(id);
+    return this.adventurerService.getUnavailability(id, filterUnavailabilityDto);
   }
 
   @Put('/:id/unavailability')
   putUnavailability(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() updateUnavailability: UpdateUnavailabilityDto
-  ): Promise<Unavailability> {
+  ): Promise<UpdateWriteOpResult> {
     return this.adventurerService.putUnavailability(id, updateUnavailability);
   }
 

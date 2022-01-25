@@ -8,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Model } from 'mongoose';
+import { ClientSession, Model, UpdateWriteOpResult } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
 import { QuestsService } from './../quests/quests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
@@ -26,6 +26,7 @@ import { add } from 'date-fns';
 import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
 import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
 import { Unavailability } from './entities/unavailability.entity';
+import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -457,45 +458,45 @@ export class AdventurersService {
         }
       }
     }
-    // const createIndisponibility = new this.unavailabilityModel({
-    //   type: createUnavailability.type,
-    //   dateStart: createUnavailability.dateStart,
-    //   dateEnd: createUnavailability.dateEnd,
-    //   requestId: createUnavailability.requestId ? createUnavailability.requestId : undefined
-    // })
-    console.log(createUnavailability)
+    const data = await this.unavailabilityModel.create({
+      ...createUnavailability,
+    });
 
-    // CANNOT CREATE UNAVAILABILITY
-    // const data = await this.unavailabilityModel.create({
-    //   ...createUnavailability
-    // });
-    // console.log(data);
-    //console.log(await data.save())
-    return null;
+    if (data) {
+      const adventurer = await this.adventurerModel.findOneAndUpdate(
+        { id: id },
+        {
+          $push: {
+            unavailabilities: ObjectId(data.id),
+          },
+        },
+      );
+    }
+
+    return data;
   }
 
   async putUnavailability(
     id: string,
     updateUnavailability: UpdateUnavailabilityDto,
-  ): Promise<Unavailability> {
-    const adventurer = await this.adventurerModel.findById(id);
-    const unavailabilities = adventurer.unavailabilities;
+  ): Promise<UpdateWriteOpResult> {
+    await this.adventurerModel.findById(id).populate('unavailabilities').exec();
 
-    // console.log(
-    //   unavailabilities.find(
-    //     (data) => data._id === ObjectId('61ed85fe1eb2bd376a38c866'),
-    //   ),
-    // );
-    // console.log(
-    //   unavailabilities.filter(
-    //     (unavailability) => unavailability._id === updateUnavailability.id,
-    //   ),
-    // );
-
-    return null;
+    return await this.unavailabilityModel.updateOne(
+      {
+        id: updateUnavailability.id,
+      },
+      {
+        dateStart: updateUnavailability.dateStart,
+        dateEnd: updateUnavailability.dateEnd,
+      },
+    );
   }
 
-  async getUnavailability(id: string): Promise<Unavailability[]> {
+  async getUnavailability(
+    id: string,
+    filter: FilterUnavailabilityDto,
+  ): Promise<Unavailability[]> {
     const adventurer = await this.adventurerModel
       .findById(id)
       .populate('unavailabilities')
@@ -505,6 +506,13 @@ export class AdventurersService {
       adventurer.unavailabilities.map(async (unavailability, index) => {
         adventurer.unavailabilities[index] =
           await this.unavailabilityModel.findById(unavailability);
+        if (
+          filter.type &&
+          adventurer.unavailabilities[index].type &&
+          adventurer.unavailabilities[index].type !== filter.type
+        ) {
+          adventurer.unavailabilities.splice(index, 1);
+        }
       }),
     );
 

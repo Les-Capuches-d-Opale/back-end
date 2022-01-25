@@ -1,8 +1,10 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
+import { Document } from 'mongoose';
 import { UnavailabilityType } from './adventurer.entity';
 
-export class Unavailability {
+@Schema()
+export class Unavailability extends Document{
   @Prop()
   @ApiProperty({
     description: 'If type is request the requestId if define',

@@ -16,14 +16,14 @@ export class CreateUnavailabilityDto {
         example: '2021-11-02',
     })
     @IsString()
-    readonly dateStart: String;
+    readonly dateStart: string;
 
     @ApiProperty({
         description: 'The date when the indisponible date will finsish.',
         example: '2021-11-02',
     })
     @IsString()
-    readonly dateEnd: String;
+    readonly dateEnd: string;
 
     @ApiProperty({
         description: "",
