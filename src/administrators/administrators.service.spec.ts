@@ -1,3 +1,4 @@
+import { Unavailability } from './../adventurers/entities/unavailability.entity';
 import { RequestsService } from './../requests/requests.service';
 import { Quest } from './../quests/entities/quest.entity';
 import { Transaction } from './../transactions/entities/transaction.entity';
@@ -52,6 +53,7 @@ describe('AdministratorsService', () => {
   let transactionModel: Model<Transaction>;
   let questModel: Model<Quest>;
   let requestModel: Model<Request>;
+  let unavailabilityModel: Model<Unavailability>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -96,6 +98,12 @@ describe('AdministratorsService', () => {
           provide: getModelToken('Speciality'),
           useValue: {
             constructor: jest.fn().mockResolvedValue(Speciality),
+          },
+        },
+        {
+          provide: getModelToken('Unavailability'),
+          useValue: {
+            constructor: jest.fn().mockResolvedValue(Unavailability),
           },
         },
         {

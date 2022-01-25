@@ -1,23 +1,31 @@
-import { ItemsService } from './../items/items.service';
 import {
   forwardRef,
   HttpException,
   Inject,
   Injectable,
-  NotFoundException,
+  NotFoundException
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { ClientSession, Model } from 'mongoose';
+import { add } from 'date-fns';
+import { ClientSession, Model, UpdateWriteOpResult } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
+import { ItemsService } from './../items/items.service';
 import { QuestsService } from './../quests/quests.service';
+import { RequestsService } from './../requests/requests.service';
 import { CreateAdventurerDto } from './dto/createAdventurer.dto';
+import { CreateUnavailabilityDto } from './dto/createUnavailability.dto';
 import { FilterAdventurerQueryDto } from './dto/filterAdventurerQuery.dto';
+import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
 import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
-import { Adventurer, StatusItem } from './entities/adventurer.entity';
+import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
+import {
+  Adventurer,
+  StatusItem
+} from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
+import { Unavailability } from './entities/unavailability.entity';
 const ObjectId = require('mongoose').Types.ObjectId;
-import { add } from 'date-fns';
 @Injectable()
 export class AdventurersService {
   constructor(
@@ -25,10 +33,14 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @InjectModel(Unavailability.name)
+    private readonly unavailabilityModel: Model<Unavailability>,
     @Inject(forwardRef(() => QuestsService))
     private readonly questsService: QuestsService,
     @Inject(forwardRef(() => ItemsService))
     private readonly itemsService: ItemsService,
+    @Inject(forwardRef(() => RequestsService))
+    private readonly requestsService: RequestsService,
   ) {}
 
   async findAll(
@@ -69,7 +81,12 @@ export class AdventurersService {
 
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
-        const endDateQuest = new Date(adventurerQuest.request.dateFin);
+        const endDateQuest = new Date(
+          new Date(adventurerQuest.request.dateDebut).setSeconds(
+            new Date(adventurerQuest.request.dateDebut).getSeconds() +
+            adventurerQuest.request.duration,
+          ),
+        );
 
         if (startDateQuest <= new Date() && endDateQuest >= new Date()) {
           return (adventurer['isAvailableNow'] = false);
@@ -120,17 +137,17 @@ export class AdventurersService {
   ): Promise<Adventurer> {
     return session
       ? await this.adventurerModel
-          .findByIdAndUpdate(
-            id,
-            { $inc: { experience: updateExpAdventurerDto.experience } },
-            { new: true },
-          )
-          .session(session)
-      : await this.adventurerModel.findByIdAndUpdate(
+        .findByIdAndUpdate(
           id,
           { $inc: { experience: updateExpAdventurerDto.experience } },
           { new: true },
-        );
+        )
+        .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
+        id,
+        { $inc: { experience: updateExpAdventurerDto.experience } },
+        { new: true },
+      );
   }
 
   async updateAmount(
@@ -395,15 +412,6 @@ export class AdventurersService {
     );
   }
 
-  async getDaysOffAdventurer(id: string): Promise<Adventurer | any> {
-    const daysOffAdventurer = await this.adventurerModel.findById(
-      id,
-      'daysOffAdventurer',
-    );
-
-    return daysOffAdventurer;
-  }
-
   async getRepairingItems(): Promise<Adventurer[]> {
     const adventurers = await this.adventurerModel.aggregate([
       {
@@ -425,5 +433,79 @@ export class AdventurersService {
     ]);
 
     return adventurers.filter((adventurer) => adventurer.items);
+  }
+
+  async createUnavailability(id: string, createUnavailability: CreateUnavailabilityDto): Promise<Unavailability> {
+    if (createUnavailability.type === "Request") {
+      if (!createUnavailability.requestId) {
+        throw new Error('Request ID is required');
+      } else {
+        const request = await this.requestsService.findOne(
+          createUnavailability.requestId,
+        );
+        if (!request) {
+          throw new Error("Request doesn't exist");
+        }
+      }
+    }
+    const data = await this.unavailabilityModel.create({
+      ...createUnavailability,
+    });
+
+    if (data) {
+      const adventurer = await this.adventurerModel.findOneAndUpdate(
+        { id: id },
+        {
+          $push: {
+            unavailabilities: ObjectId(data.id),
+          },
+        },
+      );
+    }
+
+    return data;
+  }
+
+  async putUnavailability(
+    id: string,
+    updateUnavailability: UpdateUnavailabilityDto,
+  ): Promise<UpdateWriteOpResult> {
+    await this.adventurerModel.findById(id).populate('unavailabilities').exec();
+
+    return await this.unavailabilityModel.updateOne(
+      {
+        id: updateUnavailability.id,
+      },
+      {
+        dateStart: updateUnavailability.dateStart,
+        dateEnd: updateUnavailability.dateEnd,
+      },
+    );
+  }
+
+  async getUnavailability(
+    id: string,
+    filter: FilterUnavailabilityDto,
+  ): Promise<Unavailability[]> {
+    const adventurer = await this.adventurerModel
+      .findById(id)
+      .populate('unavailabilities')
+      .exec();
+
+    await Promise.all(
+      adventurer.unavailabilities.map(async (unavailability, index) => {
+        adventurer.unavailabilities[index] =
+          await this.unavailabilityModel.findById(unavailability);
+        if (
+          filter.type &&
+          adventurer.unavailabilities[index].type &&
+          adventurer.unavailabilities[index].type !== filter.type
+        ) {
+          adventurer.unavailabilities.splice(index, 1);
+        }
+      }),
+    );
+
+    return adventurer.unavailabilities;
   }
 }

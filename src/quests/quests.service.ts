@@ -9,7 +9,8 @@ import { AdventurerProfile } from 'src/requests/entities/adventurerProfile.entit
 import { AdventurersService } from './../adventurers/adventurers.service';
 import {
   Adventurer,
-  DayOffType,
+  UnavailabilityType,
+  /* DayOffType, */
 } from './../adventurers/entities/adventurer.entity';
 import { Speciality } from './../adventurers/entities/speciality.entity';
 import { QuestStatus } from './../requests/entities/request.entity';
@@ -134,14 +135,15 @@ export class QuestsService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-
-    await this.administratorsService.updateAdventurerSchedules(
-      groups.map((group) => group.adventurer),
-      _request.dateDebut,
-      _request.dateFin,
-      DayOffType.REQUEST,
-      request,
-    );
+    
+    groups.map(async (group) => {
+      await this.adventurerService.createUnavailability(group.adventurer, {
+        dateStart: String(_request.dateDebut),
+        dateEnd: String(_request.dateFin),
+        type: UnavailabilityType.Request,
+        requestId: request,
+      });
+    });
 
     this.changeStatus(request, { status: QuestStatus.Accepted });
     return quest.save();
