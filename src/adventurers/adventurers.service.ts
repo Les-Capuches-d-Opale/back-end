@@ -412,15 +412,6 @@ export class AdventurersService {
     );
   }
 
-  async getDaysOffAdventurer(id: string): Promise<Adventurer | any> {
-    const daysOffAdventurer = await this.adventurerModel.findById(
-      id,
-      'daysOffAdventurer',
-    );
-
-    return daysOffAdventurer;
-  }
-
   async getRepairingItems(): Promise<Adventurer[]> {
     const adventurers = await this.adventurerModel.aggregate([
       {

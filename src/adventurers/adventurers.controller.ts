@@ -39,14 +39,7 @@ export class AdventurersController {
   findOne(@Param('id', ParseObjectIdPipe) id: string): Promise<Adventurer> {
     return this.adventurerService.findOne(id);
   }
-
-  @Get('/schedules/:id')
-  getScheduleAdventurer(
-    @Param('id', ParseObjectIdPipe) id: string,
-  ): Promise<Adventurer> {
-    return this.adventurerService.getDaysOffAdventurer(id);
-  }
-
+  
   @Post()
   create(
     @Body() createAdventurerDto: CreateAdventurerDto,
