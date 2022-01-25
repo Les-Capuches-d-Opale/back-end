@@ -107,7 +107,7 @@ export class Adventurer extends Document {
   @ApiProperty({
     description: 'The list of indisponibilty  of the adventurer.',
   })
-  @Prop([AdventurerItem])
+  @Prop()
   unavailabilities: Unavailability[];
 }
 

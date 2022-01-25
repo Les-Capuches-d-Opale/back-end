@@ -6,7 +6,7 @@ import { UnavailabilityType } from '../entities/adventurer.entity';
 export class CreateUnavailabilityDto {
     @ApiProperty({
         description: 'The type of the unavailability.',
-        example: '',
+        example: 'DayOf',
     })
     @IsString()
     readonly type: UnavailabilityType;
@@ -29,7 +29,7 @@ export class CreateUnavailabilityDto {
         description: "",
         example: "",
     })
-    @IsOptional ()
+    @IsOptional()
     @IsString()
-    requestId: string
+    readonly requestId: string
 }

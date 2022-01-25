@@ -79,7 +79,7 @@ export class AdventurersController {
   createUnavailability(
     @Param('id', ParseObjectIdPipe) id: string,
     @Body() createUnavailability: CreateUnavailabilityDto
-  ): Promise<Unavailability[]> {
+  ): Promise<Unavailability> {
     return this.adventurerService.createUnavailability(id, createUnavailability);
   }
 }
