@@ -125,11 +125,11 @@ export class RequestsService {
       pictureUrl,
       questGiver,
       bounty,
-      dateFin,
+      dateFin: new Date(dateFin),
       requiredProfiles,
       awardedExperience,
       status,
-      dateDebut,
+      dateDebut: new Date(dateDebut),
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -151,6 +151,8 @@ export class RequestsService {
       offset = 0,
     } = filterRequestQueryDto;
 
+    console.log(dateFin);
+
     const requests = await this.requestModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
@@ -160,7 +162,7 @@ export class RequestsService {
           $gte: bountyMin ? bountyMin : 0,
           $lte: bountyMax ? bountyMax : 999999999999999,
         },
-        dateFin: { $lte: dateFin },
+        dateFin: { $gte: dateFin ? dateFin : new Date() },
         status: { $in: ['Unassigned', 'Rejected'] },
       })
       .skip(offset)

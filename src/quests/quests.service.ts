@@ -334,8 +334,8 @@ export class QuestsService {
     const duration = formatDistance(
       quest.request.dateDebut,
       quest.request.dateFin,
-    ).split(" ")[0];
-    
+    ).split(' ')[0];
+
     quest.groups.map((profile) => {
       const amount =
         profile.baseDailyRate *
