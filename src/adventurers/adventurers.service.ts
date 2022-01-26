@@ -3,7 +3,7 @@ import {
   HttpException,
   Inject,
   Injectable,
-  NotFoundException
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { add } from 'date-fns';
@@ -19,10 +19,7 @@ import { FilterUnavailabilityDto } from './dto/FilterUnavailabilityDto.dto';
 import { UpdateAmountAdventurerDto } from './dto/updateAmountDto.dto';
 import { UpdateExpAdventurerDto } from './dto/updateExpAdventurer.dto';
 import { UpdateUnavailabilityDto } from './dto/updateUnavailability.dto';
-import {
-  Adventurer,
-  StatusItem
-} from './entities/adventurer.entity';
+import { Adventurer, StatusItem } from './entities/adventurer.entity';
 import { Speciality } from './entities/speciality.entity';
 import { Unavailability } from './entities/unavailability.entity';
 const ObjectId = require('mongoose').Types.ObjectId;
@@ -81,12 +78,7 @@ export class AdventurersService {
 
       adventurerHasQuests.forEach((adventurerQuest) => {
         const startDateQuest = new Date(adventurerQuest.request.dateDebut);
-        const endDateQuest = new Date(
-          new Date(adventurerQuest.request.dateDebut).setSeconds(
-            new Date(adventurerQuest.request.dateDebut).getSeconds() +
-            adventurerQuest.request.duration,
-          ),
-        );
+        const endDateQuest = new Date(adventurerQuest.request.dateFin);
 
         if (startDateQuest <= new Date() && endDateQuest >= new Date()) {
           return (adventurer['isAvailableNow'] = false);
@@ -137,17 +129,17 @@ export class AdventurersService {
   ): Promise<Adventurer> {
     return session
       ? await this.adventurerModel
-        .findByIdAndUpdate(
+          .findByIdAndUpdate(
+            id,
+            { $inc: { experience: updateExpAdventurerDto.experience } },
+            { new: true },
+          )
+          .session(session)
+      : await this.adventurerModel.findByIdAndUpdate(
           id,
           { $inc: { experience: updateExpAdventurerDto.experience } },
           { new: true },
-        )
-        .session(session)
-      : await this.adventurerModel.findByIdAndUpdate(
-        id,
-        { $inc: { experience: updateExpAdventurerDto.experience } },
-        { new: true },
-      );
+        );
   }
 
   async updateAmount(
@@ -435,8 +427,11 @@ export class AdventurersService {
     return adventurers.filter((adventurer) => adventurer.items);
   }
 
-  async createUnavailability(id: string, createUnavailability: CreateUnavailabilityDto): Promise<Unavailability> {
-    if (createUnavailability.type === "Request") {
+  async createUnavailability(
+    id: string,
+    createUnavailability: CreateUnavailabilityDto,
+  ): Promise<Unavailability> {
+    if (createUnavailability.type === 'Request') {
       if (!createUnavailability.requestId) {
         throw new Error('Request ID is required');
       } else {

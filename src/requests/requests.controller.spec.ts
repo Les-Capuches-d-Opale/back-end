@@ -42,7 +42,6 @@ describe('Requests Controller', () => {
             'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
           questGiver: 'Le medecin',
           bounty: 837,
-          duration: 565850,
           requiredProfiles: [
             {
               speciality: {
@@ -69,6 +68,7 @@ describe('Requests Controller', () => {
           ],
           awardedExperience: 8,
           dateDebut: '2022-02-01',
+          dateFin: '2022-04-01',
           status: 'Unassigned',
           createdAt: '2022-01-13T14:59:32.198Z',
           updatedAt: '2022-01-13T14:59:32.207Z',
