@@ -15,6 +15,7 @@ import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { QuestStatus, Request } from './entities/request.entity';
 import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
+import { profile } from 'winston';
 const mongoose = require('mongoose');
 
 @Injectable()
