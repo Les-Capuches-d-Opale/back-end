@@ -35,31 +35,6 @@ export class TransactionsService {
     return transaction;
   }
 
-  /* async filterAll(
-    filterTransactionQueryDto: FilterTransactionQueryDto,
-  ): Promise<Transaction[] | any> {
-    const { transactionType } = filterTransactionQueryDto;
-    const transactions = await this.transactionModel
-      .find()
-      .where(transactionType ? { type: transactionType } : {})
-      .exec();
-
-    return transactions;
-  }
-
-  async filterByDate(date: number): Promise<Transaction[] | any> {
-    const sinceDate = new Date(
-      new Date().setDate(new Date().getDate() - (date || 1)),
-    ).toISOString();
-
-    const transactions = await this.transactionModel
-      .find()
-      .where({ date: { $gte: sinceDate } })
-      .exec();
-
-    return transactions;
-  } */
-
   async getGroupTransaction(offset: OffsetGetTransaction): Promise<any> {
     const formatDate = 'yyyy-MM-dd';
     let transactionFinal = [];
