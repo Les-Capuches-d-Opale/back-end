@@ -49,4 +49,9 @@ export class QuestsController {
   ): Promise<UpdateWriteOpResult> {
     return this.questsService.changeStatus(id, setStatusQuest);
   }
+
+  @Get('/:id/rate')
+  rateQuest(@Param('id', ParseObjectIdPipe) id: string): Promise<number> {
+    return this.questsService.rateQuest(id);
+  }
 }

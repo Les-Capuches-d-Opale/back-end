@@ -1,7 +1,12 @@
 import { ItemsService } from './../items/items.service';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { format, eachDayOfInterval, addSeconds } from 'date-fns';
+import {
+  format,
+  eachDayOfInterval,
+  addSeconds,
+  formatDistance,
+} from 'date-fns';
 import { Connection, Model, UpdateWriteOpResult } from 'mongoose';
 import { AdministratorsService } from 'src/administrators/administrators.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
@@ -21,6 +26,7 @@ import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
 import { Quest } from './entities/quest.entity';
 import { FilterQuestDto } from './dto/filterQuest.dto';
+import { sum } from 'lodash';
 const mongoose = require('mongoose');
 var lodash = require('lodash');
 @Injectable()
@@ -39,7 +45,7 @@ export class QuestsService {
     private readonly transactionsService: TransactionsService,
     @Inject(forwardRef(() => AdministratorsService))
     private readonly administratorsService: AdministratorsService,
-  ) { }
+  ) {}
 
   async findAll(
     filterQueryDto: FilterQuestDto,
@@ -80,14 +86,17 @@ export class QuestsService {
               await this.specialityModel.findById(id);
           }),
         );
-        if (filterQueryDto.type && quest.request.status != filterQueryDto.type) {
+        if (
+          filterQueryDto.type &&
+          quest.request.status != filterQueryDto.type
+        ) {
           quests.splice(quests.indexOf(quest), 1);
         }
       }),
     );
 
     if (filterQueryDto.type) {
-      return { quests, counts: quests.length }
+      return { quests, counts: quests.length };
     }
     return { quests, counts };
   }
@@ -315,5 +324,26 @@ export class QuestsService {
         session.endSession();
       }
     });
+  }
+
+  async rateQuest(id: string): Promise<number> {
+    let paiementSum = [];
+    //const items = await this.adventurersService.getRepairingItems()
+    const quest = await this.findOne(id);
+
+    const duration = formatDistance(
+      quest.request.dateDebut,
+      quest.request.dateFin,
+    ).split(" ")[0];
+    
+    quest.groups.map((profile) => {
+      const amount =
+        profile.baseDailyRate *
+        (1 + 0.5 * Math.log(profile.experience)) *
+        parseInt(duration);
+      paiementSum.push(Math.ceil(amount));
+    });
+
+    return sum(paiementSum) / quest.request.bounty;
   }
 }

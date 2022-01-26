@@ -1,3 +1,4 @@
+import { AdministratorsService } from 'src/administrators/administrators.service';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { format, sub } from 'date-fns';
@@ -12,6 +13,7 @@ export class TransactionsService {
   constructor(
     @InjectModel(Transaction.name)
     private readonly transactionModel: Model<Transaction>,
+    private readonly administratorsService: AdministratorsService,
   ) {}
 
   async findAll(): Promise<Transaction[]> {
@@ -87,9 +89,22 @@ export class TransactionsService {
   }
 
   async getTransaction(): Promise<Transaction[]> {
-      const transactions = await this.transactionModel
-      .find()
-      .exec();
+    const transactions = await this.transactionModel.find().exec();
     return transactions;
+  }
+
+  async getLastTransaction(
+    id: string,
+  ): Promise<{ lastTransaction: Transaction[]; wallet: number }> {
+    const transactions = await this.transactionModel
+      .find()
+      .sort({ date: -1 })
+      .limit(5)
+      .exec();
+    const admin = await this.administratorsService.getOne(id);
+    return {
+      lastTransaction: transactions,
+      wallet: admin.wallet,
+    };
   }
 }
