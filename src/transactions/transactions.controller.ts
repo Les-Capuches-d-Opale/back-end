@@ -9,22 +9,16 @@ import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto'
 @Controller('transactions')
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) { }
-
-  // @Get('/')
-  // filterAll(
-  //   @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
-  // ): Promise<Transaction[]> {
-  //   return this.transactionsService.filterAll(filterTransactionQueryDto);
-  // }
- 
-  @Get('/')
+  
+  // ROUTE POUR GROUPER LES TRANSACTIONS
+  @Get('/groups')
   getGroupTransaction(): Promise<Transaction[]> {
     return this.transactionsService.getGroupTransaction();
   }
-
-  // @Get('/:date')
-  // filter(@Param('date') date: number): Promise<Transaction[]> {
-  //   return this.transactionsService.filterByDate(date);
-  // }
-
+  
+  //CREER LA ROUTE POUR CHAQUE TRANSACTIONS SUR LES 7 DERNIERS JOURS
+  @Get('/')
+  getTransaction(): Promise<Transaction[]> {
+    return null
+  }
 }
