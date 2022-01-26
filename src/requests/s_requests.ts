@@ -81,7 +81,6 @@ describe('Transactions Service', () => {
             'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
           questGiver: 'Le medecin',
           bounty: 837,
-          duration: 565850,
           requiredProfiles: [
             {
               speciality: '5cabe64dcf0d4447fa60f5e6',
@@ -94,6 +93,7 @@ describe('Transactions Service', () => {
           ],
           awardedExperience: 8,
           dateDebut: '2022-02-01',
+          dateFin: '2022-05-01',
           status: 'Unassigned',
           createdAt: '2022-01-13T14:59:32.198Z',
           updatedAt: '2022-01-13T14:59:32.207Z',
@@ -149,7 +149,6 @@ describe('Transactions Service', () => {
             'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
           questGiver: 'Le medecin',
           bounty: 837,
-          duration: 565850,
           requiredProfiles: [
             {
               speciality: {
@@ -176,6 +175,7 @@ describe('Transactions Service', () => {
           ],
           awardedExperience: 8,
           dateDebut: '2022-02-01',
+          dateFin: '2022-04-01',
           status: 'Unassigned',
           createdAt: '2022-01-13T14:59:32.198Z',
           updatedAt: '2022-01-13T14:59:32.207Z',
