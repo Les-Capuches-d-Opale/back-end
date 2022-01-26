@@ -1,4 +1,5 @@
-import { DayOffType } from './../adventurers/entities/adventurer.entity';
+import { UnavailabilityType } from './../adventurers/entities/adventurer.entity';
+//import { DayOffType } from './../adventurers/entities/adventurer.entity';
 import { TransactionsService } from './../transactions/transactions.service';
 import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { ItemsService } from './../items/items.service';
@@ -166,30 +167,6 @@ export class AdministratorsService {
           session.endSession();
         }
       }),
-    );
-  }
-
-  async updateAdventurerSchedules(
-    ids: string[],
-    dateDebut: Date,
-    dateFin: Date,
-    type: DayOffType,
-    request: string,
-  ) {
-    return await this.administratorModel.updateMany(
-      {
-        _id: { $in: ids },
-      },
-      {
-        $push: {
-          daysOffAdventurer: {
-            dateDebut,
-            dateFin,
-            type,
-            request,
-          },
-        },
-      },
     );
   }
 }

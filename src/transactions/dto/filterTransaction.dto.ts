@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional, IsString } from 'class-validator';
-import { TransactionType } from '../transaction.entity';
+import { TransactionType } from '../entities/transaction.entity';
 
 export class FilterTransactionQueryDto {
   @IsOptional()

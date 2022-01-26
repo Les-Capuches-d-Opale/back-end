@@ -1,10 +1,10 @@
-import { Speciality } from '../entities/speciality.entity';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Document, Schema as MongooseSchema } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
-import { Request } from '../../requests/entities/request.entity';
+import { Transaction } from 'src/transactions/entities/transaction.entity';
+import { Speciality } from '../entities/speciality.entity';
+import { Unavailability } from './unavailability.entity';
 
 export enum StatusItem {
   OK = 'Equipped',
@@ -12,9 +12,9 @@ export enum StatusItem {
   REPAIRING = 'Repairing',
 }
 
-export enum DayOffType {
-  REST = 'Rest',
-  REQUEST = 'Request',
+export enum UnavailabilityType {
+  Request = "Request",
+  DayOf = "DayOf",
 }
 
 class AdventurerItem {
@@ -36,24 +36,6 @@ class AdventurerItem {
 
   @Prop({ enum: StatusItem })
   status: StatusItem;
-}
-
-class dayOffAdventurer {
-  @Prop()
-  dateDebut: Date;
-
-  @Prop()
-  dateFin: Date;
-
-  @Prop({ enum: DayOffType, required: true })
-  type: DayOffType;
-
-  @Prop({
-    type: MongooseSchema.Types.ObjectId,
-    ref: 'Request',
-    required: false,
-  })
-  request?: Request;
 }
 
 @Schema()
@@ -122,10 +104,10 @@ export class Adventurer extends Document {
   items: AdventurerItem[];
 
   @ApiProperty({
-    description: 'The days off schedule of the adventurer.',
+    description: 'The list of indisponibilty  of the adventurer.',
   })
-  @Prop([dayOffAdventurer])
-  daysOffAdventurer: dayOffAdventurer[];
+  @Prop()
+  unavailabilities: Unavailability[];
 }
 
 export const AdventurerSchema = SchemaFactory.createForClass(Adventurer);
