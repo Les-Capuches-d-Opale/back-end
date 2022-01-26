@@ -20,6 +20,7 @@ import { TransactionsService } from './../transactions/transactions.service';
 import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
 import { Quest } from './entities/quest.entity';
+import { FilterQuestDto } from './dto/filterQuest.dto';
 const mongoose = require('mongoose');
 var lodash = require('lodash');
 @Injectable()
@@ -38,13 +39,13 @@ export class QuestsService {
     private readonly transactionsService: TransactionsService,
     @Inject(forwardRef(() => AdministratorsService))
     private readonly administratorsService: AdministratorsService,
-  ) {}
+  ) { }
 
   async findAll(
-    paginationQueryDto: PaginationQueryDto,
+    filterQueryDto: FilterQuestDto,
     adminId?: string,
   ): Promise<Quest[] | any> {
-    const { limit = 25, offset = 0 } = paginationQueryDto;
+    const { limit = 25, offset = 0 } = filterQueryDto;
 
     if (adminId) await this.setAllStatus(adminId);
 
@@ -63,6 +64,7 @@ export class QuestsService {
         const requiredProfilesIds = quest.request.requiredProfiles.map(
           (profile) => profile.speciality,
         );
+
         const groupIds = quest.groups.map((profile) => profile.speciality);
 
         await Promise.all(
@@ -78,9 +80,15 @@ export class QuestsService {
               await this.specialityModel.findById(id);
           }),
         );
+        if (filterQueryDto.type && quest.request.status != filterQueryDto.type) {
+          quests.splice(quests.indexOf(quest), 1);
+        }
       }),
     );
 
+    if (filterQueryDto.type) {
+      return { quests, counts: quests.length }
+    }
     return { quests, counts };
   }
 
@@ -135,7 +143,7 @@ export class QuestsService {
       createdAt: new Date(),
       updatedAt: new Date(),
     });
-    
+
     groups.map(async (group) => {
       await this.adventurerService.createUnavailability(group.adventurer, {
         dateStart: String(_request.dateDebut),

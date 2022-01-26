@@ -16,6 +16,7 @@ import { CreateQuestDto } from './dto/createQuest.dto';
 import { SetStatusQuestDto } from './dto/setStatusQuest.dto';
 import { Quest } from './entities/quest.entity';
 import { QuestsService } from './quests.service';
+import { FilterQuestDto } from './dto/filterQuest.dto';
 
 @ApiBearerAuth()
 @ApiTags('quests')
@@ -26,9 +27,9 @@ export class QuestsController {
   @Get('/')
   getAll(
     @Request() req,
-    @Query() paginationQueryDto: PaginationQueryDto,
+    @Query() filterQueryDto: FilterQuestDto,
   ): Promise<Quest[]> {
-    return this.questsService.findAll(paginationQueryDto, req.user.adminId);
+    return this.questsService.findAll(filterQueryDto, req.user.adminId);
   }
 
   @Get('/:id')
