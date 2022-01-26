@@ -8,17 +8,23 @@ import { FilterTransactionQueryDto } from './entities/dto/filterTransaction.dto'
 @ApiTags('transactions')
 @Controller('transactions')
 export class TransactionsController {
-  constructor(private readonly transactionsService: TransactionsService) {}
+  constructor(private readonly transactionsService: TransactionsService) { }
 
+  // @Get('/')
+  // filterAll(
+  //   @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
+  // ): Promise<Transaction[]> {
+  //   return this.transactionsService.filterAll(filterTransactionQueryDto);
+  // }
+ 
   @Get('/')
-  filterAll(
-    @Query() filterTransactionQueryDto: FilterTransactionQueryDto,
-  ): Promise<Transaction[]> {
-    return this.transactionsService.filterAll(filterTransactionQueryDto);
+  getGroupTransaction(): Promise<Transaction[]> {
+    return this.transactionsService.getGroupTransaction();
   }
 
-  @Get('/:date')
-  filter(@Param('date') date: number): Promise<Transaction[]> {
-    return this.transactionsService.filterByDate(date);
-  }
+  // @Get('/:date')
+  // filter(@Param('date') date: number): Promise<Transaction[]> {
+  //   return this.transactionsService.filterByDate(date);
+  // }
+
 }
