@@ -115,7 +115,7 @@ export class RequestsService {
         experience: profil.experience,
       });
     });
-
+    
     const req = new this.requestModel({
       name,
       description,
@@ -123,7 +123,7 @@ export class RequestsService {
       questGiver,
       bounty,
       dateFin: new Date(dateFin),
-      requiredProfiles,
+      requiredProfiles: newRequiredProfile,
       awardedExperience,
       status,
       dateDebut: new Date(dateDebut),
