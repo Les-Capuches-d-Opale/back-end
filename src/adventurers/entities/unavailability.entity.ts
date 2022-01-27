@@ -1,16 +1,21 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { Document } from 'mongoose';
+import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Request } from 'src/requests/entities/request.entity';
 import { UnavailabilityType } from './adventurer.entity';
 
 @Schema()
-export class Unavailability extends Document{
-  @Prop()
+export class Unavailability extends Document {
+  @Prop({
+    type: MongooseSchema.Types.ObjectId,
+    ref: 'Request',
+    required: false,
+  })
   @ApiProperty({
-    description: 'If type is request the requestId if define',
+    description: 'If type is request the request if define',
     example: '9cabe64dcf0d4447fa60f5e1',
   })
-  requestId?: string;
+  request: Request;
 
   @Prop()
   @ApiProperty({

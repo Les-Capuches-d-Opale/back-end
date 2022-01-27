@@ -203,6 +203,5 @@ export = adventurers.map((adventurer) => {
       'https://www.jeancoutu.com/globalassets/revamp/photo/conseils-photo/20160302-01-reseaux-sociaux-profil/photo-profil_301783868.jpg',
     baseDailyRate: adventurer.baseDailyRate,
     experience: adventurer.experience,
-    daysOffAdventurer: adventurer.daysOffAdventurer,
   };
 });

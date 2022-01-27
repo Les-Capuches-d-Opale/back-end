@@ -1,21 +1,18 @@
-import { PaginationQueryDto } from './../common/dto/pagination-query.dto';
 import {
   forwardRef,
   HttpException,
   HttpStatus,
   Inject,
-  Injectable,
+  Injectable
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateWriteOpResult } from 'mongoose';
+import { AdventurersService } from 'src/adventurers/adventurers.service';
 import { Speciality } from './../adventurers/entities/speciality.entity';
 import { CreateRequestDto } from './dto/createRequest.dto';
 import { FilterRequestQueryDto } from './dto/filterRequestQuery.dto';
 import { SetStatusRequestDto } from './dto/setStatusRequest.dto';
 import { QuestStatus, Request } from './entities/request.entity';
-import { Adventurer } from 'src/adventurers/entities/adventurer.entity';
-import { AdventurersService } from 'src/adventurers/adventurers.service';
-import { profile } from 'winston';
 const mongoose = require('mongoose');
 
 @Injectable()
@@ -151,8 +148,6 @@ export class RequestsService {
       offset = 0,
     } = filterRequestQueryDto;
 
-    console.log(dateFin);
-
     const requests = await this.requestModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },
@@ -167,9 +162,11 @@ export class RequestsService {
       })
       .skip(offset)
       .limit(limit)
+      .populate("requiredProfiles")
       .lean()
       .exec();
 
+    console.log(requests);
     const counts = await this.requestModel
       .find({
         name: { $regex: name ? name : '', $options: 'i' },

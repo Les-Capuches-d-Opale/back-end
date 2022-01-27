@@ -1,3 +1,4 @@
+import { RequestSchema } from './../requests/entities/request.entity';
 import { RequestsModule } from './../requests/requests.module';
 import { ItemsModule } from './../items/items.module';
 import { QuestsModule } from './../quests/quests.module';
@@ -8,6 +9,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AdventurersController } from './adventurers.controller';
 import { AdventurersService } from './adventurers.service';
 import { Unavailability, UnavailabilitySchema } from './entities/unavailability.entity';
+import { Request } from 'src/requests/entities/request.entity';
 
 @Module({
   imports: [
@@ -26,6 +28,10 @@ import { Unavailability, UnavailabilitySchema } from './entities/unavailability.
       {
         name: Unavailability.name,
         schema: UnavailabilitySchema,
+      },
+      {
+        name: Request.name,
+        schema: RequestSchema,
       },
     ]),
   ],
