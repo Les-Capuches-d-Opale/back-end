@@ -176,7 +176,7 @@ export class RequestsService {
           $gte: bountyMin ? bountyMin : 0,
           $lte: bountyMax ? bountyMax : 999999999999999,
         },
-        dateFin: { $lte: dateFin },
+        dateFin: { $gte: dateFin ? dateFin : new Date() },
         status: { $in: ['Unassigned', 'Rejected'] },
       })
       .count();
