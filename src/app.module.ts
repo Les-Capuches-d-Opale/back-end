@@ -20,7 +20,11 @@ import { RequestsModule } from './requests/requests.module';
 @Module({
   imports: [
     ConfigModule.forRoot({}),
-    MongooseModule.forRoot(process.env.DATABASE_URI),
+    MongooseModule.forRoot(
+      process.env.NODE_ENV === 'production'
+        ? process.env.DATABASE_URI
+        : process.env.DATABASE_URI_DEV,
+    ),
     MorganModule,
     AdventurersModule,
     ItemsModule,
