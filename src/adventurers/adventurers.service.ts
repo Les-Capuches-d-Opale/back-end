@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { add } from 'date-fns';
 import { ClientSession, Model, UpdateWriteOpResult } from 'mongoose';
 import { Item } from 'src/items/entities/item.entity';
+import { Request } from 'src/requests/entities/request.entity';
 import { ItemsService } from './../items/items.service';
 import { QuestsService } from './../quests/quests.service';
 import { RequestsService } from './../requests/requests.service';
@@ -30,6 +31,8 @@ export class AdventurersService {
     private readonly adventurerModel: Model<Adventurer>,
     @InjectModel(Speciality.name)
     private readonly specialityModel: Model<Speciality>,
+    @InjectModel(Request.name)
+    private readonly requestModel: Model<Request>,
     @InjectModel(Unavailability.name)
     private readonly unavailabilityModel: Model<Unavailability>,
     @Inject(forwardRef(() => QuestsService))
@@ -491,16 +494,20 @@ export class AdventurersService {
       adventurer.unavailabilities.map(async (unavailability, index) => {
         adventurer.unavailabilities[index] =
           await this.unavailabilityModel.findById(unavailability);
-        if (
-          filter.type &&
-          adventurer.unavailabilities[index].type &&
-          adventurer.unavailabilities[index].type !== filter.type
-        ) {
-          adventurer.unavailabilities.splice(index, 1);
+
+        if (adventurer.unavailabilities[index].request) {
+          adventurer.unavailabilities[index].request =
+            await this.requestModel.findById(
+              adventurer.unavailabilities[index].request,
+            );
         }
       }),
     );
-
-    return adventurer.unavailabilities;
+    return adventurer.unavailabilities.filter(
+      (unavailibility) => {
+        if(filter.type) return unavailibility.type === filter.type
+        else return unavailibility
+      },
+    );
   }
 }
